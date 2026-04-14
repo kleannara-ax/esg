@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="EsgIndicatorRepository 테스트" tests="4" skipped="0" failures="0" errors="0" timestamp="2026-04-14T05:17:25" hostname="e2b.local" time="0.113">
+  <properties/>
+  <testcase name="지표 저장 및 코드로 조회" classname="com.company.module.esg.repository.EsgIndicatorRepositoryTest" time="0.024"/>
+  <testcase name="전체 활성 지표 조회" classname="com.company.module.esg.repository.EsgIndicatorRepositoryTest" time="0.025"/>
+  <testcase name="중복 코드 존재 여부 확인" classname="com.company.module.esg.repository.EsgIndicatorRepositoryTest" time="0.031"/>
+  <testcase name="카테고리별 활성 지표 조회" classname="com.company.module.esg.repository.EsgIndicatorRepositoryTest" time="0.026"/>
+  <system-out><![CDATA[2026-04-14T05:17:25.711Z  INFO 3697 --- [esg-management-system] [    Test worker] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.company.module.esg.repository.EsgIndicatorRepositoryTest]: EsgIndicatorRepositoryTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-04-14T05:17:25.726Z  INFO 3697 --- [esg-management-system] [    Test worker] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.company.EsgManagementApplication for test class com.company.module.esg.repository.EsgIndicatorRepositoryTest
+2026-04-14T05:17:25.743Z DEBUG 3697 --- [esg-management-system] [    Test worker] org.hibernate.SQL                        : 
+    insert 
+    into
+        mod_esg_indicator
+        (active_yn, category, created_at, created_by, description, indicator_code, indicator_name, unit, updated_at, updated_by, indicator_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, default)
+Hibernate: 
+    insert 
+    into
+        mod_esg_indicator
+        (active_yn, category, created_at, created_by, description, indicator_code, indicator_name, unit, updated_at, updated_by, indicator_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, default)
+2026-04-14T05:17:25.751Z DEBUG 3697 --- [esg-management-system] [    Test worker] org.hibernate.SQL                        : 
+    select
+        ei1_0.indicator_id,
+        ei1_0.active_yn,
+        ei1_0.category,
+        ei1_0.created_at,
+        ei1_0.created_by,
+        ei1_0.description,
+        ei1_0.indicator_code,
+        ei1_0.indicator_name,
+        ei1_0.unit,
+        ei1_0.updated_at,
+        ei1_0.updated_by 
+    from
+        mod_esg_indicator ei1_0 
+    where
+        ei1_0.indicator_code=?
+Hibernate: 
+    select
+        ei1_0.indicator_id,
+        ei1_0.active_yn,
+        ei1_0.category,
+        ei1_0.created_at,
+        ei1_0.created_by,
+        ei1_0.description,
+        ei1_0.indicator_code,
+        ei1_0.indicator_name,
+        ei1_0.unit,
+        ei1_0.updated_at,
+        ei1_0.updated_by 
+    from
+        mod_esg_indicator ei1_0 
+    where
+        ei1_0.indicator_code=?
+2026-04-14T05:17:25.770Z DEBUG 3697 --- [esg-management-system] [    Test worker] org.hibernate.SQL                        : 
+    insert 
+    into
+        mod_esg_indicator
+        (active_yn, category, created_at, created_by, description, indicator_code, indicator_name, unit, updated_at, updated_by, indicator_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, default)
+Hibernate: 
+    insert 
+    into
+        mod_esg_indicator
+        (active_yn, category, created_at, created_by, description, indicator_code, indicator_name, unit, updated_at, updated_by, indicator_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, default)
+2026-04-14T05:17:25.774Z DEBUG 3697 --- [esg-management-system] [    Test worker] org.hibernate.SQL                        : 
+    insert 
+    into
+        mod_esg_indicator
+        (active_yn, category, created_at, created_by, description, indicator_code, indicator_name, unit, updated_at, updated_by, indicator_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, default)
+Hibernate: 
+    insert 
+    into
+        mod_esg_indicator
+        (active_yn, category, created_at, created_by, description, indicator_code, indicator_name, unit, updated_at, updated_by, indicator_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, default)
+2026-04-14T05:17:25.776Z DEBUG 3697 --- [esg-management-system] [    Test worker] org.hibernate.SQL                        : 
+    insert 
+    into
+        mod_esg_indicator
+        (active_yn, category, created_at, created_by, description, indicator_code, indicator_name, unit, updated_at, updated_by, indicator_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, default)
+Hibernate: 
+    insert 
+    into
+        mod_esg_indicator
+        (active_yn, category, created_at, created_by, description, indicator_code, indicator_name, unit, updated_at, updated_by, indicator_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, default)
+2026-04-14T05:17:25.781Z DEBUG 3697 --- [esg-management-system] [    Test worker] org.hibernate.SQL                        : 
+    select
+        ei1_0.indicator_id,
+        ei1_0.active_yn,
+        ei1_0.category,
+        ei1_0.created_at,
+        ei1_0.created_by,
+        ei1_0.description,
+        ei1_0.indicator_code,
+        ei1_0.indicator_name,
+        ei1_0.unit,
+        ei1_0.updated_at,
+        ei1_0.updated_by 
+    from
+        mod_esg_indicator ei1_0 
+    where
+        ei1_0.active_yn
+Hibernate: 
+    select
+        ei1_0.indicator_id,
+        ei1_0.active_yn,
+        ei1_0.category,
+        ei1_0.created_at,
+        ei1_0.created_by,
+        ei1_0.description,
+        ei1_0.indicator_code,
+        ei1_0.indicator_name,
+        ei1_0.unit,
+        ei1_0.updated_at,
+        ei1_0.updated_by 
+    from
+        mod_esg_indicator ei1_0 
+    where
+        ei1_0.active_yn
+2026-04-14T05:17:25.796Z DEBUG 3697 --- [esg-management-system] [    Test worker] org.hibernate.SQL                        : 
+    insert 
+    into
+        mod_esg_indicator
+        (active_yn, category, created_at, created_by, description, indicator_code, indicator_name, unit, updated_at, updated_by, indicator_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, default)
+Hibernate: 
+    insert 
+    into
+        mod_esg_indicator
+        (active_yn, category, created_at, created_by, description, indicator_code, indicator_name, unit, updated_at, updated_by, indicator_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, default)
+2026-04-14T05:17:25.813Z DEBUG 3697 --- [esg-management-system] [    Test worker] org.hibernate.SQL                        : 
+    select
+        ei1_0.indicator_id 
+    from
+        mod_esg_indicator ei1_0 
+    where
+        ei1_0.indicator_code=? 
+    fetch
+        first ? rows only
+Hibernate: 
+    select
+        ei1_0.indicator_id 
+    from
+        mod_esg_indicator ei1_0 
+    where
+        ei1_0.indicator_code=? 
+    fetch
+        first ? rows only
+2026-04-14T05:17:25.817Z DEBUG 3697 --- [esg-management-system] [    Test worker] org.hibernate.SQL                        : 
+    select
+        ei1_0.indicator_id 
+    from
+        mod_esg_indicator ei1_0 
+    where
+        ei1_0.indicator_code=? 
+    fetch
+        first ? rows only
+Hibernate: 
+    select
+        ei1_0.indicator_id 
+    from
+        mod_esg_indicator ei1_0 
+    where
+        ei1_0.indicator_code=? 
+    fetch
+        first ? rows only
+2026-04-14T05:17:25.830Z DEBUG 3697 --- [esg-management-system] [    Test worker] org.hibernate.SQL                        : 
+    insert 
+    into
+        mod_esg_indicator
+        (active_yn, category, created_at, created_by, description, indicator_code, indicator_name, unit, updated_at, updated_by, indicator_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, default)
+Hibernate: 
+    insert 
+    into
+        mod_esg_indicator
+        (active_yn, category, created_at, created_by, description, indicator_code, indicator_name, unit, updated_at, updated_by, indicator_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, default)
+2026-04-14T05:17:25.839Z DEBUG 3697 --- [esg-management-system] [    Test worker] org.hibernate.SQL                        : 
+    insert 
+    into
+        mod_esg_indicator
+        (active_yn, category, created_at, created_by, description, indicator_code, indicator_name, unit, updated_at, updated_by, indicator_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, default)
+Hibernate: 
+    insert 
+    into
+        mod_esg_indicator
+        (active_yn, category, created_at, created_by, description, indicator_code, indicator_name, unit, updated_at, updated_by, indicator_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, default)
+2026-04-14T05:17:25.841Z DEBUG 3697 --- [esg-management-system] [    Test worker] org.hibernate.SQL                        : 
+    insert 
+    into
+        mod_esg_indicator
+        (active_yn, category, created_at, created_by, description, indicator_code, indicator_name, unit, updated_at, updated_by, indicator_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, default)
+Hibernate: 
+    insert 
+    into
+        mod_esg_indicator
+        (active_yn, category, created_at, created_by, description, indicator_code, indicator_name, unit, updated_at, updated_by, indicator_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, default)
+2026-04-14T05:17:25.846Z DEBUG 3697 --- [esg-management-system] [    Test worker] org.hibernate.SQL                        : 
+    select
+        ei1_0.indicator_id,
+        ei1_0.active_yn,
+        ei1_0.category,
+        ei1_0.created_at,
+        ei1_0.created_by,
+        ei1_0.description,
+        ei1_0.indicator_code,
+        ei1_0.indicator_name,
+        ei1_0.unit,
+        ei1_0.updated_at,
+        ei1_0.updated_by 
+    from
+        mod_esg_indicator ei1_0 
+    where
+        ei1_0.category=? 
+        and ei1_0.active_yn
+Hibernate: 
+    select
+        ei1_0.indicator_id,
+        ei1_0.active_yn,
+        ei1_0.category,
+        ei1_0.created_at,
+        ei1_0.created_by,
+        ei1_0.description,
+        ei1_0.indicator_code,
+        ei1_0.indicator_name,
+        ei1_0.unit,
+        ei1_0.updated_at,
+        ei1_0.updated_by 
+    from
+        mod_esg_indicator ei1_0 
+    where
+        ei1_0.category=? 
+        and ei1_0.active_yn
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

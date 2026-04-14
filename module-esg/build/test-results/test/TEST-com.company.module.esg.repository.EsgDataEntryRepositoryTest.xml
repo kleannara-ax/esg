@@ -1,0 +1,587 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="EsgDataEntryRepository 테스트" tests="4" skipped="0" failures="0" errors="0" timestamp="2026-04-14T05:17:25" hostname="e2b.local" time="0.438">
+  <properties/>
+  <testcase name="월별 리포트 조회 - 상태 필터링" classname="com.company.module.esg.repository.EsgDataEntryRepositoryTest" time="0.255"/>
+  <testcase name="데이터 저장 및 연월 조회" classname="com.company.module.esg.repository.EsgDataEntryRepositoryTest" time="0.068"/>
+  <testcase name="연간 추이 조회 - 월 순서 정렬 확인" classname="com.company.module.esg.repository.EsgDataEntryRepositoryTest" time="0.058"/>
+  <testcase name="지표ID + 연월 중복 조회" classname="com.company.module.esg.repository.EsgDataEntryRepositoryTest" time="0.046"/>
+  <system-out><![CDATA[2026-04-14T05:17:21.831Z  INFO 3697 --- [esg-management-system] [    Test worker] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.company.module.esg.repository.EsgDataEntryRepositoryTest]: EsgDataEntryRepositoryTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-04-14T05:17:21.857Z  INFO 3697 --- [esg-management-system] [    Test worker] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.company.EsgManagementApplication for test class com.company.module.esg.repository.EsgDataEntryRepositoryTest
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+ :: Spring Boot ::                (v3.2.4)
+
+2026-04-14T05:17:21.957Z  INFO 3697 --- [esg-management-system] [    Test worker] c.c.m.e.r.EsgDataEntryRepositoryTest     : Starting EsgDataEntryRepositoryTest using Java 17.0.18 with PID 3697 (started by user in /home/user/webapp/module-esg)
+2026-04-14T05:17:21.958Z DEBUG 3697 --- [esg-management-system] [    Test worker] c.c.m.e.r.EsgDataEntryRepositoryTest     : Running with Spring Boot v3.2.4, Spring v6.1.5
+2026-04-14T05:17:21.959Z  INFO 3697 --- [esg-management-system] [    Test worker] c.c.m.e.r.EsgDataEntryRepositoryTest     : The following 1 profile is active: "test"
+2026-04-14T05:17:22.224Z  INFO 3697 --- [esg-management-system] [    Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-04-14T05:17:22.277Z  INFO 3697 --- [esg-management-system] [    Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 47 ms. Found 2 JPA repository interfaces.
+2026-04-14T05:17:22.332Z  INFO 3697 --- [esg-management-system] [    Test worker] beddedDataSourceBeanFactoryPostProcessor : Replacing 'dataSource' DataSource bean with embedded version
+2026-04-14T05:17:22.430Z  INFO 3697 --- [esg-management-system] [    Test worker] o.s.j.d.e.EmbeddedDatabaseFactory        : Starting embedded database: url='jdbc:h2:mem:b4ff8701-fea6-4b5a-b78b-cfb8b4306e89;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=false', username='sa'
+2026-04-14T05:17:22.685Z  INFO 3697 --- [esg-management-system] [    Test worker] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-04-14T05:17:22.749Z  INFO 3697 --- [esg-management-system] [    Test worker] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.4.4.Final
+2026-04-14T05:17:22.780Z  INFO 3697 --- [esg-management-system] [    Test worker] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2026-04-14T05:17:22.894Z  INFO 3697 --- [esg-management-system] [    Test worker] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-04-14T05:17:22.940Z  WARN 3697 --- [esg-management-system] [    Test worker] org.hibernate.orm.deprecation            : HHH90000025: H2Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-04-14T05:17:23.945Z  INFO 3697 --- [esg-management-system] [    Test worker] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-04-14T05:17:23.962Z DEBUG 3697 --- [esg-management-system] [    Test worker] org.hibernate.SQL                        : 
+    drop table if exists mod_esg_data_entry cascade 
+Hibernate: 
+    drop table if exists mod_esg_data_entry cascade 
+2026-04-14T05:17:23.967Z DEBUG 3697 --- [esg-management-system] [    Test worker] org.hibernate.SQL                        : 
+    drop table if exists mod_esg_indicator cascade 
+Hibernate: 
+    drop table if exists mod_esg_indicator cascade 
+2026-04-14T05:17:23.974Z DEBUG 3697 --- [esg-management-system] [    Test worker] org.hibernate.SQL                        : 
+    create table mod_esg_data_entry (
+        actual_value numeric(20,4),
+        target_month integer not null,
+        target_value numeric(20,4),
+        target_year integer not null,
+        created_at timestamp(6) not null,
+        entry_id bigint generated by default as identity,
+        indicator_id bigint not null,
+        updated_at timestamp(6) not null,
+        entry_status varchar(20) not null check (entry_status in ('DRAFT','SUBMITTED','APPROVED','REJECTED')),
+        created_by varchar(50),
+        updated_by varchar(50),
+        remark TEXT,
+        primary key (entry_id),
+        constraint UK_ESG_DATA_ENTRY unique (indicator_id, target_year, target_month)
+    )
+Hibernate: 
+    create table mod_esg_data_entry (
+        actual_value numeric(20,4),
+        target_month integer not null,
+        target_value numeric(20,4),
+        target_year integer not null,
+        created_at timestamp(6) not null,
+        entry_id bigint generated by default as identity,
+        indicator_id bigint not null,
+        updated_at timestamp(6) not null,
+        entry_status varchar(20) not null check (entry_status in ('DRAFT','SUBMITTED','APPROVED','REJECTED')),
+        created_by varchar(50),
+        updated_by varchar(50),
+        remark TEXT,
+        primary key (entry_id),
+        constraint UK_ESG_DATA_ENTRY unique (indicator_id, target_year, target_month)
+    )
+2026-04-14T05:17:24.025Z DEBUG 3697 --- [esg-management-system] [    Test worker] org.hibernate.SQL                        : 
+    create table mod_esg_indicator (
+        active_yn boolean not null,
+        category char(1) not null check (category in ('E','S','G')),
+        created_at timestamp(6) not null,
+        indicator_id bigint generated by default as identity,
+        updated_at timestamp(6) not null,
+        created_by varchar(50),
+        indicator_code varchar(50) not null unique,
+        unit varchar(50),
+        updated_by varchar(50),
+        indicator_name varchar(200) not null,
+        description TEXT,
+        primary key (indicator_id)
+    )
+Hibernate: 
+    create table mod_esg_indicator (
+        active_yn boolean not null,
+        category char(1) not null check (category in ('E','S','G')),
+        created_at timestamp(6) not null,
+        indicator_id bigint generated by default as identity,
+        updated_at timestamp(6) not null,
+        created_by varchar(50),
+        indicator_code varchar(50) not null unique,
+        unit varchar(50),
+        updated_by varchar(50),
+        indicator_name varchar(200) not null,
+        description TEXT,
+        primary key (indicator_id)
+    )
+2026-04-14T05:17:24.033Z DEBUG 3697 --- [esg-management-system] [    Test worker] org.hibernate.SQL                        : 
+    alter table if exists mod_esg_data_entry 
+       add constraint FK7p0y4kw3ea7eh21pbiecuvi26 
+       foreign key (indicator_id) 
+       references mod_esg_indicator
+Hibernate: 
+    alter table if exists mod_esg_data_entry 
+       add constraint FK7p0y4kw3ea7eh21pbiecuvi26 
+       foreign key (indicator_id) 
+       references mod_esg_indicator
+2026-04-14T05:17:24.071Z  INFO 3697 --- [esg-management-system] [    Test worker] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-04-14T05:17:24.539Z  INFO 3697 --- [esg-management-system] [    Test worker] o.s.d.j.r.query.QueryEnhancerFactory     : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-04-14T05:17:25.252Z  INFO 3697 --- [esg-management-system] [    Test worker] c.c.m.e.r.EsgDataEntryRepositoryTest     : Started EsgDataEntryRepositoryTest in 3.386 seconds (process running for 8.704)
+2026-04-14T05:17:25.343Z DEBUG 3697 --- [esg-management-system] [    Test worker] org.hibernate.SQL                        : 
+    insert 
+    into
+        mod_esg_indicator
+        (active_yn, category, created_at, created_by, description, indicator_code, indicator_name, unit, updated_at, updated_by, indicator_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, default)
+Hibernate: 
+    insert 
+    into
+        mod_esg_indicator
+        (active_yn, category, created_at, created_by, description, indicator_code, indicator_name, unit, updated_at, updated_by, indicator_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, default)
+2026-04-14T05:17:25.381Z DEBUG 3697 --- [esg-management-system] [    Test worker] org.hibernate.SQL                        : 
+    insert 
+    into
+        mod_esg_data_entry
+        (actual_value, created_at, created_by, entry_status, indicator_id, remark, target_month, target_value, target_year, updated_at, updated_by, entry_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, default)
+Hibernate: 
+    insert 
+    into
+        mod_esg_data_entry
+        (actual_value, created_at, created_by, entry_status, indicator_id, remark, target_month, target_value, target_year, updated_at, updated_by, entry_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, default)
+2026-04-14T05:17:25.386Z DEBUG 3697 --- [esg-management-system] [    Test worker] org.hibernate.SQL                        : 
+    insert 
+    into
+        mod_esg_data_entry
+        (actual_value, created_at, created_by, entry_status, indicator_id, remark, target_month, target_value, target_year, updated_at, updated_by, entry_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, default)
+Hibernate: 
+    insert 
+    into
+        mod_esg_data_entry
+        (actual_value, created_at, created_by, entry_status, indicator_id, remark, target_month, target_value, target_year, updated_at, updated_by, entry_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, default)
+2026-04-14T05:17:25.474Z DEBUG 3697 --- [esg-management-system] [    Test worker] org.hibernate.SQL                        : 
+    select
+        ede1_0.entry_id,
+        ede1_0.actual_value,
+        ede1_0.created_at,
+        ede1_0.created_by,
+        ede1_0.entry_status,
+        ede1_0.indicator_id,
+        i1_0.indicator_id,
+        i1_0.active_yn,
+        i1_0.category,
+        i1_0.created_at,
+        i1_0.created_by,
+        i1_0.description,
+        i1_0.indicator_code,
+        i1_0.indicator_name,
+        i1_0.unit,
+        i1_0.updated_at,
+        i1_0.updated_by,
+        ede1_0.remark,
+        ede1_0.target_month,
+        ede1_0.target_value,
+        ede1_0.target_year,
+        ede1_0.updated_at,
+        ede1_0.updated_by 
+    from
+        mod_esg_data_entry ede1_0 
+    join
+        mod_esg_indicator i1_0 
+            on i1_0.indicator_id=ede1_0.indicator_id 
+    where
+        ede1_0.target_year=? 
+        and ede1_0.target_month=? 
+        and (
+            ? is null 
+            or ede1_0.entry_status=?
+        ) 
+    order by
+        i1_0.category,
+        i1_0.indicator_code
+Hibernate: 
+    select
+        ede1_0.entry_id,
+        ede1_0.actual_value,
+        ede1_0.created_at,
+        ede1_0.created_by,
+        ede1_0.entry_status,
+        ede1_0.indicator_id,
+        i1_0.indicator_id,
+        i1_0.active_yn,
+        i1_0.category,
+        i1_0.created_at,
+        i1_0.created_by,
+        i1_0.description,
+        i1_0.indicator_code,
+        i1_0.indicator_name,
+        i1_0.unit,
+        i1_0.updated_at,
+        i1_0.updated_by,
+        ede1_0.remark,
+        ede1_0.target_month,
+        ede1_0.target_value,
+        ede1_0.target_year,
+        ede1_0.updated_at,
+        ede1_0.updated_by 
+    from
+        mod_esg_data_entry ede1_0 
+    join
+        mod_esg_indicator i1_0 
+            on i1_0.indicator_id=ede1_0.indicator_id 
+    where
+        ede1_0.target_year=? 
+        and ede1_0.target_month=? 
+        and (
+            ? is null 
+            or ede1_0.entry_status=?
+        ) 
+    order by
+        i1_0.category,
+        i1_0.indicator_code
+2026-04-14T05:17:25.491Z DEBUG 3697 --- [esg-management-system] [    Test worker] org.hibernate.SQL                        : 
+    select
+        ede1_0.entry_id,
+        ede1_0.actual_value,
+        ede1_0.created_at,
+        ede1_0.created_by,
+        ede1_0.entry_status,
+        ede1_0.indicator_id,
+        i1_0.indicator_id,
+        i1_0.active_yn,
+        i1_0.category,
+        i1_0.created_at,
+        i1_0.created_by,
+        i1_0.description,
+        i1_0.indicator_code,
+        i1_0.indicator_name,
+        i1_0.unit,
+        i1_0.updated_at,
+        i1_0.updated_by,
+        ede1_0.remark,
+        ede1_0.target_month,
+        ede1_0.target_value,
+        ede1_0.target_year,
+        ede1_0.updated_at,
+        ede1_0.updated_by 
+    from
+        mod_esg_data_entry ede1_0 
+    join
+        mod_esg_indicator i1_0 
+            on i1_0.indicator_id=ede1_0.indicator_id 
+    where
+        ede1_0.target_year=? 
+        and ede1_0.target_month=? 
+        and (
+            ? is null 
+            or ede1_0.entry_status=?
+        ) 
+    order by
+        i1_0.category,
+        i1_0.indicator_code
+Hibernate: 
+    select
+        ede1_0.entry_id,
+        ede1_0.actual_value,
+        ede1_0.created_at,
+        ede1_0.created_by,
+        ede1_0.entry_status,
+        ede1_0.indicator_id,
+        i1_0.indicator_id,
+        i1_0.active_yn,
+        i1_0.category,
+        i1_0.created_at,
+        i1_0.created_by,
+        i1_0.description,
+        i1_0.indicator_code,
+        i1_0.indicator_name,
+        i1_0.unit,
+        i1_0.updated_at,
+        i1_0.updated_by,
+        ede1_0.remark,
+        ede1_0.target_month,
+        ede1_0.target_value,
+        ede1_0.target_year,
+        ede1_0.updated_at,
+        ede1_0.updated_by 
+    from
+        mod_esg_data_entry ede1_0 
+    join
+        mod_esg_indicator i1_0 
+            on i1_0.indicator_id=ede1_0.indicator_id 
+    where
+        ede1_0.target_year=? 
+        and ede1_0.target_month=? 
+        and (
+            ? is null 
+            or ede1_0.entry_status=?
+        ) 
+    order by
+        i1_0.category,
+        i1_0.indicator_code
+2026-04-14T05:17:25.522Z DEBUG 3697 --- [esg-management-system] [    Test worker] org.hibernate.SQL                        : 
+    insert 
+    into
+        mod_esg_indicator
+        (active_yn, category, created_at, created_by, description, indicator_code, indicator_name, unit, updated_at, updated_by, indicator_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, default)
+Hibernate: 
+    insert 
+    into
+        mod_esg_indicator
+        (active_yn, category, created_at, created_by, description, indicator_code, indicator_name, unit, updated_at, updated_by, indicator_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, default)
+2026-04-14T05:17:25.553Z DEBUG 3697 --- [esg-management-system] [    Test worker] org.hibernate.SQL                        : 
+    insert 
+    into
+        mod_esg_data_entry
+        (actual_value, created_at, created_by, entry_status, indicator_id, remark, target_month, target_value, target_year, updated_at, updated_by, entry_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, default)
+Hibernate: 
+    insert 
+    into
+        mod_esg_data_entry
+        (actual_value, created_at, created_by, entry_status, indicator_id, remark, target_month, target_value, target_year, updated_at, updated_by, entry_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, default)
+2026-04-14T05:17:25.576Z DEBUG 3697 --- [esg-management-system] [    Test worker] org.hibernate.SQL                        : 
+    select
+        ede1_0.entry_id,
+        ede1_0.actual_value,
+        ede1_0.created_at,
+        ede1_0.created_by,
+        ede1_0.entry_status,
+        ede1_0.indicator_id,
+        ede1_0.remark,
+        ede1_0.target_month,
+        ede1_0.target_value,
+        ede1_0.target_year,
+        ede1_0.updated_at,
+        ede1_0.updated_by 
+    from
+        mod_esg_data_entry ede1_0 
+    where
+        ede1_0.target_year=? 
+        and ede1_0.target_month=?
+Hibernate: 
+    select
+        ede1_0.entry_id,
+        ede1_0.actual_value,
+        ede1_0.created_at,
+        ede1_0.created_by,
+        ede1_0.entry_status,
+        ede1_0.indicator_id,
+        ede1_0.remark,
+        ede1_0.target_month,
+        ede1_0.target_value,
+        ede1_0.target_year,
+        ede1_0.updated_at,
+        ede1_0.updated_by 
+    from
+        mod_esg_data_entry ede1_0 
+    where
+        ede1_0.target_year=? 
+        and ede1_0.target_month=?
+2026-04-14T05:17:25.592Z DEBUG 3697 --- [esg-management-system] [    Test worker] org.hibernate.SQL                        : 
+    insert 
+    into
+        mod_esg_indicator
+        (active_yn, category, created_at, created_by, description, indicator_code, indicator_name, unit, updated_at, updated_by, indicator_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, default)
+Hibernate: 
+    insert 
+    into
+        mod_esg_indicator
+        (active_yn, category, created_at, created_by, description, indicator_code, indicator_name, unit, updated_at, updated_by, indicator_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, default)
+2026-04-14T05:17:25.599Z DEBUG 3697 --- [esg-management-system] [    Test worker] org.hibernate.SQL                        : 
+    insert 
+    into
+        mod_esg_data_entry
+        (actual_value, created_at, created_by, entry_status, indicator_id, remark, target_month, target_value, target_year, updated_at, updated_by, entry_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, default)
+Hibernate: 
+    insert 
+    into
+        mod_esg_data_entry
+        (actual_value, created_at, created_by, entry_status, indicator_id, remark, target_month, target_value, target_year, updated_at, updated_by, entry_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, default)
+2026-04-14T05:17:25.615Z DEBUG 3697 --- [esg-management-system] [    Test worker] org.hibernate.SQL                        : 
+    insert 
+    into
+        mod_esg_data_entry
+        (actual_value, created_at, created_by, entry_status, indicator_id, remark, target_month, target_value, target_year, updated_at, updated_by, entry_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, default)
+Hibernate: 
+    insert 
+    into
+        mod_esg_data_entry
+        (actual_value, created_at, created_by, entry_status, indicator_id, remark, target_month, target_value, target_year, updated_at, updated_by, entry_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, default)
+2026-04-14T05:17:25.618Z DEBUG 3697 --- [esg-management-system] [    Test worker] org.hibernate.SQL                        : 
+    insert 
+    into
+        mod_esg_data_entry
+        (actual_value, created_at, created_by, entry_status, indicator_id, remark, target_month, target_value, target_year, updated_at, updated_by, entry_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, default)
+Hibernate: 
+    insert 
+    into
+        mod_esg_data_entry
+        (actual_value, created_at, created_by, entry_status, indicator_id, remark, target_month, target_value, target_year, updated_at, updated_by, entry_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, default)
+2026-04-14T05:17:25.624Z DEBUG 3697 --- [esg-management-system] [    Test worker] org.hibernate.SQL                        : 
+    select
+        ede1_0.entry_id,
+        ede1_0.actual_value,
+        ede1_0.created_at,
+        ede1_0.created_by,
+        ede1_0.entry_status,
+        ede1_0.indicator_id,
+        i1_0.indicator_id,
+        i1_0.active_yn,
+        i1_0.category,
+        i1_0.created_at,
+        i1_0.created_by,
+        i1_0.description,
+        i1_0.indicator_code,
+        i1_0.indicator_name,
+        i1_0.unit,
+        i1_0.updated_at,
+        i1_0.updated_by,
+        ede1_0.remark,
+        ede1_0.target_month,
+        ede1_0.target_value,
+        ede1_0.target_year,
+        ede1_0.updated_at,
+        ede1_0.updated_by 
+    from
+        mod_esg_data_entry ede1_0 
+    join
+        mod_esg_indicator i1_0 
+            on i1_0.indicator_id=ede1_0.indicator_id 
+    where
+        i1_0.indicator_id=? 
+        and ede1_0.target_year=? 
+    order by
+        ede1_0.target_month
+Hibernate: 
+    select
+        ede1_0.entry_id,
+        ede1_0.actual_value,
+        ede1_0.created_at,
+        ede1_0.created_by,
+        ede1_0.entry_status,
+        ede1_0.indicator_id,
+        i1_0.indicator_id,
+        i1_0.active_yn,
+        i1_0.category,
+        i1_0.created_at,
+        i1_0.created_by,
+        i1_0.description,
+        i1_0.indicator_code,
+        i1_0.indicator_name,
+        i1_0.unit,
+        i1_0.updated_at,
+        i1_0.updated_by,
+        ede1_0.remark,
+        ede1_0.target_month,
+        ede1_0.target_value,
+        ede1_0.target_year,
+        ede1_0.updated_at,
+        ede1_0.updated_by 
+    from
+        mod_esg_data_entry ede1_0 
+    join
+        mod_esg_indicator i1_0 
+            on i1_0.indicator_id=ede1_0.indicator_id 
+    where
+        i1_0.indicator_id=? 
+        and ede1_0.target_year=? 
+    order by
+        ede1_0.target_month
+2026-04-14T05:17:25.656Z DEBUG 3697 --- [esg-management-system] [    Test worker] org.hibernate.SQL                        : 
+    insert 
+    into
+        mod_esg_indicator
+        (active_yn, category, created_at, created_by, description, indicator_code, indicator_name, unit, updated_at, updated_by, indicator_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, default)
+Hibernate: 
+    insert 
+    into
+        mod_esg_indicator
+        (active_yn, category, created_at, created_by, description, indicator_code, indicator_name, unit, updated_at, updated_by, indicator_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, default)
+2026-04-14T05:17:25.671Z DEBUG 3697 --- [esg-management-system] [    Test worker] org.hibernate.SQL                        : 
+    insert 
+    into
+        mod_esg_data_entry
+        (actual_value, created_at, created_by, entry_status, indicator_id, remark, target_month, target_value, target_year, updated_at, updated_by, entry_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, default)
+Hibernate: 
+    insert 
+    into
+        mod_esg_data_entry
+        (actual_value, created_at, created_by, entry_status, indicator_id, remark, target_month, target_value, target_year, updated_at, updated_by, entry_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, default)
+2026-04-14T05:17:25.682Z DEBUG 3697 --- [esg-management-system] [    Test worker] org.hibernate.SQL                        : 
+    select
+        ede1_0.entry_id,
+        ede1_0.actual_value,
+        ede1_0.created_at,
+        ede1_0.created_by,
+        ede1_0.entry_status,
+        ede1_0.indicator_id,
+        ede1_0.remark,
+        ede1_0.target_month,
+        ede1_0.target_value,
+        ede1_0.target_year,
+        ede1_0.updated_at,
+        ede1_0.updated_by 
+    from
+        mod_esg_data_entry ede1_0 
+    left join
+        mod_esg_indicator i1_0 
+            on i1_0.indicator_id=ede1_0.indicator_id 
+    where
+        i1_0.indicator_id=? 
+        and ede1_0.target_year=? 
+        and ede1_0.target_month=?
+Hibernate: 
+    select
+        ede1_0.entry_id,
+        ede1_0.actual_value,
+        ede1_0.created_at,
+        ede1_0.created_by,
+        ede1_0.entry_status,
+        ede1_0.indicator_id,
+        ede1_0.remark,
+        ede1_0.target_month,
+        ede1_0.target_value,
+        ede1_0.target_year,
+        ede1_0.updated_at,
+        ede1_0.updated_by 
+    from
+        mod_esg_data_entry ede1_0 
+    left join
+        mod_esg_indicator i1_0 
+            on i1_0.indicator_id=ede1_0.indicator_id 
+    where
+        i1_0.indicator_id=? 
+        and ede1_0.target_year=? 
+        and ede1_0.target_month=?
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

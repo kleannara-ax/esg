@@ -1,0 +1,18 @@
+// ── module-user/build.gradle ───────────────────────────────────────────────
+// 사용자 관리 모듈 – 실행 불가 라이브러리 JAR
+
+dependencies {
+    // core 모듈 의존
+    implementation project(':core')
+
+    // Web (core 에서 이미 제공하지만 명시적 선언)
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+    // Test
+    testRuntimeOnly 'com.h2database:h2'
+}
+
+// 업무 모듈: root build.gradle 에서 bootJar.enabled=false / jar.enabled=true 설정됨

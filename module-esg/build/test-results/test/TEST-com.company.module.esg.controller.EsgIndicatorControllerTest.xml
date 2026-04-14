@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="EsgIndicatorController 테스트" tests="4" skipped="0" failures="0" errors="0" timestamp="2026-04-14T05:17:21" hostname="e2b.local" time="0.404">
+  <properties/>
+  <testcase name="GET /esg-api/indicators → 200 OK" classname="com.company.module.esg.controller.EsgIndicatorControllerTest" time="0.249"/>
+  <testcase name="GET /esg-api/indicators/{id} → 200 OK" classname="com.company.module.esg.controller.EsgIndicatorControllerTest" time="0.037"/>
+  <testcase name="GET /esg-api/indicators?category=E → 200 OK" classname="com.company.module.esg.controller.EsgIndicatorControllerTest" time="0.021"/>
+  <testcase name="비인증 요청 → 401 or 403 (Spring Security 기본 응답)" classname="com.company.module.esg.controller.EsgIndicatorControllerTest" time="0.085"/>
+  <system-out><![CDATA[05:17:17.509 [Test worker] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [com.company.module.esg.controller.EsgIndicatorControllerTest]: EsgIndicatorControllerTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+05:17:17.706 [Test worker] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration com.company.EsgManagementApplication for test class com.company.module.esg.controller.EsgIndicatorControllerTest
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+ :: Spring Boot ::                (v3.2.4)
+
+2026-04-14T05:17:18.211Z  INFO 3697 --- [esg-management-system] [    Test worker] c.c.m.e.c.EsgIndicatorControllerTest     : Starting EsgIndicatorControllerTest using Java 17.0.18 with PID 3697 (started by user in /home/user/webapp/module-esg)
+2026-04-14T05:17:18.213Z DEBUG 3697 --- [esg-management-system] [    Test worker] c.c.m.e.c.EsgIndicatorControllerTest     : Running with Spring Boot v3.2.4, Spring v6.1.5
+2026-04-14T05:17:18.214Z  INFO 3697 --- [esg-management-system] [    Test worker] c.c.m.e.c.EsgIndicatorControllerTest     : No active profile set, falling back to 1 default profile: "default"
+2026-04-14T05:17:20.489Z  WARN 3697 --- [esg-management-system] [    Test worker] .s.s.UserDetailsServiceAutoConfiguration : 
+
+Using generated security password: b11929d4-1f72-49b5-9791-e7757469f319
+
+This generated password is for development use only. Your security configuration must be updated before running your application in production.
+
+2026-04-14T05:17:21.338Z  INFO 3697 --- [esg-management-system] [    Test worker] o.s.b.t.m.w.SpringBootMockServletContext : Initializing Spring TestDispatcherServlet ''
+2026-04-14T05:17:21.344Z  INFO 3697 --- [esg-management-system] [    Test worker] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-04-14T05:17:21.346Z  INFO 3697 --- [esg-management-system] [    Test worker] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 1 ms
+2026-04-14T05:17:21.389Z  INFO 3697 --- [esg-management-system] [    Test worker] c.c.m.e.c.EsgIndicatorControllerTest     : Started EsgIndicatorControllerTest in 3.578 seconds (process running for 4.841)
+
+MockHttpServletRequest:
+      HTTP Method = GET
+      Request URI = /esg-api/indicators
+       Parameters = {}
+          Headers = [Content-Type:"application/json;charset=UTF-8"]
+             Body = null
+    Session Attrs = {SPRING_SECURITY_CONTEXT=SecurityContextImpl [Authentication=UsernamePasswordAuthenticationToken [Principal=org.springframework.security.core.userdetails.User [Username=user, Password=[PROTECTED], Enabled=true, AccountNonExpired=true, CredentialsNonExpired=true, AccountNonLocked=true, Granted Authorities=[ROLE_USER]], Credentials=[PROTECTED], Authenticated=true, Details=null, Granted Authorities=[ROLE_USER]]]}
+
+Handler:
+             Type = com.company.module.esg.controller.EsgIndicatorController
+           Method = com.company.module.esg.controller.EsgIndicatorController#getIndicators(EsgCategory)
+
+Async:
+    Async started = false
+     Async result = null
+
+Resolved Exception:
+             Type = null
+
+ModelAndView:
+        View name = null
+             View = null
+            Model = null
+
+FlashMap:
+       Attributes = null
+
+MockHttpServletResponse:
+           Status = 200
+    Error message = null
+          Headers = [Vary:"Origin", "Access-Control-Request-Method", "Access-Control-Request-Headers", Content-Type:"application/json", X-Content-Type-Options:"nosniff", X-XSS-Protection:"0", Cache-Control:"no-cache, no-store, max-age=0, must-revalidate", Pragma:"no-cache", Expires:"0", X-Frame-Options:"DENY"]
+     Content type = application/json
+             Body = {"success":true,"code":"SUCCESS","message":"처리가 완료되었습니다.","data":[{"indicatorId":1,"category":"E","categoryName":"환경","indicatorCode":"E_GHG_SCOPE1","indicatorName":"테스트 지표","description":null,"unit":"tCO2eq","activeYn":true,"createdAt":null,"updatedAt":null}],"timestamp":"2026-04-14T05:17:21.519490416"}
+    Forwarded URL = null
+   Redirected URL = null
+          Cookies = []
+
+MockHttpServletRequest:
+      HTTP Method = GET
+      Request URI = /esg-api/indicators/1
+       Parameters = {}
+          Headers = [Content-Type:"application/json;charset=UTF-8"]
+             Body = null
+    Session Attrs = {SPRING_SECURITY_CONTEXT=SecurityContextImpl [Authentication=UsernamePasswordAuthenticationToken [Principal=org.springframework.security.core.userdetails.User [Username=user, Password=[PROTECTED], Enabled=true, AccountNonExpired=true, CredentialsNonExpired=true, AccountNonLocked=true, Granted Authorities=[ROLE_USER]], Credentials=[PROTECTED], Authenticated=true, Details=null, Granted Authorities=[ROLE_USER]]]}
+
+Handler:
+             Type = com.company.module.esg.controller.EsgIndicatorController
+           Method = com.company.module.esg.controller.EsgIndicatorController#getIndicator(Long)
+
+Async:
+    Async started = false
+     Async result = null
+
+Resolved Exception:
+             Type = null
+
+ModelAndView:
+        View name = null
+             View = null
+            Model = null
+
+FlashMap:
+       Attributes = null
+
+MockHttpServletResponse:
+           Status = 200
+    Error message = null
+          Headers = [Vary:"Origin", "Access-Control-Request-Method", "Access-Control-Request-Headers", Content-Type:"application/json", X-Content-Type-Options:"nosniff", X-XSS-Protection:"0", Cache-Control:"no-cache, no-store, max-age=0, must-revalidate", Pragma:"no-cache", Expires:"0", X-Frame-Options:"DENY"]
+     Content type = application/json
+             Body = {"success":true,"code":"SUCCESS","message":"처리가 완료되었습니다.","data":{"indicatorId":1,"category":"E","categoryName":"환경","indicatorCode":"E_GHG_SCOPE1","indicatorName":"테스트 지표","description":null,"unit":"tCO2eq","activeYn":true,"createdAt":null,"updatedAt":null},"timestamp":"2026-04-14T05:17:21.677477376"}
+    Forwarded URL = null
+   Redirected URL = null
+          Cookies = []
+
+MockHttpServletRequest:
+      HTTP Method = GET
+      Request URI = /esg-api/indicators
+       Parameters = {category=[E]}
+          Headers = [Content-Type:"application/json;charset=UTF-8"]
+             Body = null
+    Session Attrs = {SPRING_SECURITY_CONTEXT=SecurityContextImpl [Authentication=UsernamePasswordAuthenticationToken [Principal=org.springframework.security.core.userdetails.User [Username=user, Password=[PROTECTED], Enabled=true, AccountNonExpired=true, CredentialsNonExpired=true, AccountNonLocked=true, Granted Authorities=[ROLE_USER]], Credentials=[PROTECTED], Authenticated=true, Details=null, Granted Authorities=[ROLE_USER]]]}
+
+Handler:
+             Type = com.company.module.esg.controller.EsgIndicatorController
+           Method = com.company.module.esg.controller.EsgIndicatorController#getIndicators(EsgCategory)
+
+Async:
+    Async started = false
+     Async result = null
+
+Resolved Exception:
+             Type = null
+
+ModelAndView:
+        View name = null
+             View = null
+            Model = null
+
+FlashMap:
+       Attributes = null
+
+MockHttpServletResponse:
+           Status = 200
+    Error message = null
+          Headers = [Vary:"Origin", "Access-Control-Request-Method", "Access-Control-Request-Headers", Content-Type:"application/json", X-Content-Type-Options:"nosniff", X-XSS-Protection:"0", Cache-Control:"no-cache, no-store, max-age=0, must-revalidate", Pragma:"no-cache", Expires:"0", X-Frame-Options:"DENY"]
+     Content type = application/json
+             Body = {"success":true,"code":"SUCCESS","message":"처리가 완료되었습니다.","data":[{"indicatorId":1,"category":"E","categoryName":"환경","indicatorCode":"E_GHG_SCOPE1","indicatorName":"테스트 지표","description":null,"unit":"tCO2eq","activeYn":true,"createdAt":null,"updatedAt":null}],"timestamp":"2026-04-14T05:17:21.710211769"}
+    Forwarded URL = null
+   Redirected URL = null
+          Cookies = []
+
+MockHttpServletRequest:
+      HTTP Method = GET
+      Request URI = /esg-api/indicators
+       Parameters = {}
+          Headers = []
+             Body = null
+    Session Attrs = {SPRING_SECURITY_SAVED_REQUEST=DefaultSavedRequest [http://localhost/esg-api/indicators?continue]}
+
+Handler:
+             Type = null
+
+Async:
+    Async started = false
+     Async result = null
+
+Resolved Exception:
+             Type = null
+
+ModelAndView:
+        View name = null
+             View = null
+            Model = null
+
+FlashMap:
+       Attributes = null
+
+MockHttpServletResponse:
+           Status = 403
+    Error message = Access Denied
+          Headers = [Vary:"Origin", "Access-Control-Request-Method", "Access-Control-Request-Headers", X-Content-Type-Options:"nosniff", X-XSS-Protection:"0", Cache-Control:"no-cache, no-store, max-age=0, must-revalidate", Pragma:"no-cache", Expires:"0", X-Frame-Options:"DENY"]
+     Content type = null
+             Body = 
+    Forwarded URL = null
+   Redirected URL = null
+          Cookies = []
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

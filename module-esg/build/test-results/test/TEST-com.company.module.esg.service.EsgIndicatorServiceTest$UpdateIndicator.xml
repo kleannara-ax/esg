@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="지표 수정" tests="1" skipped="0" failures="0" errors="0" timestamp="2026-04-14T05:17:26" hostname="e2b.local" time="0.006">
+  <properties/>
+  <testcase name="지표 비활성화 성공" classname="com.company.module.esg.service.EsgIndicatorServiceTest$UpdateIndicator" time="0.006"/>
+  <system-out><![CDATA[2026-04-14T05:17:26.151Z  INFO 3697 --- [esg-management-system] [    Test worker] c.c.m.esg.service.EsgIndicatorService    : ESG 지표 비활성화: id=1
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

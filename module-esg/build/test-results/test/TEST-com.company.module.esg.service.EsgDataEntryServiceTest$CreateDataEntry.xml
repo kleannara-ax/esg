@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="데이터 입력" tests="2" skipped="0" failures="0" errors="0" timestamp="2026-04-14T05:17:26" hostname="e2b.local" time="0.013">
+  <properties/>
+  <testcase name="중복 입력 시 예외 발생" classname="com.company.module.esg.service.EsgDataEntryServiceTest$CreateDataEntry" time="0.008"/>
+  <testcase name="정상 입력 성공" classname="com.company.module.esg.service.EsgDataEntryServiceTest$CreateDataEntry" time="0.005"/>
+  <system-out><![CDATA[2026-04-14T05:17:26.139Z  INFO 3697 --- [esg-management-system] [    Test worker] c.c.m.esg.service.EsgDataEntryService    : ESG 데이터 입력: indicatorId=null, 2024년 3월
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

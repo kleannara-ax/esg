@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="달성률 계산" tests="1" skipped="0" failures="0" errors="0" timestamp="2026-04-14T05:17:25" hostname="e2b.local" time="0.231">
+  <properties/>
+  <testcase name="달성률 정상 계산" classname="com.company.module.esg.service.EsgDataEntryServiceTest$AchievementRate" time="0.231"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

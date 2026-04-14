@@ -1,0 +1,43 @@
+// ── core/build.gradle ──────────────────────────────────────────────────────
+// core 는 실행 가능한 Boot JAR + 다른 모듈이 의존하는 라이브러리 역할을 동시에 수행
+
+dependencies {
+    // Web
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+
+    // Security
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+
+    // JWT
+    implementation 'io.jsonwebtoken:jjwt-api:0.12.5'
+    runtimeOnly    'io.jsonwebtoken:jjwt-impl:0.12.5'
+    runtimeOnly    'io.jsonwebtoken:jjwt-jackson:0.12.5'
+
+    // JPA
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
+    // MariaDB
+    runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
+
+    // Validation
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+    // AOP (Logging)
+    implementation 'org.springframework.boot:spring-boot-starter-aop'
+
+    // Actuator
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
+    // Test - H2 (core 단독 테스트용)
+    testRuntimeOnly 'com.h2database:h2'
+}
+
+// core 는 bootJar + 다른 모듈이 jar 로 참조 가능하도록 설정
+bootJar {
+    enabled = true
+    archiveClassifier = 'boot'
+}
+
+jar {
+    enabled = true   // plain jar → 다른 모듈이 implementation project(':core') 로 참조
+}

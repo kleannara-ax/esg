@@ -1,0 +1,26 @@
+spring:
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:esg_test_db;MODE=MySQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    username: sa
+    password:
+  h2:
+    console:
+      enabled: true
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+        format_sql: true
+
+jwt:
+  secret: test-secret-key-for-unit-test-only-32chars
+  expiration-ms: 3600000
+
+logging:
+  level:
+    com.company: DEBUG
+    org.hibernate.SQL: DEBUG

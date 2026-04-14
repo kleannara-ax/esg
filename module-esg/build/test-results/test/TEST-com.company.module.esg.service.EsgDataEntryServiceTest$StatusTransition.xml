@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="상태 전환" tests="4" skipped="0" failures="0" errors="0" timestamp="2026-04-14T05:17:26" hostname="e2b.local" time="0.023">
+  <properties/>
+  <testcase name="DRAFT 상태에서 승인 시 예외 발생" classname="com.company.module.esg.service.EsgDataEntryServiceTest$StatusTransition" time="0.007"/>
+  <testcase name="DRAFT → SUBMITTED 제출 성공" classname="com.company.module.esg.service.EsgDataEntryServiceTest$StatusTransition" time="0.003"/>
+  <testcase name="SUBMITTED → REJECTED 반려 성공" classname="com.company.module.esg.service.EsgDataEntryServiceTest$StatusTransition" time="0.005"/>
+  <testcase name="SUBMITTED → APPROVED 승인 성공" classname="com.company.module.esg.service.EsgDataEntryServiceTest$StatusTransition" time="0.005"/>
+  <system-out><![CDATA[2026-04-14T05:17:26.111Z  INFO 3697 --- [esg-management-system] [    Test worker] c.c.m.esg.service.EsgDataEntryService    : ESG 데이터 제출: entryId=1
+2026-04-14T05:17:26.116Z  INFO 3697 --- [esg-management-system] [    Test worker] c.c.m.esg.service.EsgDataEntryService    : ESG 데이터 반려: entryId=1, reason=데이터 오류
+2026-04-14T05:17:26.122Z  INFO 3697 --- [esg-management-system] [    Test worker] c.c.m.esg.service.EsgDataEntryService    : ESG 데이터 승인: entryId=1
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

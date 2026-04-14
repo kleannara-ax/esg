@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="회원가입" tests="2" skipped="0" failures="0" errors="0" timestamp="2026-04-14T05:17:45" hostname="e2b.local" time="0.049">
+  <properties/>
+  <testcase name="정상 회원가입 성공" classname="com.company.module.user.service.UserServiceTest$Signup" time="0.032"/>
+  <testcase name="중복 loginId 회원가입 시 예외 발생" classname="com.company.module.user.service.UserServiceTest$Signup" time="0.008"/>
+  <system-out><![CDATA[05:17:45.645 [Test worker] INFO com.company.module.user.service.UserService -- 신규 사용자 등록 완료: loginId=testuser
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

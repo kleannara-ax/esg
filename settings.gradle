@@ -1,0 +1,5 @@
+rootProject.name = 'esg-management-system'
+
+include 'core'
+include 'module-user'
+include 'module-esg'

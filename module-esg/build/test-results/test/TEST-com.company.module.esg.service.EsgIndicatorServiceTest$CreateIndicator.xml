@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="지표 등록" tests="2" skipped="0" failures="0" errors="0" timestamp="2026-04-14T05:17:26" hostname="e2b.local" time="0.013">
+  <properties/>
+  <testcase name="중복 코드 등록 시 예외 발생" classname="com.company.module.esg.service.EsgIndicatorServiceTest$CreateIndicator" time="0.004"/>
+  <testcase name="정상 등록 성공" classname="com.company.module.esg.service.EsgIndicatorServiceTest$CreateIndicator" time="0.008"/>
+  <system-out><![CDATA[2026-04-14T05:17:26.178Z  INFO 3697 --- [esg-management-system] [    Test worker] c.c.m.esg.service.EsgIndicatorService    : ESG 지표 등록: code=E_GHG_SCOPE1, name=온실가스 배출량 Scope 1
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

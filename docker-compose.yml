@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  # ── MariaDB ─────────────────────────────────────────────────────────────────
+  mariadb:
+    image: mariadb:10.11
+    container_name: esg-mariadb
+    restart: unless-stopped
+    environment:
+      MARIADB_ROOT_PASSWORD: root_password
+      MARIADB_DATABASE:      esg_db
+      MARIADB_USER:          esg_user
+      MARIADB_PASSWORD:      esg_pass
+      TZ:                    Asia/Seoul
+    ports:
+      - "3306:3306"
+    volumes:
+      - mariadb_data:/var/lib/mysql
+      - ./docker/mariadb/init:/docker-entrypoint-initdb.d:ro
+      - ./docker/mariadb/conf:/etc/mysql/conf.d:ro
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --default-time-zone=Asia/Seoul
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # ── App (선택) ───────────────────────────────────────────────────────────────
+  # app:
+  #   build: .
+  #   container_name: esg-app
+  #   depends_on:
+  #     mariadb:
+  #       condition: service_healthy
+  #   environment:
+  #     DB_URL:      jdbc:mariadb://mariadb:3306/esg_db?characterEncoding=UTF-8&serverTimezone=Asia/Seoul
+  #     DB_USERNAME: esg_user
+  #     DB_PASSWORD: esg_pass
+  #   ports:
+  #     - "8080:8080"
+
+volumes:
+  mariadb_data:
+    driver: local

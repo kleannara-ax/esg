@@ -1,0 +1,20 @@
+// ── module-esg/build.gradle ────────────────────────────────────────────────
+// ESG 지표 관리 업무 모듈
+// URL Prefix  : /esg-api/**
+// Table Prefix: MOD_ESG_
+
+dependencies {
+    // core 모듈 의존 (Security / Exception / Logging / BaseEntity 포함)
+    implementation project(':core')
+
+    // Web / JPA / Validation (core BOM 에서 버전 관리)
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+    // Test
+    testRuntimeOnly 'com.h2database:h2'
+}
+
+// 업무 모듈: root build.gradle 에서 bootJar.enabled=false / jar.enabled=true 설정됨
