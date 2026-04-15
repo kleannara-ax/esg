@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.company.module.esgindicator.service.EsiDepartmentServiceTest" tests="4" skipped="0" failures="0" errors="0" timestamp="2026-04-14T23:43:30" hostname="e2b.local" time="0.45">
+  <properties/>
+  <testcase name="활성 부서 목록 조회" classname="com.company.module.esgindicator.service.EsiDepartmentServiceTest" time="0.403"/>
+  <testcase name="부서 조회 - 존재하지 않는 ID 예외" classname="com.company.module.esgindicator.service.EsiDepartmentServiceTest" time="0.019"/>
+  <testcase name="부서 등록 - 정상" classname="com.company.module.esgindicator.service.EsiDepartmentServiceTest" time="0.005"/>
+  <testcase name="부서 등록 - 코드 중복 예외" classname="com.company.module.esgindicator.service.EsiDepartmentServiceTest" time="0.004"/>
+  <system-out><![CDATA[2026-04-14T23:43:31.172Z  INFO 5846 --- [esg-management-system] [    Test worker] c.c.m.e.service.EsiDepartmentService     : [ESI] 부서 등록: deptCode=HR, deptName=인사팀
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

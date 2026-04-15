@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ESG 지표 관리시스템 - 정적 미리보기</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"/>
+  <style>
+    :root {
+      --sidebar-w: 230px;
+      --header-h: 54px;
+      --color-e: #16a34a;
+      --color-s: #2563eb;
+      --color-g: #7c3aed;
+    }
+    * { box-sizing: border-box; }
+    body { background: #f3f4f8; font-size: 0.835rem; }
+
+    #sidebar {
+      width: var(--sidebar-w); min-height: 100vh;
+      background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+      color: #cbd5e1; position: fixed; top: 0; left: 0; z-index: 1000;
+      display: flex; flex-direction: column; box-shadow: 2px 0 8px rgba(0,0,0,.18);
+    }
+    #sidebar .brand { padding: 18px 20px 14px; font-size: 1rem; font-weight: 700; color: #f8fafc; border-bottom: 1px solid rgba(255,255,255,.08); display: flex; align-items: center; gap: 8px; }
+    #sidebar .nav-section { font-size: .65rem; text-transform: uppercase; color: #64748b; padding: 14px 18px 4px; letter-spacing: .07em; font-weight: 600; }
+    #sidebar .nav-link { color: #94a3b8; padding: 9px 16px; display: flex; align-items: center; gap: 9px; border-radius: 7px; margin: 1px 10px; transition: all .15s; }
+    #sidebar .nav-link:hover { background: rgba(255,255,255,.07); color: #e2e8f0; }
+    #sidebar .nav-link.active { background: rgba(255,255,255,.12); color: #fff; font-weight: 600; }
+    .nav-e.active { background: rgba(22,163,74,.18) !important; color: #4ade80 !important; }
+    .nav-s.active { background: rgba(37,99,235,.18) !important; color: #93c5fd !important; }
+    .nav-g.active { background: rgba(124,58,237,.18) !important; color: #c4b5fd !important; }
+    .badge-cnt { margin-left: auto; background: #ef4444; color: #fff; font-size: .6rem; padding: 2px 6px; border-radius: 10px; }
+    .sidebar-footer { margin-top: auto; padding: 12px 16px; font-size: .7rem; color: #475569; border-top: 1px solid rgba(255,255,255,.05); }
+
+    #topbar { height: var(--header-h); position: fixed; top: 0; left: var(--sidebar-w); right: 0; z-index: 999; background: #fff; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; padding: 0 20px; gap: 12px; box-shadow: 0 1px 3px rgba(0,0,0,.06); }
+    .year-select { border: 1.5px solid #e2e8f0; border-radius: 7px; padding: 5px 10px; font-size: .82rem; font-weight: 600; color: #1e293b; cursor: pointer; background: #f8fafc; }
+
+    #main-content { margin-left: var(--sidebar-w); padding-top: var(--header-h); min-height: 100vh; }
+    .page-body { padding: 18px 22px; }
+
+    .esg-header { background: #fff; border-radius: 10px; padding: 14px 20px; margin-bottom: 14px; display: flex; align-items: center; gap: 14px; box-shadow: 0 1px 3px rgba(0,0,0,.07); }
+    .esg-badge { width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; font-weight: 800; color: #fff; }
+    .esg-badge.E { background: var(--color-e); }
+    .esg-badge.S { background: var(--color-s); }
+    .esg-badge.G { background: var(--color-g); }
+    .esg-title { font-size: 1.05rem; font-weight: 700; color: #0f172a; }
+    .esg-sub { font-size: .78rem; color: #64748b; }
+
+    .summary-row { display: flex; gap: 12px; margin-bottom: 14px; flex-wrap: wrap; }
+    .sum-card { flex: 1; min-width: 130px; background: #fff; border-radius: 9px; padding: 13px 16px; box-shadow: 0 1px 3px rgba(0,0,0,.07); border-left: 4px solid transparent; }
+    .sum-card.ns  { border-color: #94a3b8; }
+    .sum-card.inp { border-color: #f59e0b; }
+    .sum-card.sub { border-color: #3b82f6; }
+    .sum-card.cfm { border-color: #10b981; }
+    .sum-card .num { font-size: 1.6rem; font-weight: 800; color: #0f172a; line-height: 1.2; }
+    .sum-card .label { font-size: .7rem; color: #64748b; }
+    .sum-card .rate { font-size: .75rem; font-weight: 600; color: #10b981; }
+
+    .toolbar { background: #fff; border-radius: 9px; padding: 10px 16px; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; box-shadow: 0 1px 3px rgba(0,0,0,.07); }
+    .dept-tab { border: 1.5px solid #e2e8f0; border-radius: 6px; padding: 4px 10px; font-size: .75rem; cursor: pointer; color: #475569; background: #f8fafc; white-space: nowrap; }
+    .dept-tab.active { background: #1e40af; color: #fff; border-color: #1e40af; font-weight: 600; }
+
+    .table-wrapper { background: #fff; border-radius: 9px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,.08); margin-bottom: 16px; }
+    .table-scroll { overflow-x: auto; overflow-y: auto; max-height: calc(100vh - 310px); }
+    .ind-table { width: 100%; border-collapse: collapse; font-size: .78rem; }
+    .ind-table thead th { background: #1e293b; color: #e2e8f0; white-space: nowrap; padding: 8px 10px; text-align: center; border: 1px solid #334155; position: sticky; top: 0; z-index: 10; font-weight: 600; font-size: .73rem; }
+    .ind-table tbody td { border: 1px solid #e8ecf0; padding: 5px 8px; vertical-align: middle; }
+    .ind-table tbody tr:hover td { background: #f8fafc; }
+    .row-e td { background: #f0fdf4; }
+    .row-s td { background: #eff6ff; }
+    .row-g td { background: #f5f3ff; }
+    .cell-major { font-weight: 700; color: #0f172a; }
+    .cell-mid   { font-weight: 600; color: #374151; }
+    .cell-minor { padding-left: 12px !important; }
+
+    .val-cell input { width: 100%; border: 1px solid transparent; border-radius: 4px; padding: 4px 6px; text-align: right; font-size: .78rem; background: transparent; }
+    .val-cell input:hover { border-color: #93c5fd; background: #eff6ff; }
+    .val-cell input:focus { border-color: #3b82f6; background: #fff; outline: none; }
+    .val-cell.confirmed input { background: #f0fdf4; color: #166534; font-weight: 600; }
+
+    .sbadge { font-size: .65rem; padding: 2px 7px; border-radius: 10px; font-weight: 600; }
+    .sbadge-ns  { background: #f1f5f9; color: #64748b; }
+    .sbadge-cfm { background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
+    .sbadge-sub { background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; }
+    .sbadge-inp { background: #fffbeb; color: #92400e; border: 1px solid #fde68a; }
+
+    .progress-sm { height: 6px; border-radius: 3px; background: #e2e8f0; overflow: hidden; }
+    .progress-sm .bar { height: 100%; background: #10b981; border-radius: 3px; }
+
+    #toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; }
+    .toast-msg { padding: 11px 18px; border-radius: 8px; color: #fff; font-size: .82rem; font-weight: 500; box-shadow: 0 4px 14px rgba(0,0,0,.2); animation: slideIn .25s ease; }
+    .toast-msg.success { background: #059669; }
+    .toast-msg.info    { background: #2563eb; }
+    @keyframes slideIn { from { opacity:0; transform: translateX(20px); } to { opacity:1; transform: none; } }
+
+    .view-toggle { display: flex; gap: 4px; }
+    .view-btn { padding: 4px 10px; font-size: .73rem; border-radius: 5px; border: 1.5px solid #e2e8f0; background: #f8fafc; cursor: pointer; color: #475569; }
+    .view-btn.active { background: #1e40af; color: #fff; border-color: #1e40af; }
+  </style>
+</head>
+<body>
+
+<div id="toast-container"></div>
+
+<!-- Sidebar -->
+<nav id="sidebar">
+  <div class="brand">
+    <span style="font-size:1.3rem">🌿</span>
+    <div>
+      <div style="font-size:.9rem;line-height:1.1">ESG 지표관리</div>
+      <div style="font-size:.62rem;color:#64748b;font-weight:400">깨끗한나라 Fact Book</div>
+    </div>
+  </div>
+  <ul class="nav flex-column mt-1">
+    <li><div class="nav-section">지표 입력</div></li>
+    <li><a class="nav-link nav-e active" href="#" onclick="switchCategory('E')"><i class="bi bi-tree-fill"></i> 환경(E) <span class="badge-cnt">12</span></a></li>
+    <li><a class="nav-link nav-s" href="#" onclick="switchCategory('S')"><i class="bi bi-people-fill"></i> 사회(S) <span class="badge-cnt">8</span></a></li>
+    <li><a class="nav-link nav-g" href="#" onclick="switchCategory('G')"><i class="bi bi-bank2"></i> 지배구조(G)</a></li>
+    <li><div class="nav-section">조회/현황</div></li>
+    <li><a class="nav-link" href="#" onclick="showToastMsg('입력 현황 페이지 (실 환경에서 동작)')"><i class="bi bi-bar-chart-fill"></i> 입력 현황</a></li>
+    <li><a class="nav-link" href="#" onclick="showToastMsg('Fact Book Excel 내보내기 실행 중...')"><i class="bi bi-file-earmark-excel-fill" style="color:#21a366"></i> Fact Book 내보내기</a></li>
+    <li><a class="nav-link" href="#" onclick="showToastMsg('Excel 업로드 모달 오픈')"><i class="bi bi-upload"></i> Excel 업로드</a></li>
+    <li><div class="nav-section">관리</div></li>
+    <li><a class="nav-link" href="#"><i class="bi bi-building"></i> 부서 관리</a></li>
+    <li><a class="nav-link" href="#"><i class="bi bi-list-check"></i> 지표 마스터</a></li>
+  </ul>
+  <div class="sidebar-footer"><i class="bi bi-person-circle me-1"></i> admin@company.com</div>
+</nav>
+
+<!-- Top Bar -->
+<div id="topbar">
+  <nav style="margin-right:auto;">
+    <ol class="breadcrumb mb-0">
+      <li class="breadcrumb-item" style="color:#64748b;font-size:.78rem;">ESG 지표관리</li>
+      <li class="breadcrumb-item active" style="font-size:.78rem;font-weight:600;" id="breadcat">환경(E) 지표</li>
+    </ol>
+  </nav>
+  <label style="font-size:.75rem;color:#64748b;white-space:nowrap;">기준연도</label>
+  <select class="year-select" onchange="showToastMsg(this.value + '년으로 변경')">
+    <option>2024년</option><option>2023년</option><option>2022년</option><option>2021년</option><option>2020년</option>
+  </select>
+  <div class="view-toggle">
+    <button class="view-btn active" onclick="setView('E',this)">환경</button>
+    <button class="view-btn" onclick="setView('S',this)">사회</button>
+    <button class="view-btn" onclick="setView('G',this)">지배구조</button>
+  </div>
+  <button class="btn btn-sm btn-outline-secondary" style="font-size:.73rem;">
+    <i class="bi bi-download"></i> 양식
+  </button>
+  <button class="btn btn-sm btn-outline-success" style="font-size:.73rem;border-color:#21a366;color:#21a366;"
+          onclick="showToastMsg('Fact Book Excel 생성 완료')">
+    <i class="bi bi-file-earmark-excel"></i> Fact Book
+  </button>
+  <button class="btn btn-sm btn-primary" style="font-size:.73rem;" onclick="saveDemo()">
+    <i class="bi bi-floppy"></i> 저장 (Ctrl+S)
+  </button>
+</div>
+
+<!-- Main -->
+<div id="main-content">
+  <div class="page-body">
+
+    <!-- ESG Header -->
+    <div class="esg-header">
+      <div class="esg-badge E" id="esgBadge">E</div>
+      <div>
+        <div class="esg-title" id="esgTitle">환경(E) 지표 입력</div>
+        <div class="esg-sub">2024년도 데이터 입력 및 조회 — 깨끗한나라(주) ESG Fact Book</div>
+      </div>
+      <div class="ms-auto">
+        <span class="sbadge sbadge-cfm me-1">완료율 58%</span>
+        <span class="sbadge sbadge-ns">총 84건</span>
+      </div>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="summary-row">
+      <div class="sum-card ns"><div class="num" id="cntNs">35</div><div class="label">미입력</div></div>
+      <div class="sum-card inp"><div class="num" id="cntInp">12</div><div class="label">입력중</div></div>
+      <div class="sum-card sub"><div class="num" id="cntSub">8</div><div class="label">제출완료</div></div>
+      <div class="sum-card cfm"><div class="num" id="cntCfm">29</div><div class="label">최종확정</div><div class="rate">34% 완료</div></div>
+      <div class="sum-card" style="border-color:#64748b;flex:2;min-width:200px;">
+        <div style="font-size:.72rem;color:#64748b;margin-bottom:6px;font-weight:600;">전체 완료율</div>
+        <div class="progress-sm mb-1"><div class="bar" style="width:44%"></div></div>
+        <div style="font-size:.72rem;color:#475569"><span style="color:#10b981;font-weight:700">44</span>% 완료 &nbsp;|&nbsp; 37 / 84건</div>
+      </div>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="toolbar">
+      <span style="font-size:.72rem;color:#64748b;font-weight:600;white-space:nowrap">부서 선택:</span>
+      <div style="display:flex;gap:4px;flex-wrap:wrap;">
+        <button class="dept-tab active" onclick="activateTab(this)">전체</button>
+        <button class="dept-tab" onclick="activateTab(this)">환경에너지팀</button>
+        <button class="dept-tab" onclick="activateTab(this)">경영기획팀</button>
+        <button class="dept-tab" onclick="activateTab(this)">HL기획팀</button>
+        <button class="dept-tab" onclick="activateTab(this)">PS기획팀</button>
+      </div>
+      <div style="margin-left:auto;display:flex;gap:6px;">
+        <input type="text" class="form-control form-control-sm" style="width:160px;font-size:.73rem;"
+               placeholder="지표명 검색..." oninput="searchTable(this.value)"/>
+        <button class="btn btn-sm btn-outline-secondary" style="font-size:.73rem;"
+                onclick="showToastMsg('부서별 현황 패널 토글')">
+          <i class="bi bi-graph-up"></i> 현황
+        </button>
+      </div>
+    </div>
+
+    <!-- E Category Table -->
+    <div id="tableE" class="table-wrapper">
+      <div class="table-scroll">
+        <table class="ind-table" id="mainTable">
+          <thead>
+            <tr>
+              <th style="width:40px">#</th>
+              <th style="width:110px">대구분</th>
+              <th style="width:130px">중구분</th>
+              <th style="width:180px">지표명</th>
+              <th style="width:72px;text-align:center">단위</th>
+              <th style="width:115px">환경에너지팀</th>
+              <th style="width:115px">경영기획팀</th>
+              <th style="width:115px">HL기획팀</th>
+              <th style="width:115px">PS기획팀</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody">
+          <!-- Row group: 온실가스 배출 -->
+          <tr class="row-e">
+            <td style="color:#94a3b8;text-align:center;font-size:.7rem">1</td>
+            <td class="cell-major">온실가스 배출</td>
+            <td class="cell-mid">온실가스</td>
+            <td class="cell-minor">총 배출량(Scope 1 &amp; 2)</td>
+            <td style="text-align:center;color:#64748b">tCO2eq</td>
+            <td class="val-cell confirmed"><input type="number" value="315306" title="환경에너지팀 확정값"/></td>
+            <td class="val-cell"><input type="number" placeholder="입력" title="경영기획팀"/></td>
+            <td class="val-cell"><input type="number" placeholder="입력" title="HL기획팀"/></td>
+            <td class="val-cell"><input type="number" placeholder="입력" title="PS기획팀"/></td>
+          </tr>
+          <tr class="row-e">
+            <td style="color:#94a3b8;text-align:center;font-size:.7rem">2</td>
+            <td class="cell-major">온실가스 배출</td>
+            <td class="cell-mid">온실가스</td>
+            <td class="cell-minor">- 직접 배출량(Scope 1)</td>
+            <td style="text-align:center;color:#64748b">tCO2eq</td>
+            <td class="val-cell confirmed"><input type="number" value="187125"/></td>
+            <td class="val-cell"><input type="number" placeholder="입력"/></td>
+            <td class="val-cell"><input type="number" placeholder="입력"/></td>
+            <td class="val-cell"><input type="number" placeholder="입력"/></td>
+          </tr>
+          <tr class="row-e">
+            <td style="color:#94a3b8;text-align:center;font-size:.7rem">3</td>
+            <td class="cell-major">온실가스 배출</td>
+            <td class="cell-mid">온실가스</td>
+            <td class="cell-minor">- 간접 배출량(Scope 2)</td>
+            <td style="text-align:center;color:#64748b">tCO2eq</td>
+            <td class="val-cell confirmed"><input type="number" value="128181"/></td>
+            <td class="val-cell"><input type="number" placeholder="입력"/></td>
+            <td class="val-cell"><input type="number" placeholder="입력"/></td>
+            <td class="val-cell"><input type="number" placeholder="입력"/></td>
+          </tr>
+          <tr class="row-e">
+            <td style="color:#94a3b8;text-align:center;font-size:.7rem">4</td>
+            <td class="cell-major">온실가스 배출</td>
+            <td class="cell-mid">온실가스 감축량</td>
+            <td class="cell-minor">총 감축량(Scope1 &amp; 2 &amp; 3)</td>
+            <td style="text-align:center;color:#64748b">tCO2eq</td>
+            <td class="val-cell confirmed"><input type="number" value="7647"/></td>
+            <td class="val-cell"><input type="number" placeholder="입력"/></td>
+            <td class="val-cell"><input type="number" placeholder="입력"/></td>
+            <td class="val-cell"><input type="number" placeholder="입력"/></td>
+          </tr>
+          <tr class="row-e">
+            <td style="color:#94a3b8;text-align:center;font-size:.7rem">5</td>
+            <td class="cell-major">에너지 소비</td>
+            <td class="cell-mid">일반에너지</td>
+            <td class="cell-minor">총 소비량</td>
+            <td style="text-align:center;color:#64748b">TJ</td>
+            <td class="val-cell confirmed"><input type="number" value="4353"/></td>
+            <td class="val-cell"><input type="number" placeholder="입력"/></td>
+            <td class="val-cell"><input type="number" placeholder="입력"/></td>
+            <td class="val-cell"><input type="number" placeholder="입력"/></td>
+          </tr>
+          <tr class="row-e">
+            <td style="color:#94a3b8;text-align:center;font-size:.7rem">6</td>
+            <td class="cell-major">에너지 소비</td>
+            <td class="cell-mid">일반에너지</td>
+            <td class="cell-minor">직접에너지 소비량</td>
+            <td style="text-align:center;color:#64748b">TJ</td>
+            <td class="val-cell confirmed"><input type="number" value="1372.814"/></td>
+            <td class="val-cell"><input type="number" placeholder="입력"/></td>
+            <td class="val-cell"><input type="number" placeholder="입력"/></td>
+            <td class="val-cell"><input type="number" placeholder="입력"/></td>
+          </tr>
+          <tr class="row-e">
+            <td style="color:#94a3b8;text-align:center;font-size:.7rem">7</td>
+            <td class="cell-major">용수</td>
+            <td class="cell-mid">취수</td>
+            <td class="cell-minor">총 취수량</td>
+            <td style="text-align:center;color:#64748b">ton</td>
+            <td class="val-cell confirmed"><input type="number" value="6899202"/></td>
+            <td class="val-cell"><input type="number" placeholder="입력"/></td>
+            <td class="val-cell"><input type="number" placeholder="입력"/></td>
+            <td class="val-cell"><input type="number" placeholder="입력"/></td>
+          </tr>
+          <tr class="row-e">
+            <td style="color:#94a3b8;text-align:center;font-size:.7rem">8</td>
+            <td class="cell-major">폐기물</td>
+            <td class="cell-mid">폐기물</td>
+            <td class="cell-minor">배출량</td>
+            <td style="text-align:center;color:#64748b">ton</td>
+            <td class="val-cell confirmed"><input type="number" value="139498.79"/></td>
+            <td class="val-cell"><input type="number" placeholder="입력"/></td>
+            <td class="val-cell"><input type="number" placeholder="입력"/></td>
+            <td class="val-cell"><input type="number" placeholder="입력"/></td>
+          </tr>
+          <tr class="row-e">
+            <td style="color:#94a3b8;text-align:center;font-size:.7rem">9</td>
+            <td class="cell-major">폐기물</td>
+            <td class="cell-mid">환경투자</td>
+            <td class="cell-minor">환경투자비</td>
+            <td style="text-align:center;color:#64748b">억원</td>
+            <td class="val-cell confirmed"><input type="number" value="128.81"/></td>
+            <td class="val-cell confirmed"><input type="number" value="0"/></td>
+            <td class="val-cell"><input type="number" placeholder="입력"/></td>
+            <td class="val-cell"><input type="number" placeholder="입력"/></td>
+          </tr>
+          <tr class="row-e">
+            <td style="color:#94a3b8;text-align:center;font-size:.7rem">10</td>
+            <td class="cell-major">원재료</td>
+            <td class="cell-mid">원재료</td>
+            <td class="cell-minor">총 원재료 사용량</td>
+            <td style="text-align:center;color:#64748b">ton</td>
+            <td class="val-cell"><input type="number" placeholder="입력"/></td>
+            <td class="val-cell confirmed"><input type="number" value="414314.262"/></td>
+            <td class="val-cell"><input type="number" placeholder="입력"/></td>
+            <td class="val-cell"><input type="number" placeholder="입력"/></td>
+          </tr>
+          <tr class="row-e">
+            <td style="color:#94a3b8;text-align:center;font-size:.7rem">11</td>
+            <td class="cell-major">친환경 제품</td>
+            <td class="cell-mid">친환경 및 환경성개선 제품</td>
+            <td class="cell-minor">Home &amp; Life 사업파트 매출액</td>
+            <td style="text-align:center;color:#64748b">억원</td>
+            <td class="val-cell"><input type="number" placeholder="입력"/></td>
+            <td class="val-cell"><input type="number" placeholder="입력"/></td>
+            <td class="val-cell confirmed"><input type="number" value="487"/></td>
+            <td class="val-cell"><input type="number" placeholder="입력"/></td>
+          </tr>
+          <tr class="row-e">
+            <td style="color:#94a3b8;text-align:center;font-size:.7rem">12</td>
+            <td class="cell-major">친환경 제품</td>
+            <td class="cell-mid">친환경 및 환경성개선 제품</td>
+            <td class="cell-minor">Paper Solution 사업 매출액</td>
+            <td style="text-align:center;color:#64748b"></td>
+            <td class="val-cell"><input type="number" placeholder="입력"/></td>
+            <td class="val-cell"><input type="number" placeholder="입력"/></td>
+            <td class="val-cell"><input type="number" placeholder="입력"/></td>
+            <td class="val-cell confirmed"><input type="number" value="2580"/></td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+      <div style="padding:8px 16px;font-size:.72rem;color:#94a3b8;background:#fafafa;border-top:1px solid #f0f0f0;">
+        <i class="bi bi-info-circle me-1"></i>
+        초록 배경 = 최종확정, 입력칸 클릭 후 Enter로 다음 칸 이동, Ctrl+S 저장
+      </div>
+    </div>
+
+    <!-- Social Table (hidden) -->
+    <div id="tableS" style="display:none" class="table-wrapper">
+      <div class="table-scroll">
+        <table class="ind-table">
+          <thead><tr>
+            <th>#</th><th>대구분</th><th>중구분</th><th>지표명</th><th>단위</th>
+            <th>HR팀</th><th>안전보건팀</th><th>정보보안팀</th>
+          </tr></thead>
+          <tbody>
+          <tr class="row-s"><td style="text-align:center;color:#94a3b8;font-size:.7rem">1</td><td class="cell-major">임직원 수</td><td class="cell-mid">연령별</td><td class="cell-minor">만 30세 미만</td><td style="text-align:center;color:#64748b">명(%)</td><td class="val-cell confirmed"><input value="96"/></td><td class="val-cell"><input placeholder="입력"/></td><td class="val-cell"><input placeholder="입력"/></td></tr>
+          <tr class="row-s"><td style="text-align:center;color:#94a3b8;font-size:.7rem">2</td><td class="cell-major">임직원 수</td><td class="cell-mid">고용형태별</td><td class="cell-minor">정규직</td><td style="text-align:center;color:#64748b">명(%)</td><td class="val-cell confirmed"><input value="599"/></td><td class="val-cell"><input placeholder="입력"/></td><td class="val-cell"><input placeholder="입력"/></td></tr>
+          <tr class="row-s"><td style="text-align:center;color:#94a3b8;font-size:.7rem">3</td><td class="cell-major">산업재해</td><td class="cell-mid">산업재해율</td><td class="cell-minor">구성원</td><td style="text-align:center;color:#64748b">%</td><td class="val-cell"><input placeholder="입력"/></td><td class="val-cell confirmed"><input value="0.65"/></td><td class="val-cell"><input placeholder="입력"/></td></tr>
+          <tr class="row-s"><td style="text-align:center;color:#94a3b8;font-size:.7rem">4</td><td class="cell-major">산업재해</td><td class="cell-mid">사망자수</td><td class="cell-minor">구성원</td><td style="text-align:center;color:#64748b">명</td><td class="val-cell"><input placeholder="입력"/></td><td class="val-cell confirmed"><input value="0"/></td><td class="val-cell"><input placeholder="입력"/></td></tr>
+          <tr class="row-s"><td style="text-align:center;color:#94a3b8;font-size:.7rem">5</td><td class="cell-major">교육</td><td class="cell-mid">정보보안 교육</td><td class="cell-minor">참여인원</td><td style="text-align:center;color:#64748b">명</td><td class="val-cell"><input placeholder="입력"/></td><td class="val-cell"><input placeholder="입력"/></td><td class="val-cell confirmed"><input value="295"/></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Governance Table (hidden) -->
+    <div id="tableG" style="display:none" class="table-wrapper">
+      <div class="table-scroll">
+        <table class="ind-table">
+          <thead><tr>
+            <th>#</th><th>대구분</th><th>중구분</th><th>지표명</th><th>단위</th>
+            <th>자산관리파트</th><th>HR팀</th><th>진실경영팀</th>
+          </tr></thead>
+          <tbody>
+          <tr class="row-g"><td style="text-align:center;color:#94a3b8;font-size:.7rem">1</td><td class="cell-major">구성</td><td class="cell-mid">독립성</td><td class="cell-minor">이사회의 사외이사 비율</td><td style="text-align:center;color:#64748b">%</td><td class="val-cell confirmed"><input value="29"/></td><td class="val-cell"><input placeholder="입력"/></td><td class="val-cell"><input placeholder="입력"/></td></tr>
+          <tr class="row-g"><td style="text-align:center;color:#94a3b8;font-size:.7rem">2</td><td class="cell-major">운영</td><td class="cell-mid">개최</td><td class="cell-minor">개최 건수</td><td style="text-align:center;color:#64748b">회</td><td class="val-cell confirmed"><input value="12"/></td><td class="val-cell"><input placeholder="입력"/></td><td class="val-cell"><input placeholder="입력"/></td></tr>
+          <tr class="row-g"><td style="text-align:center;color:#94a3b8;font-size:.7rem">3</td><td class="cell-major">주주권리 강화</td><td class="cell-mid">의결권 행사 활성화</td><td class="cell-minor">전자투표제 도입</td><td style="text-align:center;color:#64748b">V</td><td class="val-cell confirmed"><input value="V"/></td><td class="val-cell"><input placeholder="입력"/></td><td class="val-cell"><input placeholder="입력"/></td></tr>
+          <tr class="row-g"><td style="text-align:center;color:#94a3b8;font-size:.7rem">4</td><td class="cell-major">윤리경영 노력</td><td class="cell-mid">윤리 및 반부패 교육</td><td class="cell-minor">이수율</td><td style="text-align:center;color:#64748b">%</td><td class="val-cell"><input placeholder="입력"/></td><td class="val-cell"><input placeholder="입력"/></td><td class="val-cell confirmed"><input value="66.8"/></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+const SUMMARY = {
+  E: { ns:35, inp:12, sub:8, cfm:29, total:84 },
+  S: { ns:18, inp:5,  sub:10, cfm:30, total:63 },
+  G: { ns:5,  inp:2,  sub:8,  cfm:10, total:25 }
+};
+
+function switchCategory(cat) {
+  document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+  document.querySelector('.nav-' + cat.toLowerCase()).classList.add('active');
+  setView(cat, null);
+}
+
+function setView(cat, btn) {
+  ['E','S','G'].forEach(c => {
+    const el = document.getElementById('table'+c);
+    if (el) el.style.display = c === cat ? '' : 'none';
+  });
+
+  document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+
+  const names = {E:'환경(E)', S:'사회(S)', G:'지배구조(G)'};
+  document.getElementById('esgBadge').textContent  = cat;
+  document.getElementById('esgBadge').className    = 'esg-badge ' + cat;
+  document.getElementById('esgTitle').textContent  = names[cat] + ' 지표 입력';
+  document.getElementById('breadcat').textContent  = names[cat] + ' 지표';
+
+  const s = SUMMARY[cat];
+  document.getElementById('cntNs').textContent  = s.ns;
+  document.getElementById('cntInp').textContent = s.inp;
+  document.getElementById('cntSub').textContent = s.sub;
+  document.getElementById('cntCfm').textContent = s.cfm;
+
+  // Update toolbar dept tabs
+  const depts = {
+    E: ['전체','환경에너지팀','경영기획팀','HL기획팀','PS기획팀'],
+    S: ['전체','HR팀','안전보건팀','정보보안팀'],
+    G: ['전체','자산관리파트','HR팀','진실경영팀']
+  };
+  // (simplified for preview)
+}
+
+function activateTab(btn) {
+  document.querySelectorAll('.dept-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  showToastMsg(btn.textContent + ' 부서 필터 적용');
+}
+
+function searchTable(term) {
+  const lower = term.toLowerCase();
+  document.querySelectorAll('#mainTable tbody tr').forEach(tr => {
+    const text = tr.textContent.toLowerCase();
+    tr.style.display = (!term || text.includes(lower)) ? '' : 'none';
+  });
+}
+
+function saveDemo() {
+  showToastMsg('저장 완료 (Ctrl+S)', 'success');
+}
+
+function showToastMsg(msg, type = 'info') {
+  const container = document.getElementById('toast-container');
+  const el = document.createElement('div');
+  el.className = `toast-msg ${type}`;
+  el.textContent = msg;
+  container.appendChild(el);
+  setTimeout(() => el.remove(), 2800);
+}
+
+// Keyboard Ctrl+S
+document.addEventListener('keydown', e => {
+  if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+    e.preventDefault();
+    saveDemo();
+  }
+});
+// Enter key in inputs
+document.querySelectorAll('input').forEach((inp, i, arr) => {
+  inp.addEventListener('keydown', e => {
+    if (e.key === 'Enter') { e.preventDefault(); if (arr[i+1]) arr[i+1].focus(); }
+  });
+});
+</script>
+</body>
+</html>

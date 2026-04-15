@@ -62,7 +62,7 @@ configure([project(':core')]) {
 }
 
 // ── 업무 모듈: Spring Boot 플러그인 적용(BOM 활용) + bootJar 비활성화 ─────────────
-configure([project(':module-user'), project(':module-esg')]) {
+configure([project(':module-user'), project(':module-esg'), project(':module-esgindicator')]) {
     apply plugin: 'org.springframework.boot'
     bootJar.enabled = false
     jar.enabled     = true

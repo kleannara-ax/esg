@@ -1,0 +1,1208 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title th:text="'ESG 지표 관리시스템 - ' + ${categoryName}">ESG 지표 관리시스템</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"/>
+  <style>
+    :root {
+      --sidebar-w: 230px;
+      --header-h: 54px;
+      --color-e: #16a34a;
+      --color-s: #2563eb;
+      --color-g: #7c3aed;
+      --color-e-bg: #f0fdf4;
+      --color-s-bg: #eff6ff;
+      --color-g-bg: #f5f3ff;
+    }
+    * { box-sizing: border-box; }
+    body { background: #f3f4f8; font-size: 0.835rem; font-family: 'Pretendard', 'Noto Sans KR', sans-serif; }
+
+    /* ── Sidebar ── */
+    #sidebar {
+      width: var(--sidebar-w); min-height: 100vh;
+      background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+      color: #cbd5e1; position: fixed; top: 0; left: 0; z-index: 1000;
+      display: flex; flex-direction: column; box-shadow: 2px 0 8px rgba(0,0,0,.18);
+    }
+    #sidebar .brand {
+      padding: 18px 20px 14px; font-size: 1rem; font-weight: 700; color: #f8fafc;
+      border-bottom: 1px solid rgba(255,255,255,.08); display: flex; align-items: center; gap: 8px;
+    }
+    #sidebar .brand .leaf { font-size: 1.3rem; }
+    #sidebar .nav-section {
+      font-size: .65rem; text-transform: uppercase; color: #64748b;
+      padding: 14px 18px 4px; letter-spacing: .07em; font-weight: 600;
+    }
+    #sidebar .nav-link {
+      color: #94a3b8; padding: 9px 16px; display: flex; align-items: center;
+      gap: 9px; border-radius: 7px; margin: 1px 10px; transition: all .15s;
+    }
+    #sidebar .nav-link:hover  { background: rgba(255,255,255,.07); color: #e2e8f0; }
+    #sidebar .nav-link.active { background: rgba(255,255,255,.12); color: #fff; font-weight: 600; }
+    .nav-e.active { background: rgba(22,163,74,.18) !important; color: #4ade80 !important; }
+    .nav-s.active { background: rgba(37,99,235,.18) !important; color: #93c5fd !important; }
+    .nav-g.active { background: rgba(124,58,237,.18) !important; color: #c4b5fd !important; }
+    #sidebar .nav-link .badge-cnt {
+      margin-left: auto; background: #ef4444; color: #fff;
+      font-size: .6rem; padding: 2px 6px; border-radius: 10px;
+    }
+    .sidebar-footer {
+      margin-top: auto; padding: 12px 16px; font-size: .7rem; color: #475569;
+      border-top: 1px solid rgba(255,255,255,.05);
+    }
+
+    /* ── Top bar ── */
+    #topbar {
+      height: var(--header-h); position: fixed; top: 0;
+      left: var(--sidebar-w); right: 0; z-index: 999;
+      background: #fff; border-bottom: 1px solid #e2e8f0;
+      display: flex; align-items: center; padding: 0 20px; gap: 12px;
+      box-shadow: 0 1px 3px rgba(0,0,0,.06);
+    }
+    #topbar .breadcrumb-item + .breadcrumb-item::before { color: #94a3b8; }
+    #topbar .year-select {
+      border: 1.5px solid #e2e8f0; border-radius: 7px; padding: 5px 10px;
+      font-size: .82rem; font-weight: 600; color: #1e293b; cursor: pointer;
+      background: #f8fafc;
+    }
+    #topbar .year-select:focus { outline: 2px solid #3b82f6; }
+
+    /* ── Main ── */
+    #main-content { margin-left: var(--sidebar-w); padding-top: var(--header-h); min-height: 100vh; }
+    .page-body { padding: 18px 22px; }
+
+    /* ── ESG Tab header ── */
+    .esg-header {
+      background: #fff; border-radius: 10px; padding: 14px 20px;
+      margin-bottom: 14px; display: flex; align-items: center; gap: 14px;
+      box-shadow: 0 1px 3px rgba(0,0,0,.07);
+    }
+    .esg-badge {
+      width: 44px; height: 44px; border-radius: 10px; display: flex;
+      align-items: center; justify-content: center; font-size: 1.25rem; font-weight: 800; color: #fff;
+    }
+    .esg-badge.E { background: var(--color-e); }
+    .esg-badge.S { background: var(--color-s); }
+    .esg-badge.G { background: var(--color-g); }
+    .esg-title { font-size: 1.05rem; font-weight: 700; color: #0f172a; }
+    .esg-sub   { font-size: .78rem; color: #64748b; }
+
+    /* ── Summary Cards ── */
+    .summary-row { display: flex; gap: 12px; margin-bottom: 14px; flex-wrap: wrap; }
+    .sum-card {
+      flex: 1; min-width: 130px; background: #fff; border-radius: 9px;
+      padding: 13px 16px; box-shadow: 0 1px 3px rgba(0,0,0,.07);
+      border-left: 4px solid transparent; transition: box-shadow .15s;
+    }
+    .sum-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,.1); }
+    .sum-card.ns  { border-color: #94a3b8; }
+    .sum-card.inp { border-color: #f59e0b; }
+    .sum-card.sub { border-color: #3b82f6; }
+    .sum-card.cfm { border-color: #10b981; }
+    .sum-card .num   { font-size: 1.6rem; font-weight: 800; color: #0f172a; line-height: 1.2; }
+    .sum-card .label { font-size: .7rem; color: #64748b; margin-top: 2px; }
+    .sum-card .rate  { font-size: .75rem; font-weight: 600; color: #10b981; }
+
+    /* ── Toolbar ── */
+    .toolbar {
+      background: #fff; border-radius: 9px; padding: 10px 16px;
+      margin-bottom: 12px; display: flex; align-items: center; gap: 8px;
+      flex-wrap: wrap; box-shadow: 0 1px 3px rgba(0,0,0,.07);
+    }
+    .toolbar .dept-tabs { display: flex; gap: 4px; flex-wrap: wrap; }
+    .dept-tab {
+      border: 1.5px solid #e2e8f0; border-radius: 6px; padding: 4px 10px;
+      font-size: .75rem; cursor: pointer; color: #475569; background: #f8fafc; transition: all .12s;
+      white-space: nowrap;
+    }
+    .dept-tab:hover  { background: #e0e7ff; color: #3730a3; border-color: #a5b4fc; }
+    .dept-tab.active { background: #1e40af; color: #fff; border-color: #1e40af; font-weight: 600; }
+    .ms-auto-gap { margin-left: auto; display: flex; gap: 6px; }
+
+    /* ── Indicator Table ── */
+    .table-wrapper {
+      background: #fff; border-radius: 9px; overflow: hidden;
+      box-shadow: 0 1px 4px rgba(0,0,0,.08); margin-bottom: 16px;
+    }
+    .table-scroll { overflow-x: auto; overflow-y: auto; max-height: calc(100vh - 310px); }
+    .ind-table { width: 100%; border-collapse: collapse; font-size: .78rem; }
+    .ind-table thead th {
+      background: #1e293b; color: #e2e8f0; white-space: nowrap;
+      padding: 8px 10px; text-align: center; border: 1px solid #334155;
+      position: sticky; top: 0; z-index: 10; font-weight: 600; font-size: .73rem;
+    }
+    .ind-table thead th.col-major { background: #0f172a; }
+    .ind-table tbody td { border: 1px solid #e8ecf0; padding: 5px 8px; vertical-align: middle; }
+    .ind-table tbody tr:hover td { background: #f8fafc; }
+
+    /* sticky left columns */
+    .col-no    { width: 40px; text-align: center; }
+    .col-dept  { width: 80px; min-width: 80px; }
+    .col-major { width: 110px; min-width: 110px; }
+    .col-mid   { width: 130px; min-width: 130px; }
+    .col-minor { width: 180px; min-width: 180px; }
+    .col-unit  { width: 72px; text-align: center; color: #64748b; white-space: nowrap; }
+    .col-val   { width: 105px; min-width: 95px; }
+
+    th.sticky-0, td.sticky-0 { position: sticky; left: 0; z-index: 5; background: inherit; }
+    th.sticky-1, td.sticky-1 { position: sticky; left: 40px; z-index: 5; background: inherit; }
+    th.sticky-2, td.sticky-2 { position: sticky; left: 120px; z-index: 5; background: inherit; }
+    th.sticky-3, td.sticky-3 { position: sticky; left: 250px; z-index: 5; background: inherit; }
+    th.sticky-4, td.sticky-4 { position: sticky; left: 430px; z-index: 5; background: inherit; }
+    th.sticky-5, td.sticky-5 { position: sticky; left: 502px; z-index: 5; background: inherit; }
+
+    /* Grouping rows */
+    .row-group-e { background: #f0fdf4 !important; }
+    .row-group-s { background: #eff6ff !important; }
+    .row-group-g { background: #f5f3ff !important; }
+    .cell-major { font-weight: 700; color: #0f172a; font-size: .75rem; }
+    .cell-mid   { font-weight: 600; color: #374151; }
+    .cell-minor { color: #111827; padding-left: 12px !important; }
+
+    /* Input cells */
+    .val-cell { position: relative; }
+    .val-cell input[type=text], .val-cell input[type=number] {
+      width: 100%; border: 1px solid transparent; border-radius: 4px;
+      padding: 4px 6px; text-align: right; font-size: .78rem;
+      background: transparent; transition: all .1s;
+    }
+    .val-cell input:hover  { border-color: #93c5fd; background: #eff6ff; }
+    .val-cell input:focus  { border-color: #3b82f6; background: #fff; outline: none; box-shadow: 0 0 0 2px rgba(59,130,246,.2); }
+    .val-cell.confirmed input { background: #f0fdf4; color: #166534; font-weight: 600; }
+    .val-cell.has-value input { color: #1e293b; }
+    .val-cell.empty input     { color: #94a3b8; }
+    .val-cell .status-dot {
+      position: absolute; top: 3px; right: 3px; width: 6px; height: 6px;
+      border-radius: 50%; pointer-events: none;
+    }
+    .dot-ns  { background: #94a3b8; }
+    .dot-inp { background: #f59e0b; }
+    .dot-sub { background: #3b82f6; }
+    .dot-cfm { background: #10b981; }
+
+    /* Status badges */
+    .sbadge { font-size: .65rem; padding: 2px 7px; border-radius: 10px; font-weight: 600; white-space: nowrap; }
+    .sbadge-ns  { background: #f1f5f9; color: #64748b; }
+    .sbadge-inp { background: #fffbeb; color: #92400e; border: 1px solid #fde68a; }
+    .sbadge-sub { background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; }
+    .sbadge-cfm { background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
+
+    /* Progress bar */
+    .progress-sm { height: 6px; border-radius: 3px; background: #e2e8f0; overflow: hidden; }
+    .progress-sm .bar { height: 100%; background: #10b981; border-radius: 3px; transition: width .4s; }
+
+    /* Dept status panel */
+    .dept-status-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 8px; margin-bottom: 14px;
+    }
+    .dept-status-card {
+      background: #fff; border-radius: 8px; padding: 10px 13px;
+      box-shadow: 0 1px 3px rgba(0,0,0,.06); border-top: 3px solid #e2e8f0; cursor: pointer;
+    }
+    .dept-status-card.selected { border-top-color: #3b82f6; box-shadow: 0 2px 8px rgba(59,130,246,.2); }
+    .dept-status-card .d-name { font-weight: 600; font-size: .78rem; color: #1e293b; margin-bottom: 4px; }
+    .dept-status-card .d-progress { margin-bottom: 4px; }
+    .dept-status-card .d-counts { font-size: .68rem; color: #64748b; display: flex; gap: 6px; }
+
+    /* Modal */
+    .detail-panel {
+      background: #fff; border-radius: 9px; padding: 16px 20px;
+      box-shadow: 0 1px 4px rgba(0,0,0,.08); margin-bottom: 14px; display: none;
+    }
+    .detail-panel.show { display: block; }
+    .detail-panel h6 { font-weight: 700; color: #0f172a; margin-bottom: 10px; font-size: .85rem; }
+
+    /* Toast */
+    #toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; }
+    .toast-msg {
+      padding: 11px 18px; border-radius: 8px; color: #fff; font-size: .82rem;
+      font-weight: 500; box-shadow: 0 4px 14px rgba(0,0,0,.2); animation: slideIn .25s ease;
+    }
+    .toast-msg.success { background: #059669; }
+    .toast-msg.error   { background: #dc2626; }
+    .toast-msg.info    { background: #2563eb; }
+    @keyframes slideIn { from { opacity:0; transform: translateX(20px); } to { opacity:1; transform: none; } }
+
+    /* Loading */
+    .spinner-overlay {
+      position: fixed; inset: 0; background: rgba(15,23,42,.35);
+      display: flex; align-items: center; justify-content: center; z-index: 9998; display: none;
+    }
+    .spinner-box { background: #fff; border-radius: 12px; padding: 28px 36px; text-align: center; }
+
+    /* Admin menu items */
+    .admin-badge { background: #7c3aed; color: #fff; font-size: .6rem; padding: 1px 5px; border-radius: 4px; }
+
+    /* ── Revenue Header ── */
+    .rev-section {
+      background: #fff; border-radius: 9px; overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0,0,0,.07); margin-bottom: 12px;
+    }
+    .rev-section-hdr {
+      padding: 8px 14px;
+      background: linear-gradient(90deg, #0f2744 0%, #1a3a5e 100%);
+      display: flex; align-items: center; gap: 8px;
+    }
+    .rev-section-title { font-size: .78rem; font-weight: 700; color: #e2e8f0; }
+    .rev-section-note  { font-size: .67rem; color: #7dd3fc; margin-left: auto; }
+    .rev-tbl { width: 100%; border-collapse: collapse; min-width: 600px; font-size: .78rem; }
+    .rev-tbl thead tr:first-child th {
+      background: #0f2744; color: #bae6fd;
+      font-size: .72rem; font-weight: 700; letter-spacing: .04em;
+      padding: 6px 12px; border-right: 1px solid rgba(255,255,255,.08); text-align: center;
+    }
+    .rev-tbl thead tr:first-child th:first-child {
+      text-align: left; background: #0a1e38; color: #64748b; min-width: 150px;
+    }
+    .rev-tbl thead tr:nth-child(2) th {
+      background: #162f52; color: #7dd3fc;
+      font-size: .68rem; padding: 3px 12px; border-right: 1px solid rgba(255,255,255,.07);
+      text-align: center; font-weight: 500;
+    }
+    .rev-tbl thead tr:nth-child(2) th:first-child { text-align: left; color: #475569; background: #0c2240; }
+    .rev-tbl tbody td {
+      padding: 6px 12px; border-bottom: 1px solid #e8ecf0; border-right: 1px solid #e8ecf0;
+      font-size: .79rem; font-weight: 600; text-align: right;
+      font-family: 'JetBrains Mono', 'SFMono-Regular', Consolas, monospace;
+    }
+    .rev-tbl tbody td:first-child {
+      text-align: left; font-family: inherit; font-weight: 600;
+      font-size: .77rem; background: #f4f8ff; color: #1e293b;
+    }
+    .rev-tbl tbody tr:first-child td { background: #f8fbff; }
+    .rev-tbl tbody tr:last-child td  { background: #fafcff; }
+    .rev-tbl tbody tr:hover td { background: #e8f2ff !important; }
+    .rev-tbl tbody tr:hover td:first-child { background: #deeeff !important; }
+    .rev-latest { color: #1b6ec2; font-weight: 700; }
+    .rev-est    { color: #94a3b8; font-style: italic; }
+
+    /* ── Category Filter Panel ── */
+    .cat-filter {
+      background: #fff; border-radius: 9px; overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0,0,0,.07); margin-bottom: 12px;
+    }
+    .cat-filter-hdr {
+      padding: 7px 14px; background: #f8fafc; border-bottom: 1px solid #e2e8f0;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .cat-filter-title { font-size: .75rem; font-weight: 700; color: #1e293b; }
+    .cat-filter-hint  { font-size: .68rem; color: #64748b; margin-left: 4px; }
+    .cat-filter-cnt {
+      background: #1b6ec2; color: #fff;
+      border-radius: 8px; font-size: .62rem; font-weight: 700;
+      padding: 1px 6px; display: none;
+    }
+    .cat-filter-clr {
+      margin-left: auto; background: none; border: none; cursor: pointer;
+      font-size: .72rem; color: #1b6ec2; font-weight: 500;
+      padding: 2px 7px; border-radius: 4px; transition: background .12s;
+    }
+    .cat-filter-clr:hover { background: #eff6ff; }
+    .cat-filter-body {
+      padding: 10px 14px;
+      display: grid; grid-template-columns: repeat(5, 1fr);
+      gap: 9px 14px;
+    }
+    .cfg { }
+    .cfg > label {
+      display: block; font-size: .65rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .07em; color: #64748b; margin-bottom: 5px;
+    }
+    .chip-wrap { display: flex; flex-wrap: wrap; gap: 3px; max-height: 72px; overflow-y: auto; }
+    .chip-wrap::-webkit-scrollbar { width: 3px; }
+    .chip-wrap::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 2px; }
+    .fchip {
+      display: inline-flex; align-items: center; gap: 3px;
+      border: 1.5px solid #e2e8f0; border-radius: 5px;
+      padding: 2px 7px; font-size: .71rem; color: #64748b;
+      cursor: pointer; background: #fff; transition: all .12s;
+      user-select: none; white-space: nowrap;
+    }
+    .fchip:hover { border-color: #1b6ec2; color: #1b6ec2; background: #eff6ff; }
+    .fchip.on    { border-color: #1b6ec2; color: #1b6ec2; background: #eff6ff; font-weight: 700; }
+    .fchip-ck { font-size: .62rem; opacity: 0; transition: opacity .1s; }
+    .fchip.on .fchip-ck { opacity: 1; }
+
+    /* Filter states on table rows */
+    .ind-table tbody tr.row-hl td { background: #fffbeb !important; }
+    .ind-table tbody tr.row-hl td.sticky-0,
+    .ind-table tbody tr.row-hl td.sticky-1,
+    .ind-table tbody tr.row-hl td.sticky-2,
+    .ind-table tbody tr.row-hl td.sticky-3,
+    .ind-table tbody tr.row-hl td.sticky-4 { background: #fef8e0 !important; }
+    .ind-table tbody tr.row-hl td.sticky-0 { box-shadow: inset 3px 0 0 #f59e0b; }
+    .ind-table tbody tr.row-dim { opacity: 0.28; }
+    .ind-table tbody tr.row-dim:hover { opacity: 1; }
+
+    /* Year columns in ind-table header */
+    .th-yr { background: #1b3254 !important; color: #bae6fd !important; }
+  </style>
+</head>
+<body>
+
+<!-- ══ Loading Overlay ══ -->
+<div class="spinner-overlay" id="loadingOverlay">
+  <div class="spinner-box">
+    <div class="spinner-border text-primary mb-2" style="width:2.4rem;height:2.4rem;"></div>
+    <div style="font-size:.85rem;color:#475569;">처리 중...</div>
+  </div>
+</div>
+
+<!-- ══ Toast Container ══ -->
+<div id="toast-container"></div>
+
+<!-- ══ Sidebar ════════════════════════════════════════════════════════════ -->
+<nav id="sidebar">
+  <div class="brand">
+    <span class="leaf">🌿</span>
+    <div>
+      <div style="font-size:.9rem;line-height:1.1">ESG 지표관리</div>
+      <div style="font-size:.62rem;color:#64748b;font-weight:400">Fact Book 시스템</div>
+    </div>
+  </div>
+
+  <ul class="nav flex-column mt-1">
+    <li><div class="nav-section">지표 입력</div></li>
+    <li class="nav-item">
+      <a class="nav-link nav-e" th:classappend="${category == 'E' ? ' active' : ''}"
+         th:href="@{/esgindicator-api/ui(year=${year},category=E)}">
+        <i class="bi bi-tree-fill"></i> 환경(E)
+        <span class="badge-cnt" th:if="${category == 'E' and summary != null and summary.notStartedCount > 0}"
+              th:text="${summary.notStartedCount}">0</span>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link nav-s" th:classappend="${category == 'S' ? ' active' : ''}"
+         th:href="@{/esgindicator-api/ui(year=${year},category=S)}">
+        <i class="bi bi-people-fill"></i> 사회(S)
+        <span class="badge-cnt" th:if="${category == 'S' and summary != null and summary.notStartedCount > 0}"
+              th:text="${summary.notStartedCount}">0</span>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link nav-g" th:classappend="${category == 'G' ? ' active' : ''}"
+         th:href="@{/esgindicator-api/ui(year=${year},category=G)}">
+        <i class="bi bi-bank2"></i> 지배구조(G)
+        <span class="badge-cnt" th:if="${category == 'G' and summary != null and summary.notStartedCount > 0}"
+              th:text="${summary.notStartedCount}">0</span>
+      </a>
+    </li>
+
+    <li><div class="nav-section">조회/현황</div></li>
+    <li class="nav-item">
+      <a class="nav-link" th:classappend="${#strings.contains(#httpServletRequest.requestURI,'status') ? ' active' : ''}"
+         th:href="@{/esgindicator-api/ui(year=${year},category=${category},view='status')}">
+        <i class="bi bi-bar-chart-fill"></i> 입력 현황
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="#" onclick="exportFactBook(event)">
+        <i class="bi bi-file-earmark-excel-fill" style="color:#21a366"></i> Fact Book 내보내기
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="#" onclick="showUploadModal(event)">
+        <i class="bi bi-upload"></i> Excel 업로드
+      </a>
+    </li>
+
+    <li><div class="nav-section">관리 <span class="admin-badge">Admin</span></div></li>
+    <li class="nav-item">
+      <a class="nav-link" th:href="@{/esgindicator-api/ui/departments}">
+        <i class="bi bi-building"></i> 부서 관리
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" th:href="@{/esgindicator-api/ui/indicators(category=${category})}">
+        <i class="bi bi-list-check"></i> 지표 마스터
+      </a>
+    </li>
+  </ul>
+
+  <div class="sidebar-footer">
+    <i class="bi bi-person-circle me-1"></i>
+    <span sec:authentication="name" th:text="${#authentication?.name ?: '사용자'}">사용자</span>
+  </div>
+</nav>
+
+<!-- ══ Top Bar ════════════════════════════════════════════════════════════ -->
+<div id="topbar">
+  <!-- Breadcrumb -->
+  <nav aria-label="breadcrumb" style="margin-right:auto;">
+    <ol class="breadcrumb mb-0">
+      <li class="breadcrumb-item" style="color:#64748b;font-size:.78rem;">ESG 지표관리</li>
+      <li class="breadcrumb-item active" style="font-size:.78rem;font-weight:600;"
+          th:text="${categoryName + ' 지표'}">환경 지표</li>
+    </ol>
+  </nav>
+
+  <!-- Year Selector -->
+  <label style="font-size:.75rem;color:#64748b;white-space:nowrap;">기준연도</label>
+  <select id="yearSelect" class="year-select" onchange="changeYear(this.value)">
+    <option th:each="y : ${years}" th:value="${y}" th:text="${y + '년'}"
+            th:selected="${y == year}">2024년</option>
+  </select>
+
+  <!-- Action buttons -->
+  <button class="btn btn-sm btn-outline-secondary" style="font-size:.75rem;" onclick="downloadTemplate()">
+    <i class="bi bi-download"></i> 양식 다운로드
+  </button>
+  <button class="btn btn-sm btn-outline-success" style="font-size:.75rem;border-color:#21a366;color:#21a366;" onclick="exportFactBook(event)">
+    <i class="bi bi-file-earmark-excel"></i> Fact Book
+  </button>
+  <button id="btnSave" class="btn btn-sm btn-primary" style="font-size:.75rem;" onclick="saveAll()">
+    <i class="bi bi-floppy"></i> 저장
+  </button>
+  <button id="btnSubmitAll" class="btn btn-sm btn-info text-white" style="font-size:.75rem;" onclick="submitDeptValues()">
+    <i class="bi bi-send"></i> 제출
+  </button>
+</div>
+
+<!-- ══ Main Content ════════════════════════════════════════════════════════ -->
+<div id="main-content">
+  <div class="page-body">
+
+    <!-- ══ Revenue Header (연도별 매출액) ══ -->
+    <div class="rev-section">
+      <div class="rev-section-hdr">
+        <i class="bi bi-graph-up-arrow" style="color:#7dd3fc;font-size:13px"></i>
+        <span class="rev-section-title">연도별 매출액 현황</span>
+        <span class="rev-section-note">* 공시기준 &nbsp;|&nbsp; 단위: 십억원</span>
+      </div>
+      <div style="overflow-x:auto">
+        <table class="rev-tbl">
+          <thead>
+            <tr>
+              <th class="tl">구분</th>
+              <th>2020</th>
+              <th>2021</th>
+              <th>2022</th>
+              <th>2023</th>
+              <th>2024</th>
+              <th>2025 (추정)</th>
+            </tr>
+            <tr>
+              <th class="tl">*공시기준 / 단위: 십억원</th>
+              <th>연결 / 별도</th>
+              <th>연결 / 별도</th>
+              <th>연결 / 별도</th>
+              <th>연결 / 별도</th>
+              <th>연결 / 별도</th>
+              <th>연결 / 별도</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>연결 매출액</td>
+              <td>591.6</td>
+              <td>578.7</td>
+              <td>606.5</td>
+              <td>514.9</td>
+              <td class="rev-latest">537.0</td>
+              <td class="rev-est">508.2</td>
+            </tr>
+            <tr>
+              <td>별도 매출액</td>
+              <td>590.2</td>
+              <td>576.7</td>
+              <td>605.9</td>
+              <td>515.2</td>
+              <td class="rev-latest">536.2</td>
+              <td class="rev-est">507.5</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ESG Category Header -->
+    <div class="esg-header">
+      <div class="esg-badge" th:classappend="${category}" th:text="${category}">E</div>
+      <div>
+        <div class="esg-title" th:text="${categoryName + ' ('+category+') 지표 입력'  }">환경(E) 지표 입력</div>
+        <div class="esg-sub" th:text="${year + '년도 데이터 입력 및 조회'}">2024년도 데이터 입력 및 조회</div>
+      </div>
+      <div class="ms-auto" th:if="${summary != null}">
+        <span class="sbadge sbadge-cfm me-1"
+              th:text="${'완료율 ' + (summary.totalCount > 0 ? #numbers.formatDecimal(summary.confirmedCount * 100.0 / summary.totalCount, 1, 1) : 0) + '%'}">
+          완료율 0%
+        </span>
+        <span class="sbadge sbadge-ns"
+              th:text="${'총 ' + (summary.totalCount != null ? summary.totalCount : 0) + '건'}">
+          총 0건
+        </span>
+      </div>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="summary-row" th:if="${summary != null}">
+      <div class="sum-card ns">
+        <div class="num" th:text="${summary.notStartedCount != null ? summary.notStartedCount : 0}">0</div>
+        <div class="label">미입력</div>
+      </div>
+      <div class="sum-card inp">
+        <div class="num" th:text="${summary.inProgressCount != null ? summary.inProgressCount : 0}">0</div>
+        <div class="label">입력중</div>
+      </div>
+      <div class="sum-card sub">
+        <div class="num" th:text="${summary.submittedCount != null ? summary.submittedCount : 0}">0</div>
+        <div class="label">제출완료</div>
+      </div>
+      <div class="sum-card cfm">
+        <div class="num" th:text="${summary.confirmedCount != null ? summary.confirmedCount : 0}">0</div>
+        <div class="label">최종확정</div>
+        <div class="rate" th:if="${summary.totalCount != null and summary.totalCount > 0}"
+             th:text="${#numbers.formatDecimal(summary.confirmedCount * 100.0 / summary.totalCount, 1, 1) + '% 완료'}">
+          0% 완료
+        </div>
+      </div>
+      <div class="sum-card" style="border-color:#64748b;flex:2;min-width:200px;">
+        <div style="font-size:.72rem;color:#64748b;margin-bottom:6px;font-weight:600;">전체 완료율</div>
+        <div class="progress-sm mb-1">
+          <div class="bar" th:style="${'width:' + (summary.totalCount > 0 ? (summary.confirmedCount + summary.submittedCount) * 100 / summary.totalCount : 0) + '%'}"></div>
+        </div>
+        <div style="font-size:.72rem;color:#475569">
+          <span style="color:#10b981;font-weight:700"
+                th:text="${summary.totalCount > 0 ? (summary.confirmedCount + summary.submittedCount) * 100 / summary.totalCount : 0}">0</span>%
+          완료 &nbsp;|&nbsp;
+          <span th:text="${(summary.confirmedCount != null ? summary.confirmedCount : 0) + (summary.submittedCount != null ? summary.submittedCount : 0)}">0</span> /
+          <span th:text="${summary.totalCount != null ? summary.totalCount : 0}">0</span>건
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ Category Multi-Filter Panel ══ -->
+    <div class="cat-filter" th:if="${sheet != null}">
+      <div class="cat-filter-hdr">
+        <i class="bi bi-funnel" style="color:#1b6ec2;font-size:13px"></i>
+        <span class="cat-filter-title">지표 필터 &amp; 강조</span>
+        <span id="filterActiveCnt" class="cat-filter-cnt">0</span>
+        <span class="cat-filter-hint">— 선택 시 해당 행 강조, 미선택 행 흐리게 표시 (다중 선택)</span>
+        <button class="cat-filter-clr" onclick="clearAllFilters()">
+          <i class="bi bi-x-circle"></i> 초기화
+        </button>
+      </div>
+      <div class="cat-filter-body">
+        <div class="cfg">
+          <label><i class="bi bi-building" style="font-size:9px"></i> 담당부서</label>
+          <div class="chip-wrap" id="fchips-dept"></div>
+        </div>
+        <div class="cfg">
+          <label><i class="bi bi-bookmark" style="font-size:9px"></i> 대분류</label>
+          <div class="chip-wrap" id="fchips-cat1"></div>
+        </div>
+        <div class="cfg">
+          <label><i class="bi bi-tags" style="font-size:9px"></i> 중분류</label>
+          <div class="chip-wrap" id="fchips-cat2"></div>
+        </div>
+        <div class="cfg">
+          <label><i class="bi bi-diagram-3" style="font-size:9px"></i> 세분류</label>
+          <div class="chip-wrap" id="fchips-cat3"></div>
+        </div>
+        <div class="cfg">
+          <label><i class="bi bi-list-ul" style="font-size:9px"></i> 지표명</label>
+          <div class="chip-wrap" id="fchips-cat4"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toolbar: Dept Tabs + Action Buttons -->
+    <div class="toolbar" th:if="${sheet != null and sheet.departments != null}">
+      <span style="font-size:.72rem;color:#64748b;font-weight:600;white-space:nowrap">부서 선택:</span>
+      <div class="dept-tabs">
+        <button class="dept-tab active" id="deptTab-all" onclick="filterDept('all', this)">전체</button>
+        <button th:each="dept : ${sheet.departments}"
+                th:id="'deptTab-' + ${dept.deptId}"
+                th:text="${dept.deptName}"
+                th:onclick="'filterDept(' + ${dept.deptId} + ', this)'"
+                class="dept-tab">부서명</button>
+      </div>
+      <div class="ms-auto-gap">
+        <button class="btn btn-sm btn-outline-secondary" style="font-size:.73rem;"
+                onclick="toggleStatusPanel()">
+          <i class="bi bi-graph-up"></i> 현황보기
+        </button>
+        <input type="text" class="form-control form-control-sm" style="width:160px;font-size:.73rem;"
+               placeholder="지표명 검색..." oninput="filterTable(this.value)" id="searchInput"/>
+      </div>
+    </div>
+
+    <!-- Dept Status Cards (collapsible panel) -->
+    <div id="statusPanel" class="detail-panel" th:if="${sheet != null and sheet.departments != null}">
+      <h6><i class="bi bi-grid-3x3-gap me-1"></i>부서별 입력 현황</h6>
+      <div class="dept-status-grid">
+        <div th:each="dept, deptStat : ${sheet.departments}"
+             class="dept-status-card"
+             th:id="'statusCard-' + ${dept.deptId}"
+             th:onclick="'filterDept(' + ${dept.deptId} + ', document.getElementById(\'deptTab-\' + ' + ${dept.deptId} + '))'">
+          <div class="d-name" th:text="${dept.deptName}">부서명</div>
+          <div class="d-progress">
+            <div class="progress-sm">
+              <div class="bar" style="width:0%" th:id="'bar-' + ${dept.deptId}"></div>
+            </div>
+          </div>
+          <div class="d-counts">
+            <span th:id="'cnt-' + ${dept.deptId}" style="color:#64748b">계산중...</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Indicator Grid Table -->
+    <div class="table-wrapper" th:if="${sheet != null and sheet.rows != null}">
+      <div class="table-scroll">
+        <table class="ind-table" id="indicatorTable">
+          <thead>
+            <tr>
+              <th class="col-no sticky-0" rowspan="1">#</th>
+              <th class="col-major sticky-1">대구분</th>
+              <th class="col-mid sticky-2">중구분</th>
+              <th class="col-minor sticky-3">지표명 (소분류)</th>
+              <th class="col-unit sticky-4">단위</th>
+              <!-- Dept columns -->
+              <th class="col-val" th:each="dept : ${sheet.departments}"
+                  th:text="${dept.deptName}"
+                  th:data-dept-id="${dept.deptId}">부서</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr th:each="row, rowStat : ${sheet.rows}"
+                th:data-major="${row.majorCategory}"
+                th:data-minor="${row.minorCategory}"
+                th:data-cat1="${row.majorCategory}"
+                th:data-cat2="${row.midCategory}"
+                th:data-cat3="${row.midCategory}"
+                th:data-cat4="${row.minorCategory}"
+                th:data-dept="${#lists.isEmpty(row.values) ? '' : row.values[0].deptName}"
+                th:classappend="${category == 'E' ? 'row-group-e' : (category == 'S' ? 'row-group-s' : 'row-group-g')}">
+
+              <td class="col-no sticky-0" th:text="${rowStat.index + 1}"
+                  style="color:#94a3b8;font-size:.7rem;text-align:center;">1</td>
+
+              <td class="col-major sticky-1 cell-major"
+                  th:text="${row.majorCategory}">대구분</td>
+
+              <td class="col-mid sticky-2 cell-mid"
+                  th:text="${row.midCategory}">중구분</td>
+
+              <td class="col-minor sticky-3 cell-minor"
+                  th:text="${row.minorCategory}">지표명</td>
+
+              <td class="col-unit sticky-4"
+                  th:text="${row.unit}">단위</td>
+
+              <!-- Value cells per department -->
+              <td th:each="val, vStat : ${row.values}"
+                  th:data-dept-id="${sheet.departments[vStat.index].deptId}"
+                  th:classappend="${val != null and val.confirmedYn ? ' confirmed' : (val != null and val.indicatorValue != null ? ' has-value' : ' empty')}"
+                  class="val-cell col-val">
+                <input type="number" step="any"
+                       th:id="'input-' + ${row.indicatorId} + '-' + ${sheet.departments[vStat.index].deptId}"
+                       th:data-indicator-id="${row.indicatorId}"
+                       th:data-dept-id="${sheet.departments[vStat.index].deptId}"
+                       th:data-value-id="${val != null ? val.valueId : ''}"
+                       th:value="${val != null and val.indicatorValue != null ? val.indicatorValue : ''}"
+                       th:readonly="${val != null and val.confirmedYn}"
+                       th:placeholder="${val != null and val.confirmedYn ? '확정' : '입력'}"
+                       onchange="markDirty(this)"
+                       th:title="${row.minorCategory + ' / ' + (val != null ? val.deptName : '')}"/>
+                <span class="status-dot"
+                      th:classappend="${val != null ? (val.inputStatus == 'CONFIRMED' ? ' dot-cfm' : (val.inputStatus == 'SUBMITTED' ? ' dot-sub' : (val.inputStatus == 'IN_PROGRESS' ? ' dot-inp' : ' dot-ns'))) : ' dot-ns'}"></span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Empty state -->
+    <div th:if="${sheet == null or sheet.rows == null or #lists.isEmpty(sheet.rows)}"
+         class="text-center py-5 text-muted">
+      <i class="bi bi-inbox display-4 d-block mb-3" style="color:#cbd5e1;"></i>
+      <p style="font-size:.9rem;">데이터가 없습니다. 지표 마스터를 먼저 등록하세요.</p>
+      <a th:href="@{/esgindicator-api/ui/indicators(category=${category})}"
+         class="btn btn-outline-primary btn-sm">지표 마스터 관리</a>
+    </div>
+
+    <!-- Department management page -->
+    <div th:if="${departments != null}" class="card border-0 shadow-sm">
+      <div class="card-header bg-white fw-bold py-2">
+        <i class="bi bi-building me-2"></i>부서 관리
+        <button class="btn btn-primary btn-sm ms-auto float-end" onclick="showDeptForm()">
+          <i class="bi bi-plus-lg"></i> 부서 추가
+        </button>
+      </div>
+      <div class="card-body p-0">
+        <table class="table table-hover mb-0 align-middle" style="font-size:.82rem;">
+          <thead class="table-light">
+          <tr>
+            <th>ID</th><th>코드</th><th>부서명</th><th>정렬</th><th>사용여부</th><th>관리</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr th:each="d : ${departments}">
+            <td th:text="${d.deptId}">1</td>
+            <td><span class="badge bg-secondary" th:text="${d.deptCode}">DEPT001</span></td>
+            <td th:text="${d.deptName}">부서명</td>
+            <td th:text="${d.sortOrder}">1</td>
+            <td>
+              <span class="sbadge" th:classappend="${d.useYn ? ' sbadge-cfm' : ' sbadge-ns'}"
+                    th:text="${d.useYn ? '활성' : '비활성'}">활성</span>
+            </td>
+            <td>
+              <button class="btn btn-xs btn-outline-primary"
+                      th:onclick="'editDept(' + ${d.deptId} + ')'">수정</button>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Indicator master page -->
+    <div th:if="${indicators != null}" class="card border-0 shadow-sm">
+      <div class="card-header bg-white fw-bold py-2">
+        <i class="bi bi-list-check me-2"></i>지표 마스터 (<span th:text="${categoryName}">환경</span>)
+      </div>
+      <div class="card-body p-0">
+        <div style="overflow-x:auto;max-height:calc(100vh - 220px);overflow-y:auto;">
+        <table class="table table-hover table-sm mb-0" style="font-size:.78rem;">
+          <thead class="table-dark sticky-top">
+          <tr>
+            <th style="width:45px">ID</th>
+            <th style="width:55px">구분</th>
+            <th>담당부서</th>
+            <th>대구분</th>
+            <th>중구분</th>
+            <th>지표명</th>
+            <th>단위</th>
+            <th style="width:50px">순서</th>
+            <th style="width:55px">사용</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr th:each="ind : ${indicators}">
+            <td th:text="${ind.indicatorId}" style="color:#64748b;">1</td>
+            <td><span class="sbadge"
+                      th:classappend="${ind.esgCategory == 'E' ? ' sbadge-cfm' : (ind.esgCategory == 'S' ? ' sbadge-sub' : ' sbadge-inp')}"
+                      th:text="${ind.esgCategory}">E</span></td>
+            <td th:text="${ind.deptName}">환경에너지팀</td>
+            <td th:text="${ind.majorCategory}">온실가스</td>
+            <td th:text="${ind.midCategory}">직접배출</td>
+            <td class="fw-semibold" th:text="${ind.minorCategory}">지표명</td>
+            <td style="color:#64748b;" th:text="${ind.unit}">tCO2eq</td>
+            <td th:text="${ind.sortOrder}">1</td>
+            <td><span class="sbadge" th:classappend="${ind.useYn ? ' sbadge-cfm' : ' sbadge-ns'}"
+                      th:text="${ind.useYn ? '활성' : '비활성'}">활성</span></td>
+          </tr>
+          </tbody>
+        </table>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /page-body -->
+</div><!-- /main-content -->
+
+<!-- ══ Upload Modal ═══════════════════════════════════════════════════════ -->
+<div class="modal fade" id="uploadModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header py-2">
+        <h6 class="modal-title"><i class="bi bi-upload me-2"></i>Excel 일괄 업로드</h6>
+        <button type="button" class="btn-close btn-sm" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body" style="font-size:.83rem;">
+        <div class="mb-3">
+          <label class="form-label fw-semibold">부서 선택</label>
+          <select id="uploadDeptId" class="form-select form-select-sm">
+            <option value="">-- 부서 선택 --</option>
+            <option th:each="dept : ${sheet?.departments}"
+                    th:value="${dept.deptId}"
+                    th:text="${dept.deptName}">부서명</option>
+          </select>
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Excel 파일</label>
+          <input type="file" class="form-control form-control-sm" id="uploadFile" accept=".xlsx,.xls"/>
+        </div>
+        <div class="alert alert-info py-2" style="font-size:.75rem;">
+          <i class="bi bi-info-circle me-1"></i>
+          양식 다운로드 후 작성한 파일을 업로드하세요. (A열=지표ID, F열=입력값, G열=비고)
+        </div>
+      </div>
+      <div class="modal-footer py-2">
+        <button class="btn btn-sm btn-secondary" data-bs-dismiss="modal">취소</button>
+        <button class="btn btn-sm btn-primary" onclick="doUpload()">
+          <i class="bi bi-upload me-1"></i>업로드
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script th:inline="javascript">
+/*<![CDATA[*/
+const YEAR      = /*[[${year}]]*/ 2024;
+const CATEGORY  = /*[[${category}]]*/ 'E';
+const BASE_URL  = '/esgindicator-api';
+let   dirtySet  = new Set();
+let   currentDeptFilter = 'all';
+
+// ── Year Change ────────────────────────────────────────────────────────────
+function changeYear(val) {
+  window.location.href = `${BASE_URL}/ui?year=${val}&category=${CATEGORY}`;
+}
+
+// ── Dept Filter ────────────────────────────────────────────────────────────
+function filterDept(deptId, btn) {
+  currentDeptFilter = deptId;
+  // Update tab highlight
+  document.querySelectorAll('.dept-tab').forEach(t => t.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+
+  // Show/hide columns
+  const table = document.getElementById('indicatorTable');
+  if (!table) return;
+  const headers = table.querySelectorAll('thead th[data-dept-id]');
+  headers.forEach(th => {
+    const did = th.dataset.deptId;
+    const show = deptId === 'all' || did == deptId;
+    th.style.display = show ? '' : 'none';
+  });
+  table.querySelectorAll('tbody td[data-dept-id]').forEach(td => {
+    const did = td.dataset.deptId;
+    const show = deptId === 'all' || did == deptId;
+    td.style.display = show ? '' : 'none';
+  });
+
+  // Update status card highlight
+  document.querySelectorAll('.dept-status-card').forEach(c => c.classList.remove('selected'));
+  if (deptId !== 'all') {
+    const card = document.getElementById('statusCard-' + deptId);
+    if (card) card.classList.add('selected');
+  }
+}
+
+// ── Table Search ──────────────────────────────────────────────────────────
+function filterTable(term) {
+  const lower = term.toLowerCase();
+  document.querySelectorAll('#indicatorTable tbody tr').forEach(tr => {
+    const major = (tr.dataset.major || '').toLowerCase();
+    const minor = (tr.dataset.minor || '').toLowerCase();
+    tr.style.display = (!term || major.includes(lower) || minor.includes(lower)) ? '' : 'none';
+  });
+}
+
+// ── Dirty Tracking ────────────────────────────────────────────────────────
+function markDirty(input) {
+  const indicatorId = input.dataset.indicatorId;
+  const deptId      = input.dataset.deptId;
+  dirtySet.add(`${indicatorId}:${deptId}`);
+  // Visual feedback
+  input.parentElement.style.background = '#fffde7';
+}
+
+// ── Save All ──────────────────────────────────────────────────────────────
+async function saveAll() {
+  if (dirtySet.size === 0) {
+    showToast('변경된 데이터가 없습니다.', 'info');
+    return;
+  }
+  showLoading(true);
+
+  // Group by dept
+  const byDept = {};
+  dirtySet.forEach(key => {
+    const [indId, deptId] = key.split(':');
+    if (!byDept[deptId]) byDept[deptId] = [];
+    const input = document.querySelector(`input[data-indicator-id="${indId}"][data-dept-id="${deptId}"]`);
+    if (input) byDept[deptId].push({ indicatorId: Number(indId), value: input.value });
+  });
+
+  let savedTotal = 0, errCount = 0;
+  for (const [deptId, items] of Object.entries(byDept)) {
+    const body = {
+      deptId: Number(deptId),
+      baseYear: YEAR,
+      items: items.map(it => ({
+        indicatorId: it.indicatorId,
+        indicatorValue: it.value === '' ? null : Number(it.value),
+        formulaRemark: null
+      }))
+    };
+    try {
+      const resp = await fetch(`${BASE_URL}/values/bulk`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+        body: JSON.stringify(body)
+      });
+      const json = await resp.json();
+      if (json.success) {
+        savedTotal += json.data?.length || 0;
+        items.forEach(it => {
+          const inp = document.querySelector(`input[data-indicator-id="${it.indicatorId}"][data-dept-id="${deptId}"]`);
+          if (inp) inp.parentElement.style.background = '';
+        });
+      } else {
+        errCount++;
+      }
+    } catch(e) {
+      errCount++;
+    }
+  }
+
+  dirtySet.clear();
+  showLoading(false);
+  if (errCount > 0) {
+    showToast(`${savedTotal}건 저장, ${errCount}건 오류`, 'error');
+  } else {
+    showToast(`${savedTotal}건이 저장되었습니다.`, 'success');
+    updateDeptStatusCards();
+  }
+}
+
+// ── Submit ────────────────────────────────────────────────────────────────
+async function submitDeptValues() {
+  if (currentDeptFilter === 'all') {
+    showToast('부서를 먼저 선택하세요.', 'info');
+    return;
+  }
+  if (!confirm('현재 부서의 모든 입력값을 제출하시겠습니까?')) return;
+  showLoading(true);
+
+  // Find all value IDs for current dept
+  const inputs = document.querySelectorAll(`input[data-dept-id="${currentDeptFilter}"]`);
+  let submitted = 0;
+  for (const inp of inputs) {
+    const valueId = inp.dataset.valueId;
+    if (!valueId || !inp.value) continue;
+    try {
+      const resp = await fetch(`${BASE_URL}/values/${valueId}/submit`, {
+        method: 'POST',
+        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+      });
+      const json = await resp.json();
+      if (json.success) submitted++;
+    } catch(e) {}
+  }
+
+  showLoading(false);
+  showToast(`${submitted}건이 제출되었습니다.`, 'success');
+  setTimeout(() => location.reload(), 1200);
+}
+
+// ── Export Fact Book ──────────────────────────────────────────────────────
+function exportFactBook(e) {
+  e && e.preventDefault();
+  showToast('Fact Book Excel 생성 중...', 'info');
+  window.open(`${BASE_URL}/values/export/factbook?year=${YEAR}`, '_blank');
+}
+
+// ── Download Template ─────────────────────────────────────────────────────
+function downloadTemplate() {
+  if (currentDeptFilter === 'all') {
+    showToast('부서를 선택한 후 양식을 다운로드하세요.', 'info');
+    return;
+  }
+  window.open(`${BASE_URL}/values/export/template?year=${YEAR}&category=${CATEGORY}&deptId=${currentDeptFilter}`, '_blank');
+}
+
+// ── Upload Modal ──────────────────────────────────────────────────────────
+function showUploadModal(e) {
+  e && e.preventDefault();
+  new bootstrap.Modal(document.getElementById('uploadModal')).show();
+}
+
+async function doUpload() {
+  const deptId = document.getElementById('uploadDeptId').value;
+  const file   = document.getElementById('uploadFile').files[0];
+  if (!deptId) { showToast('부서를 선택하세요.', 'error'); return; }
+  if (!file)   { showToast('파일을 선택하세요.', 'error'); return; }
+
+  showLoading(true);
+  const form = new FormData();
+  form.append('file', file);
+
+  try {
+    const resp = await fetch(`${BASE_URL}/values/upload?year=${YEAR}&deptId=${deptId}`, {
+      method: 'POST', body: form,
+      headers: { 'X-Requested-With': 'XMLHttpRequest' }
+    });
+    const json = await resp.json();
+    showLoading(false);
+    if (json.success) {
+      showToast(json.data || '업로드 완료', 'success');
+      bootstrap.Modal.getInstance(document.getElementById('uploadModal'))?.hide();
+      setTimeout(() => location.reload(), 1200);
+    } else {
+      showToast('업로드 실패: ' + json.message, 'error');
+    }
+  } catch(e) {
+    showLoading(false);
+    showToast('업로드 중 오류가 발생했습니다.', 'error');
+  }
+}
+
+// ── Status Panel ──────────────────────────────────────────────────────────
+function toggleStatusPanel() {
+  const panel = document.getElementById('statusPanel');
+  if (panel) panel.classList.toggle('show');
+}
+
+// ── Dept Status Cards update ──────────────────────────────────────────────
+function updateDeptStatusCards() {
+  // Calculate completion per dept from current inputs
+  const deptStats = {};
+  document.querySelectorAll('#indicatorTable tbody tr').forEach(tr => {
+    tr.querySelectorAll('td.val-cell[data-dept-id]').forEach(td => {
+      const dId = td.dataset.deptId;
+      if (!deptStats[dId]) deptStats[dId] = { total: 0, filled: 0 };
+      deptStats[dId].total++;
+      const inp = td.querySelector('input');
+      if (inp && inp.value.trim() !== '') deptStats[dId].filled++;
+    });
+  });
+
+  for (const [dId, stats] of Object.entries(deptStats)) {
+    const bar = document.getElementById('bar-' + dId);
+    const cnt = document.getElementById('cnt-' + dId);
+    if (bar) bar.style.width = stats.total > 0 ? Math.round(stats.filled * 100 / stats.total) + '%' : '0%';
+    if (cnt) cnt.textContent = `${stats.filled}/${stats.total} (${stats.total > 0 ? Math.round(stats.filled * 100 / stats.total) : 0}%)`;
+  }
+}
+
+// ── Toast ─────────────────────────────────────────────────────────────────
+function showToast(msg, type = 'success') {
+  const container = document.getElementById('toast-container');
+  const el = document.createElement('div');
+  el.className = `toast-msg ${type}`;
+  el.textContent = msg;
+  container.appendChild(el);
+  setTimeout(() => el.remove(), 3000);
+}
+
+// ── Loading ───────────────────────────────────────────────────────────────
+function showLoading(show) {
+  const overlay = document.getElementById('loadingOverlay');
+  if (overlay) overlay.style.display = show ? 'flex' : 'none';
+}
+
+// ══════════════════════════════════════════════════════════════════════════
+//  CATEGORY FILTER PANEL (다중 선택 필터 + 강조/흐리게)
+// ══════════════════════════════════════════════════════════════════════════
+const _fState = { dept: new Set(), cat1: new Set(), cat2: new Set(), cat3: new Set(), cat4: new Set() };
+
+function _buildFilterChips() {
+  const tbl = document.getElementById('indicatorTable');
+  if (!tbl) return;
+
+  // Collect unique values from table rows
+  const vals = { dept: new Set(), cat1: new Set(), cat2: new Set(), cat3: new Set(), cat4: new Set() };
+  tbl.querySelectorAll('tbody tr').forEach(tr => {
+    const d = tr.dataset.dept || '';
+    const c1 = tr.dataset.cat1 || '';
+    const c2 = tr.dataset.major || '';
+    const c3 = tr.dataset.cat3 || '';
+    const c4 = tr.dataset.minor || '';
+    if (d)  vals.dept.add(d);
+    if (c1) vals.cat1.add(c1);
+    if (c2) vals.cat2.add(c2);
+    if (c3) vals.cat3.add(c3);
+    if (c4) vals.cat4.add(c4);
+  });
+
+  _renderChips('fchips-dept', [...vals.dept].sort((a,b) => a.localeCompare(b,'ko')), 'dept');
+  _renderChips('fchips-cat1', [...vals.cat1].sort((a,b) => a.localeCompare(b,'ko')), 'cat1');
+  _renderChips('fchips-cat2', [...vals.cat2].sort((a,b) => a.localeCompare(b,'ko')), 'cat2');
+  _renderChips('fchips-cat3', [...vals.cat3].sort((a,b) => a.localeCompare(b,'ko')), 'cat3');
+  _renderChips('fchips-cat4', [...vals.cat4].sort((a,b) => a.localeCompare(b,'ko')), 'cat4');
+}
+
+function _renderChips(containerId, values, key) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  el.innerHTML = '';
+  values.forEach(v => {
+    const b = document.createElement('button');
+    b.className = 'fchip';
+    b.dataset.key = key;
+    b.dataset.v = v;
+    b.innerHTML = `<i class="bi bi-check2 fchip-ck"></i>${v.replace(/&/g,'&amp;').replace(/</g,'&lt;')}`;
+    b.onclick = () => {
+      if (_fState[key].has(v)) { _fState[key].delete(v); b.classList.remove('on'); }
+      else { _fState[key].add(v); b.classList.add('on'); }
+      _applyFilters();
+    };
+    el.appendChild(b);
+  });
+}
+
+function _applyFilters() {
+  const tbl = document.getElementById('indicatorTable');
+  if (!tbl) return;
+  const has = Object.values(_fState).some(s => s.size > 0);
+  let cnt = 0;
+
+  tbl.querySelectorAll('tbody tr').forEach(tr => {
+    if (!has) { tr.classList.remove('row-hl','row-dim'); return; }
+    const dept = tr.dataset.dept || '';
+    const c1   = tr.dataset.cat1 || '';
+    const c2   = tr.dataset.major || '';
+    const c3   = tr.dataset.cat3 || '';
+    const c4   = tr.dataset.minor || '';
+    const ok   = (!_fState.dept.size || _fState.dept.has(dept))
+              && (!_fState.cat1.size || _fState.cat1.has(c1))
+              && (!_fState.cat2.size || _fState.cat2.has(c2))
+              && (!_fState.cat3.size || _fState.cat3.has(c3))
+              && (!_fState.cat4.size || _fState.cat4.has(c4));
+    if (ok) { tr.classList.add('row-hl'); tr.classList.remove('row-dim'); cnt++; }
+    else     { tr.classList.add('row-dim'); tr.classList.remove('row-hl'); }
+  });
+
+  const total = Object.values(_fState).reduce((s,f) => s + f.size, 0);
+  const cntEl = document.getElementById('filterActiveCnt');
+  if (cntEl) { cntEl.textContent = total; cntEl.style.display = total ? 'inline' : 'none'; }
+}
+
+function clearAllFilters() {
+  Object.values(_fState).forEach(s => s.clear());
+  document.querySelectorAll('.fchip.on').forEach(c => c.classList.remove('on'));
+  _applyFilters();
+}
+
+// ── Init ─────────────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  updateDeptStatusCards();
+  _buildFilterChips();
+
+  // Keyboard shortcut: Ctrl+S = Save
+  document.addEventListener('keydown', e => {
+    if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+      e.preventDefault();
+      saveAll();
+    }
+  });
+
+  // Tab key navigation between inputs
+  document.querySelectorAll('.val-cell input').forEach((inp, idx, arr) => {
+    inp.addEventListener('keydown', e => {
+      if (e.key === 'Tab' && !e.shiftKey) {
+        // handled by browser
+      } else if (e.key === 'Enter') {
+        e.preventDefault();
+        if (arr[idx + 1]) arr[idx + 1].focus();
+      }
+    });
+  });
+});
+/*]]>*/
+</script>
+</body>
+</html>

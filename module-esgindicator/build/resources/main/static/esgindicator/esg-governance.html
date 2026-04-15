@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>ESG 거버넌스지표 — 깨끗한나라</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" crossorigin="anonymous"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --sw:208px;
+  --bg:#eef1f6;
+  --card:#fff;
+  --border:#dde2ea;
+  --border2:#c5cdd8;
+  --sb:#0d1b2e;
+  --sb2:#122030;
+  --accent:#1a6dc5;
+  --accent-lt:#e8f2ff;
+  --eg:#15803d;
+  --eg-lt:#f0fdf4;
+  /* Governance accent — purple */
+  --gc:#7c3aed;
+  --gc-lt:#f5f3ff;
+  --txt:#1c2a3a;
+  --txt2:#3a4f68;
+  --muted:#607a96;
+  --light:#94a3b8;
+  /* revenue */
+  --rh:#0d2140;
+  --rh2:#122850;
+  --rh3:#1a3360;
+  /* table header */
+  --th:#1a2d46;
+  --th-cat:#1e3350;
+  --th-yr:#1c3258;
+  --th-yr-cur:#1d3e70;
+  /* group merge visual */
+  --grp-border:#3b6fc4;
+  /* filter highlight */
+  --hl:#fff8e1;
+  --hl-bd:#f59e0b;
+  --dim:.2;
+  /* edit panel */
+  --ep-w:420px;
+}
+body{font-family:'Pretendard','Noto Sans KR',-apple-system,sans-serif;font-size:13px;background:var(--bg);color:var(--txt)}
+
+/* ══ SIDEBAR ══ */
+#sb{
+  width:var(--sw);min-height:100vh;position:fixed;top:0;left:0;z-index:400;
+  background:linear-gradient(180deg,var(--sb) 0%,var(--sb2) 100%);
+  display:flex;flex-direction:column;
+  box-shadow:2px 0 16px rgba(0,0,0,.28);
+}
+.sb-brand{padding:13px 13px 11px;display:flex;align-items:center;gap:9px;border-bottom:1px solid rgba(255,255,255,.06)}
+.sb-icon{width:30px;height:30px;border-radius:7px;background:var(--gc);display:flex;align-items:center;justify-content:center;font-size:15px;color:#fff;flex-shrink:0}
+.sb-ttl{font-size:11.5px;font-weight:700;color:#f1f5f9;line-height:1.35}
+.sb-sub{font-size:9.5px;color:#64748b;margin-top:1px}
+.sb-grp{font-size:9px;text-transform:uppercase;letter-spacing:.1em;color:#475569;padding:11px 13px 4px;font-weight:700}
+.sb-a{display:flex;align-items:center;gap:8px;padding:7px 10px;margin:1px 6px;border-radius:5px;color:#94a3b8;font-size:12px;cursor:pointer;text-decoration:none;transition:all .12s}
+.sb-a:hover{background:rgba(255,255,255,.07);color:#e2e8f0}
+.sb-a.on{background:rgba(124,58,237,.25);color:#c4b5fd;font-weight:600}
+.sb-a.on i{color:#c4b5fd}
+.sb-a i{font-size:12px;flex-shrink:0;color:#64748b;width:15px;text-align:center}
+.sb-n{margin-left:auto;background:rgba(255,255,255,.12);color:#e2e8f0;font-size:9.5px;font-weight:700;padding:1px 6px;border-radius:9px}
+.sb-div{height:1px;background:rgba(255,255,255,.05);margin:5px 12px}
+
+/* ══ MAIN ══ */
+#main{margin-left:var(--sw);display:flex;flex-direction:column;min-height:100vh;transition:margin-right .25s}
+#main.panel-open{margin-right:var(--ep-w)}
+
+/* ══ TOP NAV ══ */
+#topnav{
+  height:46px;background:var(--card);border-bottom:1px solid var(--border);
+  display:flex;align-items:center;padding:0 16px;gap:9px;
+  position:sticky;top:0;z-index:300;box-shadow:0 1px 3px rgba(0,0,0,.05);
+}
+.tnav-title{font-size:13px;font-weight:700;color:var(--txt);display:flex;align-items:center;gap:7px}
+.badge-g{background:#7c3aed;color:#fff;font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;letter-spacing:.04em}
+.tnav-sep{width:1px;height:16px;background:var(--border);margin:0 2px}
+.tnav-space{flex:1}
+.btn{display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:5px;font-size:12px;font-weight:600;border:1px solid transparent;cursor:pointer;transition:all .12s;white-space:nowrap}
+.btn-outline{background:#fff;border-color:var(--border2);color:var(--txt2)}
+.btn-outline:hover{background:#f1f5f9;border-color:#b0bac8}
+.btn-primary{background:var(--gc);border-color:var(--gc);color:#fff}
+.btn-primary:hover{background:#6d28d9}
+.btn i{font-size:12px}
+
+/* ══ FILTER PANEL ══ */
+#filter-panel{
+  background:#f4f7fb;border:1px solid #d4dce8;border-radius:8px;
+  margin:10px 16px 0;padding:12px 16px 8px;
+  display:flex;flex-wrap:wrap;align-items:flex-start;gap:0;
+  box-shadow:0 1px 4px rgba(0,0,0,.04);
+}
+.fg{display:flex;flex-direction:column;gap:8px;padding:8px 18px 8px 0;}
+.fg:first-child{padding-left:0;}
+.fg-label{font-size:13.5px;font-weight:700;color:var(--txt);letter-spacing:.01em;white-space:nowrap;margin-bottom:6px;padding-bottom:4px;border-bottom:2px solid #ede9fe}
+.fg-chips{display:flex;flex-wrap:wrap;gap:3px}
+.fg-dept{min-width:200px;max-width:240px}
+.fg-cat2{min-width:400px;flex:1}
+.fg-cat3{min-width:280px;flex:2}
+/* search box */
+.f-search-wrap{width:100%;padding:6px 0 2px;border-top:1px solid var(--border);margin-top:4px}
+.f-search{width:100%;max-width:420px;padding:5px 11px;font-size:12px;border:1px solid #c8d3e0;border-radius:6px;outline:none;background:#f8fafc;color:var(--txt);transition:border .13s}
+.f-search:focus{border-color:#7c3aed;background:#fff}
+.chip{
+  display:inline-flex;align-items:center;gap:3px;
+  padding:3px 9px;border-radius:20px;font-size:11px;font-weight:500;
+  border:1px solid #d4dce8;background:#edf1f7;color:#3a4f68;
+  cursor:pointer;transition:all .13s;user-select:none;
+}
+.chip:hover{border-color:#8fa8c0;background:#dde5f0}
+.chip.active.c-dept{background:#7c3aed;border-color:#7c3aed;color:#fff}
+.chip.active.c-cat2{background:#0369a1;border-color:#0369a1;color:#fff}
+.chip.active.c-cat3{background:#0f766e;border-color:#0f766e;color:#fff}
+.f-sep{width:1px;min-height:40px;background:var(--border);align-self:stretch;margin:4px 4px 4px 0;}
+.f-stats{width:100%;padding:6px 0 2px;display:flex;align-items:center;gap:10px;border-top:1px solid var(--border);margin-top:6px}
+.f-stats strong{color:var(--txt);font-weight:700}
+.f-stats span{font-size:11px;color:var(--muted)}
+.f-clear{font-size:11px;color:var(--accent);cursor:pointer;font-weight:600;display:flex;align-items:center;gap:3px;padding:3px 8px;border-radius:4px;border:1px solid var(--accent-lt);background:var(--accent-lt);transition:all .12s}
+.f-clear:hover{background:#d1e8ff}
+
+/* ══ TABLE AREA ══ */
+#tbl-area{flex:1;overflow:hidden;display:flex;flex-direction:column;padding:10px 16px 14px}
+.tbl-bar{display:flex;align-items:center;gap:8px;margin-bottom:7px}
+.tbl-info{font-size:11.5px;color:var(--muted);display:flex;align-items:center;gap:5px}
+.tbl-info strong{color:var(--txt);font-weight:700}
+.tbl-wrap{
+  flex:1;border:1px solid var(--border);border-radius:7px;
+  overflow:auto;background:var(--card);
+  box-shadow:0 1px 5px rgba(0,0,0,.04);
+  max-height:calc(100vh - 46px - 88px - 42px);
+}
+.tbl-wrap::-webkit-scrollbar{width:6px;height:6px}
+.tbl-wrap::-webkit-scrollbar-track{background:#f1f5f9}
+.tbl-wrap::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:3px}
+.tbl-wrap::-webkit-scrollbar-thumb:hover{background:#94a3b8}
+
+/* ══ MAIN TABLE ══ */
+#mtbl{border-collapse:collapse;min-width:1050px;width:100%;font-size:12px}
+#mtbl thead th{
+  position:sticky;top:0;z-index:10;
+  background:var(--th);color:rgba(255,255,255,.85);
+  font-size:10px;font-weight:700;letter-spacing:.03em;
+  border-bottom:2px solid rgba(255,255,255,.1);
+  white-space:nowrap;padding:0;
+}
+.col-no   {width:36px;min-width:36px}
+.col-dept {width:90px;min-width:90px}
+.col-cat2 {width:130px;min-width:130px}
+.col-cat3 {width:130px;min-width:130px}
+.col-cat4 {width:210px;min-width:210px}
+.col-unit {width:72px;min-width:72px}
+.col-yr   {width:88px;min-width:88px}
+.col-no  {position:sticky;left:0;z-index:12}
+.col-dept{position:sticky;left:36px;z-index:12}
+.col-cat2{position:sticky;left:126px;z-index:12}
+thead .col-no  {z-index:22}
+thead .col-dept{z-index:22}
+thead .col-cat2{z-index:22}
+
+/* year header — clickable */
+th.col-yr .thi{cursor:pointer;user-select:none;transition:background .13s}
+th.col-yr .thi:hover{background:#2a4870}
+th.col-yr .thi.active-yr{background:#1d5ba8 !important;color:#fff}
+th.col-yr .thi.active-yr::after{content:'✎';font-size:8px;margin-left:4px;opacity:.7}
+
+.thi{padding:8px 9px;border-right:1px solid rgba(255,255,255,.07);display:flex;align-items:center;height:100%}
+.thi.c{justify-content:center}
+.thi.r{justify-content:flex-end}
+.thi.yr{justify-content:flex-end;background:var(--th-yr)}
+.thi.yr.cur{background:var(--th-yr-cur)}
+thead .col-no   .thi{background:var(--th-cat)}
+thead .col-dept .thi{background:var(--th-cat)}
+thead .col-cat2 .thi{background:var(--th-cat)}
+thead .col-cat3 .thi{background:var(--th-cat)}
+thead .col-cat4 .thi{background:var(--th-cat)}
+thead .col-unit .thi{background:var(--th-cat)}
+
+/* tbody */
+#mtbl tbody tr{transition:opacity .16s,background .13s}
+#mtbl tbody tr:hover{background:#f6f9fd}
+#mtbl tbody td{border-bottom:1px solid var(--border);vertical-align:top;padding:0}
+#mtbl tbody tr.grp-start-dept td{border-top:2px solid #b0bfce}
+#mtbl tbody tr.grp-start-cat2 td{border-top:1px solid #dde6ef}
+
+/* sticky body cols bg */
+tbody .col-no  {background:#f7f9fb;border-right:1px solid var(--border2)}
+tbody .col-dept{background:#f7f9fb;border-right:1px solid var(--border2)}
+tbody .col-cat2{background:#f8fafc;border-right:1px solid var(--border2)}
+
+/* editing highlight */
+td.col-yr-editing{background:#eef6ff !important}
+td.col-yr-editing .tdi{background:#eef6ff !important}
+
+.tdi{padding:6px 9px;border-right:1px solid var(--border);display:flex;align-items:flex-start;min-height:32px}
+.tdi.c{justify-content:center;align-items:center}
+.tdi.r{justify-content:flex-end;align-items:center;font-variant-numeric:tabular-nums;font-family:'JetBrains Mono',Consolas,monospace}
+
+/* content styles */
+.row-no{color:var(--light);font-size:10.5px;font-variant-numeric:tabular-nums}
+.dept-badge{display:inline-flex;align-items:center;font-size:10px;font-weight:600;padding:2px 7px;border-radius:3px;white-space:nowrap;line-height:1.5}
+.dept-자산관리파트{background:#f5f3ff;color:#6d28d9;border:1px solid #ddd6fe}
+.dept-HR팀{background:#eff6ff;color:#1e40af;border:1px solid #bfdbfe}
+.dept-진실경영팀{background:#fdf4ff;color:#7e22ce;border:1px solid #e9d5ff}
+.cat2-txt{font-size:11.5px;font-weight:700;color:var(--txt);line-height:1.4}
+.cat3-txt{font-size:11.5px;font-weight:600;color:var(--txt2);line-height:1.4}
+.cat4-txt{font-size:12px;color:var(--txt);line-height:1.4}
+.cat4-txt.ind1{padding-left:10px;color:#374151}
+.cat4-txt.ind2{padding-left:18px;color:#4b5563}
+.unit-txt{color:var(--muted);font-size:10.5px}
+.yr-val{font-size:11.5px;font-weight:500;color:var(--txt);font-variant-numeric:tabular-nums;font-family:'JetBrains Mono',Consolas,monospace}
+.yr-val.cur{color:#7c3aed;font-weight:700}
+.yr-val.null-v{color:#d1d5db;font-size:11px}
+.yr-val.str-v{color:#6b7280;font-size:11px;font-family:inherit;font-variant-numeric:normal;text-align:center}
+
+
+/* ── 필터 칩: 관련없는 칩 연하게 표시 (숨기지 않음) ── */
+.chip.dim{opacity:.35;border-color:#d4dce8}
+.chip.dim:hover{opacity:.7}
+
+/* ── 필터 강조 3단계 ── */
+/* 전체 조건 일치: 가장 진한 강조 (기존 row-hl 유지) */
+tr.row-hl-full{background:#fff8e1 !important}
+tr.row-hl-full td{border-bottom-color:#f0d060 !important}
+tr.row-hl-full .cat4-txt{font-weight:700;color:#78350f}
+tr.row-hl-full .yr-val{font-weight:700}
+tr.row-hl-full tbody .col-no,
+tr.row-hl-full tbody .col-dept,
+tr.row-hl-full tbody .col-cat2{background:#fff8e1 !important}
+tr.row-hl-full .tdi{background:#fff8e1}
+tr.row-hl-full td:first-child{box-shadow:inset 3px 0 0 #f59e0b}
+
+/* 부분 조건 일치: 중간 강조 */
+tr.row-hl-part{background:#f0f7ff !important}
+tr.row-hl-part td{border-bottom-color:#bfdbfe !important}
+tr.row-hl-part .cat4-txt{color:#1e40af}
+tr.row-hl-part tbody .col-no,
+tr.row-hl-part tbody .col-dept,
+tr.row-hl-part tbody .col-cat2{background:#f0f7ff !important}
+tr.row-hl-part .tdi{background:#f0f7ff}
+tr.row-hl-part td:first-child{box-shadow:inset 3px 0 0 #93c5fd}
+
+/* 관련없음: 흐리게 (기존 row-dim 유지) */
+tr.row-dim{opacity:var(--dim)}
+/* FILTER STATES */
+tr.row-dim{opacity:var(--dim)}
+tr.row-hl{background:var(--hl) !important}
+tr.row-hl td{border-bottom-color:#f0d060 !important}
+tr.row-hl .cat4-txt{font-weight:700;color:#78350f}
+tr.row-hl .yr-val{font-weight:700}
+tr.row-hl tbody .col-no,
+tr.row-hl tbody .col-dept,
+tr.row-hl tbody .col-cat2{background:var(--hl) !important}
+tr.row-hl .tdi{background:var(--hl)}
+tr.row-hl td:first-child{box-shadow:inset 3px 0 0 var(--hl-bd)}
+
+/* ══ 실적 수정 PANEL ══ */
+#edit-panel{
+  position:fixed;top:0;right:0;bottom:0;
+  width:var(--ep-w);z-index:500;
+  background:#fff;
+  border-left:2px solid #7c3aed;
+  box-shadow:-4px 0 24px rgba(0,0,0,.16);
+  display:flex;flex-direction:column;
+  transform:translateX(100%);
+  transition:transform .25s cubic-bezier(.4,0,.2,1);
+  overflow:hidden;
+}
+#edit-panel.open{transform:translateX(0)}
+.ep-hdr{
+  background:linear-gradient(135deg,#2e1065 0%,#5b21b6 100%);
+  padding:14px 16px 12px;
+  display:flex;align-items:center;gap:10px;
+  border-bottom:1px solid rgba(255,255,255,.1);
+  flex-shrink:0;
+}
+.ep-hdr-icon{width:32px;height:32px;border-radius:8px;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:15px;color:#c4b5fd;flex-shrink:0}
+.ep-hdr-info{flex:1;min-width:0}
+.ep-title{font-size:13px;font-weight:700;color:#f1f5f9;line-height:1.3}
+.ep-sub{font-size:10.5px;color:rgba(255,255,255,.45);margin-top:2px}
+.ep-close{width:28px;height:28px;border-radius:6px;background:rgba(255,255,255,.1);border:none;color:rgba(255,255,255,.7);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;transition:all .13s;flex-shrink:0}
+.ep-close:hover{background:rgba(255,255,255,.2);color:#fff}
+.ep-mode{display:inline-flex;align-items:center;gap:4px;font-size:9.5px;font-weight:700;padding:2px 8px;border-radius:12px;background:#6d28d9;color:#ddd6fe;border:1px solid rgba(196,181,253,.3);margin-top:4px;letter-spacing:.04em}
+.ep-body{flex:1;overflow-y:auto;padding:14px 16px}
+.ep-body::-webkit-scrollbar{width:4px}
+.ep-body::-webkit-scrollbar-thumb{background:#c5cdd8;border-radius:2px}
+.ep-yr-tabs{display:flex;gap:4px;margin-bottom:14px;flex-wrap:wrap}
+.ep-yr-tab{padding:4px 12px;border-radius:5px;border:1px solid var(--border2);font-size:11.5px;font-weight:600;cursor:pointer;background:#f8fafc;color:var(--txt2);transition:all .13s}
+.ep-yr-tab:hover{background:#f5f3ff;border-color:#c4b5fd;color:#7c3aed}
+.ep-yr-tab.active{background:#7c3aed;border-color:#7c3aed;color:#fff}
+.ep-card{border:1px solid var(--border);border-radius:8px;margin-bottom:8px;overflow:hidden;transition:box-shadow .13s}
+.ep-card:hover{box-shadow:0 2px 8px rgba(0,0,0,.07)}
+.ep-card-hdr{background:#f4f6fa;padding:7px 11px;display:flex;align-items:center;gap:7px;border-bottom:1px solid var(--border)}
+.ep-card-num{font-size:9.5px;color:var(--light);font-weight:600;min-width:18px}
+.ep-card-cat4{font-size:12px;font-weight:600;color:var(--txt);flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ep-card-unit{font-size:10px;color:var(--muted);white-space:nowrap}
+.ep-card-body{padding:9px 11px;display:flex;align-items:center;gap:8px}
+.ep-label{font-size:10.5px;color:var(--muted);min-width:56px}
+.ep-input{flex:1;padding:5px 8px;border-radius:5px;border:1.5px solid var(--border);font-size:13px;font-weight:500;color:var(--txt);font-family:'JetBrains Mono',Consolas,monospace;transition:border-color .13s;outline:none;background:#fff;text-align:right}
+.ep-input:focus{border-color:#7c3aed;box-shadow:0 0 0 3px rgba(124,58,237,.12)}
+.ep-input.changed{border-color:#f59e0b;background:#fffbf0}
+.ep-prev{font-size:11px;color:var(--muted);min-width:72px;text-align:right;font-family:'JetBrains Mono',Consolas,monospace}
+.ep-section{font-size:9.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;padding:4px 0 6px;margin-top:10px;border-bottom:1px solid var(--border);margin-bottom:8px;display:flex;align-items:center;gap:5px}
+.ep-footer{padding:12px 16px;border-top:1px solid var(--border);display:flex;align-items:center;gap:8px;flex-shrink:0;background:#f8fafc}
+.ep-info{flex:1;font-size:10.5px;color:var(--muted)}
+.ep-info strong{color:var(--txt)}
+.btn-save-panel{background:#15803d;border-color:#15803d;color:#fff;display:inline-flex;align-items:center;gap:5px;padding:7px 16px;border-radius:6px;font-size:12px;font-weight:700;border:1px solid transparent;cursor:pointer;transition:all .13s}
+.btn-save-panel:hover{background:#166534}
+.btn-cancel-panel{background:#fff;border:1px solid var(--border2);color:var(--txt2);display:inline-flex;align-items:center;gap:5px;padding:7px 14px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;transition:all .13s}
+.btn-cancel-panel:hover{background:#f1f5f9}
+#ep-overlay{display:none;position:fixed;inset:0;z-index:499;background:rgba(0,0,0,.08)}
+#ep-overlay.show{display:block}
+
+/* TOAST */
+#toast{position:fixed;bottom:20px;right:20px;background:#1e293b;color:#fff;padding:9px 16px;border-radius:7px;font-size:12.5px;font-weight:500;box-shadow:0 4px 18px rgba(0,0,0,.22);opacity:0;transform:translateY(8px);transition:all .2s;pointer-events:none;z-index:9999;display:flex;align-items:center;gap:8px}
+#toast.show{opacity:1;transform:translateY(0)}
+#toast.ok  .t-ic{color:#4ade80}
+#toast.err .t-ic{color:#f87171}
+
+@media(max-width:860px){#sb{display:none}#main{margin-left:0}}
+
+/* ══ 숫자 폰트 & 가독성 (요청 8) ══ */
+.yr-val, .rev-val, .ep-input, .ep-prev, .ep-auto-label,
+.tdi.r span, .tdi.c span.yr-val {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+  font-family: 'SF Mono','JetBrains Mono','Fira Mono',Consolas,'Courier New',monospace;
+  letter-spacing: -.01em;
+}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<nav id="sb">
+  <div class="sb-brand">
+    <div class="sb-icon"><i class="bi bi-building-fill-gear"></i></div>
+    <div>
+      <div class="sb-ttl">ESG 지표 관리</div>
+      <div class="sb-sub">깨끗한나라</div>
+    </div>
+  </div>
+  <div class="sb-grp">ESG 카테고리</div>
+  <a class="sb-a" href="esg-environment.html"><i class="bi bi-globe-americas"></i>환경 (Environment)<span class="sb-n">80</span></a>
+  <a class="sb-a" href="esg-social.html"><i class="bi bi-people"></i>사회 (Social)<span class="sb-n">83</span></a>
+  <a class="sb-a on" href="#"><i class="bi bi-building-fill-gear"></i>거버넌스<span class="sb-n">24</span></a>
+  <div class="sb-div"></div>
+  <div class="sb-grp">관리</div>
+  <a class="sb-a" href="#"><i class="bi bi-table"></i>지표 마스터</a>
+  <a class="sb-a" href="#"><i class="bi bi-people-fill"></i>부서 관리</a>
+  <a class="sb-a" href="#"><i class="bi bi-clock-history"></i>이력 조회</a>
+  <div class="sb-div"></div>
+  <div class="sb-grp">데이터</div>
+  <a class="sb-a" href="#" onclick="downloadCsv();return false"><i class="bi bi-file-earmark-excel"></i>Fact Sheet 내보내기</a>
+  <a class="sb-a" href="#"><i class="bi bi-upload"></i>데이터 업로드</a>
+</nav>
+
+<!-- MAIN -->
+<div id="main">
+
+  <!-- TOP NAV -->
+  <header id="topnav">
+    <div class="tnav-title"><span class="badge-g">G</span>거버넌스지표 현황</div>
+    <span class="tnav-sep"></span>
+    <span style="font-size:11.5px;color:var(--muted)">기준연도: <strong style="color:var(--txt)">2020 – 2025</strong></span>
+    <div class="tnav-space"></div>
+    <button class="btn btn-outline" onclick="downloadCsv()"><i class="bi bi-file-earmark-excel"></i>Excel 다운로드</button>
+    <button class="btn btn-primary" onclick="showToast('저장되었습니다.','ok')"><i class="bi bi-floppy-fill"></i>저장</button>
+  </header>
+
+  <!-- FILTER PANEL -->
+  <div id="filter-panel">
+    <div class="fg fg-dept">
+      <div class="fg-label">담당부서</div>
+      <div class="fg-chips" id="chips-dept"></div>
+    </div>
+    <div class="f-sep"></div>
+    <div class="fg fg-cat2">
+      <div class="fg-label">Category 1</div>
+      <div class="fg-chips" id="chips-cat2"></div>
+    </div>
+    <div class="f-sep"></div>
+    <div class="fg fg-cat3">
+      <div class="fg-label">Category 2</div>
+      <div class="fg-chips" id="chips-cat3"></div>
+    </div>
+    <div class="f-search-wrap">
+      <input type="text" class="f-search" id="f-search-input" placeholder="담당부서, 카테고리, 지표명 검색" oninput="applyFilter()">
+    </div>
+    <div class="f-stats">
+      <span><strong id="vis-cnt">24</strong> / 24개 표시</span>
+      <span class="f-clear" id="clear-btn" onclick="clearFilters()" style="display:none"><i class="bi bi-x-circle"></i>초기화</span>
+    </div>
+  </div>
+
+  <!-- TABLE AREA -->
+  <div id="tbl-area">
+    <div class="tbl-bar">
+      <div class="tbl-info"><i class="bi bi-table" style="color:#7c3aed"></i>&nbsp;거버넌스지표 <strong>24</strong>개 항목 · 연도별 값 (2020 – 2025) <span style="font-size:10px;color:var(--muted);margin-left:4px">· 연도 헤더 클릭 시 실적 수정</span></div>
+      <div style="flex:1"></div>
+      <button class="btn btn-outline" style="font-size:11px;padding:4px 10px" onclick="toggleCompact()"><i class="bi bi-layout-three-columns"></i>&nbsp;<span id="compact-lbl">컴팩트</span></button>
+    </div>
+    <div class="tbl-wrap" id="tbl-wrap">
+      <table id="mtbl">
+        <thead>
+          <tr>
+            <th class="col-no"><div class="thi c" style="font-size:9px">#</div></th>
+            <th class="col-dept"><div class="thi">담당부서</div></th>
+            <th class="col-cat2"><div class="thi">Category 2</div></th>
+            <th class="col-cat3"><div class="thi">Category 3</div></th>
+            <th class="col-cat4"><div class="thi">Category 4 (소제목)</div></th>
+            <th class="col-unit"><div class="thi c">단위</div></th>
+            <th class="col-yr" data-yk="y2020"><div class="thi yr" data-yk="y2020">2020</div></th>
+            <th class="col-yr" data-yk="y2021"><div class="thi yr" data-yk="y2021">2021</div></th>
+            <th class="col-yr" data-yk="y2022"><div class="thi yr" data-yk="y2022">2022</div></th>
+            <th class="col-yr" data-yk="y2023"><div class="thi yr" data-yk="y2023">2023</div></th>
+            <th class="col-yr" data-yk="y2024"><div class="thi yr cur" data-yk="y2024">2024</div></th>
+            <th class="col-yr" data-yk="y2025"><div class="thi yr" data-yk="y2025">2025</div></th>
+          </tr>
+        </thead>
+        <tbody id="mtbody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- EDIT PANEL OVERLAY -->
+<div id="ep-overlay" onclick="closeEditPanel()"></div>
+
+<!-- 실적 수정 PANEL -->
+<div id="edit-panel">
+  <div class="ep-hdr">
+    <div class="ep-hdr-icon"><i class="bi bi-pencil-square"></i></div>
+    <div class="ep-hdr-info">
+      <div class="ep-title" id="ep-title">실적 수정</div>
+      <div class="ep-sub" id="ep-sub">연도를 선택하여 수정할 수 있습니다</div>
+      <div class="ep-mode"><i class="bi bi-pencil"></i> 편집 모드</div>
+    </div>
+    <button class="ep-close" onclick="closeEditPanel()"><i class="bi bi-x-lg"></i></button>
+  </div>
+  <div style="padding:10px 16px 0;border-bottom:1px solid var(--border);background:#f8fafc;flex-shrink:0">
+    <div style="font-size:9.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px">연도 선택</div>
+    <div class="ep-yr-tabs" id="ep-yr-tabs"></div>
+  </div>
+  <div class="ep-body" id="ep-body">
+    <div style="text-align:center;padding:30px 0;color:var(--muted);font-size:12px">
+      <i class="bi bi-calendar3" style="font-size:28px;display:block;margin-bottom:8px;opacity:.4"></i>
+      위에서 연도를 선택하세요
+    </div>
+  </div>
+  <div class="ep-footer">
+    <div class="ep-info">변경된 항목: <strong id="ep-changed-cnt">0</strong>개</div>
+    <button class="btn-cancel-panel" onclick="closeEditPanel()"><i class="bi bi-x"></i>닫기</button>
+    <button class="btn-save-panel" onclick="saveEdits()"><i class="bi bi-floppy-fill"></i>저장</button>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast"><span class="t-ic bi bi-check-circle-fill"></span><span id="toast-msg"></span></div>
+
+<script>
+/* ════════════════════════════════════════════════════════
+   DATA — 거버넌스지표
+   출처: 20260327_깨끗한나라 25년 ESG Fact sheet_업로드용(거버넌스).xlsx
+════════════════════════════════════════════════════════ */
+const RAW = [
+  {id:1, dept:"자산관리파트", cat2:"구성", cat3:"독립성",   cat4:"이사회의 사외이사 비율",                               unit:"%",     y2020:25,       y2021:25,    y2022:25,    y2023:25,    y2024:29,    y2025:null},
+  {id:2, dept:"자산관리파트", cat2:"구성", cat3:"다양성",   cat4:"여성이사",                                             unit:"%",     y2020:25,       y2021:25,    y2022:25,    y2023:25,    y2024:14,    y2025:null},
+  {id:3, dept:"자산관리파트", cat2:"구성", cat3:"전문성",   cat4:"산업경험 보유 이사",                                   unit:"%",     y2020:100,      y2021:100,   y2022:100,   y2023:100,   y2024:100,   y2025:null},
+  {id:4, dept:"자산관리파트", cat2:"구성", cat3:"전문성",   cat4:"리스크 전문가",                                        unit:"명",    y2020:1,        y2021:1,     y2022:1,     y2023:1,     y2024:1,     y2025:null},
+  {id:5, dept:"자산관리파트", cat2:"구성", cat3:"효율성",   cat4:"평균임기",                                             unit:"년",    y2020:2,        y2021:2,     y2022:3,     y2023:3,     y2024:2,     y2025:null},
+  {id:6, dept:"자산관리파트", cat2:"구성", cat3:"효율성",   cat4:"참석률",                                               unit:"%",     y2020:100,      y2021:100,   y2022:100,   y2023:100,   y2024:100,   y2025:null},
+  {id:7, dept:"자산관리파트", cat2:"운영", cat3:"개최",     cat4:"개최 건수",                                            unit:"회",    y2020:9,        y2021:11,    y2022:9,     y2023:7,     y2024:12,    y2025:null},
+  {id:8, dept:"자산관리파트", cat2:"운영", cat3:"보고 및 의결", cat4:"보고안건 수",                                      unit:"건",    y2020:11,       y2021:11,    y2022:13,    y2023:14,    y2024:19,    y2025:null},
+  {id:9, dept:"자산관리파트", cat2:"운영", cat3:"보고 및 의결", cat4:"의결안건 수",                                      unit:"건",    y2020:19,       y2021:16,    y2022:17,    y2023:10,    y2024:19,    y2025:null},
+  {id:10,dept:"자산관리파트", cat2:"운영", cat3:"안건별 의견", cat4:"찬성",                                              unit:"건(%)", y2020:"19(100)",y2021:"16(100)",y2022:"17(100)",y2023:"10(100)",y2024:"19(100)",y2025:null},
+  {id:11,dept:"자산관리파트", cat2:"운영", cat3:"안건별 의견", cat4:"반대",                                              unit:"건(%)", y2020:0,        y2021:0,     y2022:0,     y2023:0,     y2024:0,     y2025:null},
+  {id:12,dept:"자산관리파트", cat2:"운영", cat3:"안건별 의견", cat4:"수정",                                              unit:"건(%)", y2020:0,        y2021:0,     y2022:0,     y2023:0,     y2024:0,     y2025:null},
+  {id:13,dept:"자산관리파트", cat2:"운영", cat3:"안건별 의견", cat4:"기권",                                              unit:"건(%)", y2020:0,        y2021:0,     y2022:0,     y2023:0,     y2024:0,     y2025:null},
+  {id:14,dept:"자산관리파트", cat2:"책임", cat3:"책임감경", cat4:"손해배상책임보험 가입",                                 unit:"V",     y2020:"N",      y2021:"V",   y2022:"V",   y2023:"V",   y2024:"V",   y2025:null},
+  {id:15,dept:"HR팀",         cat2:"책임", cat3:"이사교육", cat4:"사내교육 참가",                                        unit:"V",     y2020:0,        y2021:0,     y2022:0,     y2023:0,     y2024:0,     y2025:null},
+  {id:16,dept:"자산관리파트", cat2:"평가 및 보수", cat3:"보수", cat4:"CEO 성과지표에 ESG 포함",                          unit:"V",     y2020:"V",      y2021:"V",   y2022:"V",   y2023:"V",   y2024:"V",   y2025:null},
+  {id:17,dept:"자산관리파트", cat2:"평가 및 보수", cat3:"보수", cat4:"개별 보수산정 기준 및 보수액 공시",                unit:"V",     y2020:"V",      y2021:"V",   y2022:"V",   y2023:"V",   y2024:"V",   y2025:null},
+  {id:18,dept:"자산관리파트", cat2:"평가 및 보수", cat3:"주식", cat4:"최대주주 및 특수관계인의 보통주식 지분율",         unit:"%",     y2020:40.04,    y2021:40.04, y2022:40.05, y2023:40.05, y2024:40.03, y2025:null},
+  {id:19,dept:"자산관리파트", cat2:"평가 및 보수", cat3:"주식", cat4:"최대주주 및 특수관계인의 보통주식 총수 중 등기임원 지분율", unit:"%", y2020:23.85, y2021:23.85, y2022:23.88, y2023:23.88, y2024:27.31, y2025:null},
+  {id:20,dept:"자산관리파트", cat2:"주주권리 강화", cat3:"의결권 행사 활성화", cat4:"전자투표제 도입",                   unit:"V",     y2020:"V",      y2021:"V",   y2022:"V",   y2023:"V",   y2024:"V",   y2025:null},
+  {id:21,dept:"자산관리파트", cat2:"주주권리 강화", cat3:"의결권 행사 활성화", cat4:"전체 주주에 대한 의결권대리 행사 권유", unit:"V",  y2020:"V",      y2021:"V",   y2022:"V",   y2023:"V",   y2024:"V",   y2025:null},
+  {id:22,dept:"자산관리파트", cat2:"주주권리 강화", cat3:"주주권 보호",        cat4:"주총 전 안건 통지",                  unit:"V",     y2020:"V",      y2021:"V",   y2022:"V",   y2023:"V",   y2024:"V",   y2025:null},
+  {id:23,dept:"진실경영팀",   cat2:"주주권리 강화", cat3:"윤리 및 반부패 교육", cat4:"직원 1인당 교육시간",              unit:"시간",  y2020:1,        y2021:1,     y2022:2,     y2023:2,     y2024:2,     y2025:null},
+  {id:24,dept:"진실경영팀",   cat2:"주주권리 강화", cat3:"윤리 및 반부패 교육", cat4:"이수율*",                          unit:"%",     y2020:45.12,    y2021:25.9,  y2022:28.5,  y2023:48.3,  y2024:66.8,  y2025:null}
+];
+
+/* ════════════════════════════════════════
+   FILTER STATE
+   cat2 = 기존 cat2(이사회 영역) → 필터 "Category 1"
+   cat3 = 기존 cat3(세부 항목)  → 필터 "Category 2"
+════════════════════════════════════════ */
+const F = { dept: new Set(), cat2: new Set(), cat3: new Set() };
+
+function uniqOrdered(key){
+  const seen = new Set(); const result = [];
+  RAW.forEach(r => { const v = r[key]; if(v != null && v !== '' && !seen.has(v)){ seen.add(v); result.push(v); } });
+  return result;
+}
+
+function initChips(){
+  mkChips('chips-dept', uniqOrdered('dept'), 'c-dept', F.dept);
+  mkChips('chips-cat2', uniqOrdered('cat2'), 'c-cat2', F.cat2);
+  mkChips('chips-cat3', uniqOrdered('cat3'), 'c-cat3', F.cat3);
+}
+
+function mkChips(containerId, vals, cls, stateSet){
+  const el = document.getElementById(containerId);
+  el.innerHTML = '';
+  vals.forEach(v => {
+    const c = document.createElement('span');
+    c.className = `chip ${cls}`;
+    c.textContent = v;
+    c.addEventListener('click', () => {
+      stateSet.has(v) ? stateSet.delete(v) : stateSet.add(v);
+      c.classList.toggle('active', stateSet.has(v));
+      applyFilter();
+    });
+    el.appendChild(c);
+  });
+}
+
+function isFiltering(){ return F.dept.size || F.cat2.size || F.cat3.size; }
+
+function matchScore(r){
+  let score = 0, total = 0;
+  if(F.dept.size){ total++; if(F.dept.has(r.dept)) score++; }
+  if(F.cat2.size){ total++; if(F.cat2.has(r.cat2)) score++; }
+  if(F.cat3.size){ total++; if(F.cat3.has(r.cat3)) score++; }
+  return { score, total };
+}
+
+function getSearchQ(){
+  const el = document.getElementById('f-search-input');
+  return el ? el.value.trim().toLowerCase() : '';
+}
+function searchMatch(r, q){
+  if(!q) return true;
+  const ql = q.toLowerCase();
+  const deptOk = ql.length >= 2 ? (r.dept||'').toLowerCase().includes(ql) : false;
+  const catOk = [r.cat2||'', r.cat3||'', r.cat4||''].some(v => v.toLowerCase().includes(ql));
+  return deptOk || catOk;
+}
+function applyFilter(){
+  const filtering = isFiltering();
+  const q = getSearchQ();
+  const trs = document.querySelectorAll('#mtbody tr[data-id]');
+  let vis = 0;
+  trs.forEach(tr => {
+    const id = +tr.dataset.id;
+    const r = RAW.find(x => x.id === id);
+    if(!r) return;
+    tr.classList.remove('row-hl','row-hl-full','row-hl-part','row-dim');
+    const srchOk = searchMatch(r, q);
+    if(!filtering && !q){ vis++; return; }
+    const { score, total } = matchScore(r);
+    if(srchOk && score === total){
+      tr.classList.add('row-hl-full'); vis++;
+    } else if(srchOk && score > 0){
+      tr.classList.add('row-hl-part'); vis++;
+    } else if(srchOk && !filtering){
+      tr.classList.add('row-hl-part'); vis++;
+    } else {
+      tr.classList.add('row-dim');
+    }
+  });
+  document.getElementById('vis-cnt').textContent = (filtering||q) ? vis : RAW.length;
+  document.getElementById('clear-btn').style.display = (filtering||q) ? 'flex' : 'none';
+  syncChipDim();
+}
+
+function syncChipDim(){
+  if(!isFiltering()){
+    document.querySelectorAll('.chip.dim').forEach(c => c.classList.remove('dim'));
+    return;
+  }
+  const relatedCat2 = new Set();
+  const relatedCat3 = new Set();
+  RAW.forEach(r => {
+    const deptOk = !F.dept.size || F.dept.has(r.dept);
+    const cat2Ok = !F.cat2.size || F.cat2.has(r.cat2);
+    if(deptOk && cat2Ok){
+      relatedCat2.add(r.cat2);
+      relatedCat3.add(r.cat3);
+    }
+  });
+  document.querySelectorAll('#chips-cat2 .chip').forEach(c => {
+    if(F.cat2.has(c.textContent)){ c.classList.remove('dim'); }
+    else{ c.classList.toggle('dim', !relatedCat2.has(c.textContent)); }
+  });
+  document.querySelectorAll('#chips-cat3 .chip').forEach(c => {
+    if(F.cat3.has(c.textContent)){ c.classList.remove('dim'); }
+    else{ c.classList.toggle('dim', !relatedCat3.has(c.textContent)); }
+  });
+}
+
+function clearFilters(){
+  F.dept.clear(); F.cat2.clear(); F.cat3.clear();
+  document.querySelectorAll('.chip.active').forEach(c => c.classList.remove('active'));
+  document.querySelectorAll('.chip.dim').forEach(c => c.classList.remove('dim'));
+  const si = document.getElementById('f-search-input'); if(si) si.value='';
+  applyFilter();
+}
+
+/* ════════════════════════════════════════
+   NUMBER FORMAT
+════════════════════════════════════════ */
+function fmtNum(v){
+  // 소수점 없이 + 천단위 구분 (요청 1)
+  if(v === null || v === undefined) return null;
+  if(typeof v === 'string') return v;
+  if(typeof v === 'number'){
+    return Math.round(v).toLocaleString('ko-KR');
+  }
+  return String(v);
+}
+
+/* ════════════════════════════════════════
+   CAT4 INDENT
+════════════════════════════════════════ */
+function cat4cls(cat4){
+  if(!cat4) return '';
+  const s = String(cat4).trim();
+  if(s.startsWith('-- ') || s.startsWith('  - ')) return 'ind2';
+  if(s.startsWith('- ')) return 'ind1';
+  return '';
+}
+
+/* ════════════════════════════════════════
+   GROUP STARTS
+════════════════════════════════════════ */
+function computeGroupStarts(){
+  return RAW.map((r, i) => ({
+    dept: i === 0 || RAW[i-1].dept !== r.dept,
+    cat2: i === 0 || RAW[i-1].dept !== r.dept || RAW[i-1].cat2 !== r.cat2,
+    cat3: i === 0 || RAW[i-1].dept !== r.dept || RAW[i-1].cat2 !== r.cat2 || RAW[i-1].cat3 !== r.cat3
+  }));
+}
+
+/* ════════════════════════════════════════
+   BUILD TABLE
+════════════════════════════════════════ */
+const YKEYS = ['y2020','y2021','y2022','y2023','y2024','y2025'];
+const YR_LABELS = {y2020:'2020',y2021:'2021',y2022:'2022',y2023:'2023',y2024:'2024',y2025:'2025'};
+
+function buildTable(){
+  const tbody = document.getElementById('mtbody');
+  tbody.innerHTML = '';
+  const gs = computeGroupStarts();
+
+  RAW.forEach((r, idx) => {
+    const g = gs[idx];
+    const tr = document.createElement('tr');
+    tr.dataset.id = r.id;
+    if(g.dept) tr.classList.add('grp-start-dept');
+    else if(g.cat2) tr.classList.add('grp-start-cat2');
+
+    // # row number
+    const tdNo = mkTd('col-no');
+    tdNo.innerHTML = `<div class="tdi c"><span class="row-no">${idx + 1}</span></div>`;
+    tr.appendChild(tdNo);
+
+    // 담당부서
+    const tdDept = mkTd('col-dept');
+    tdDept.innerHTML = `<div class="tdi"><span class="dept-badge dept-${escHtml(r.dept)}">${escHtml(r.dept)}</span></div>`;
+    tr.appendChild(tdDept);
+
+    // cat2
+    const tdCat2 = mkTd('col-cat2');
+    tdCat2.innerHTML = `<div class="tdi"><span class="cat2-txt">${escHtml(r.cat2)}</span></div>`;
+    tr.appendChild(tdCat2);
+
+    // cat3
+    const tdCat3 = mkTd('col-cat3');
+    tdCat3.innerHTML = `<div class="tdi"><span class="cat3-txt">${escHtml(r.cat3)}</span></div>`;
+    tr.appendChild(tdCat3);
+
+    // cat4
+    const tdCat4 = mkTd('col-cat4');
+    const ic = cat4cls(r.cat4);
+    tdCat4.innerHTML = `<div class="tdi"><span class="cat4-txt ${ic}">${escHtml(r.cat4)}</span></div>`;
+    tr.appendChild(tdCat4);
+
+    // unit
+    const tdUnit = mkTd('col-unit');
+    tdUnit.innerHTML = `<div class="tdi c"><span class="unit-txt">${r.unit || '—'}</span></div>`;
+    tr.appendChild(tdUnit);
+
+    // year values
+    YKEYS.forEach((yk) => {
+      const val = r[yk];
+      const isCur = yk === 'y2024';
+      const isNull = (val === null || val === undefined);
+      const isStr  = typeof val === 'string';
+      const td = mkTd('col-yr');
+      td.dataset.yk    = yk;
+      td.dataset.rowId = r.id;
+      let cls = 'yr-val';
+      if(isNull)     cls += ' null-v';
+      else if(isStr) cls += ' str-v';
+      else if(isCur) cls += ' cur';
+      const display = isNull ? '—' : fmtNum(val);
+      const align   = isStr ? 'c' : 'r';
+      td.innerHTML  = `<div class="tdi ${align}"><span class="${cls}">${display}</span></div>`;
+      tr.appendChild(td);
+    });
+
+    tbody.appendChild(tr);
+  });
+}
+
+function mkTd(cls){ const td = document.createElement('td'); td.className = cls; return td; }
+function escHtml(s){ if(!s) return ''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+/* ════════════════════════════════════════
+   COMPACT TOGGLE
+════════════════════════════════════════ */
+let compact = false;
+function toggleCompact(){
+  compact = !compact;
+  document.querySelectorAll('#mtbl .tdi').forEach(d => {
+    d.style.minHeight = compact ? '22px' : '';
+    d.style.padding   = compact ? '2px 8px' : '';
+  });
+  document.getElementById('compact-lbl').textContent = compact ? '일반 뷰' : '컴팩트';
+}
+
+/* ════════════════════════════════════════
+   CSV DOWNLOAD
+════════════════════════════════════════ */
+function downloadCsv(){
+  const hdr = ['#','담당부서','Category2','Category3','Category4(소제목)','단위','2020','2021','2022','2023','2024','2025'];
+  const rows = RAW.map((r, i) => [
+    i + 1, r.dept, r.cat2, r.cat3, r.cat4, r.unit || '',
+    r.y2020 ?? '', r.y2021 ?? '', r.y2022 ?? '', r.y2023 ?? '', r.y2024 ?? '', r.y2025 ?? ''
+  ]);
+  const csv = [hdr, ...rows].map(row =>
+    row.map(v => `"${String(v).replace(/"/g,'""')}"`).join(',')
+  ).join('\n');
+  const blob = new Blob(['\uFEFF' + csv], {type:'text/csv;charset=utf-8'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = '깨끗한나라_ESG거버넌스지표.csv';
+  a.click();
+  showToast('CSV 다운로드 시작','ok');
+}
+
+/* ════════════════════════════════════════
+   TOAST
+════════════════════════════════════════ */
+let _tt = null;
+function showToast(msg, type = 'ok'){
+  const el = document.getElementById('toast');
+  const ic = el.querySelector('.t-ic');
+  document.getElementById('toast-msg').textContent = msg;
+  el.className = `show ${type}`;
+  ic.className = `t-ic bi ${type === 'ok' ? 'bi-check-circle-fill' : 'bi-exclamation-triangle-fill'}`;
+  clearTimeout(_tt);
+  _tt = setTimeout(() => el.classList.remove('show'), 2800);
+}
+
+/* ════════════════════════════════════════════════════════════
+   실적 수정 PANEL
+════════════════════════════════════════════════════════════ */
+let activeYk = null;
+let editData  = {};
+const EDIT_DATA_ORIG = {};
+
+function openEditPanel(yk){
+  activeYk = yk;
+  const yr = YR_LABELS[yk];
+  document.getElementById('ep-title').textContent = `${yr}년 실적 수정`;
+  document.getElementById('ep-sub').textContent = `거버넌스지표 ${RAW.length}개 항목의 ${yr}년 실적값을 수정합니다`;
+  document.querySelectorAll('th.col-yr .thi').forEach(el => {
+    el.classList.toggle('active-yr', el.dataset.yk === yk);
+  });
+  document.querySelectorAll('td.col-yr').forEach(td => {
+    td.classList.toggle('col-yr-editing', td.dataset.yk === yk);
+  });
+  buildYrTabs(yk);
+  buildEpBody(yk);
+  document.getElementById('edit-panel').classList.add('open');
+  document.getElementById('ep-overlay').classList.add('show');
+  document.getElementById('main').classList.add('panel-open');
+  updateChangedCount();
+}
+
+function closeEditPanel(){
+  document.getElementById('edit-panel').classList.remove('open');
+  document.getElementById('ep-overlay').classList.remove('show');
+  document.getElementById('main').classList.remove('panel-open');
+  document.querySelectorAll('th.col-yr .thi').forEach(el => el.classList.remove('active-yr'));
+  document.querySelectorAll('td.col-yr').forEach(td => td.classList.remove('col-yr-editing'));
+  activeYk = null;
+}
+
+function buildYrTabs(selectedYk){
+  const container = document.getElementById('ep-yr-tabs');
+  container.innerHTML = '';
+  YKEYS.forEach(yk => {
+    const tab = document.createElement('button');
+    tab.className = 'ep-yr-tab' + (yk === selectedYk ? ' active' : '');
+    tab.textContent = YR_LABELS[yk];
+    tab.addEventListener('click', () => {
+      activeYk = yk;
+      buildYrTabs(yk);
+      buildEpBody(yk);
+      document.querySelectorAll('th.col-yr .thi').forEach(el => {
+        el.classList.toggle('active-yr', el.dataset.yk === yk);
+      });
+      document.querySelectorAll('td.col-yr').forEach(td => {
+        td.classList.toggle('col-yr-editing', td.dataset.yk === yk);
+      });
+    });
+    container.appendChild(tab);
+  });
+}
+
+function buildEpBody(yk){
+  const body = document.getElementById('ep-body');
+  body.innerHTML = '';
+  let lastCat2 = null;
+  RAW.forEach(r => {
+    if(r.cat2 !== lastCat2){
+      lastCat2 = r.cat2;
+      const sec = document.createElement('div');
+      sec.className = 'ep-section';
+      sec.innerHTML = `<i class="bi bi-tag" style="font-size:9px"></i>${escHtml(r.cat2)}`;
+      body.appendChild(sec);
+    }
+    const key = `${r.id}_${yk}`;
+    if(!(key in EDIT_DATA_ORIG)){ EDIT_DATA_ORIG[key] = r[yk]; }
+    const origVal = EDIT_DATA_ORIG[key];
+    const curVal  = (key in editData) ? editData[key] : r[yk];
+    const card = document.createElement('div');
+    card.className = 'ep-card';
+    card.innerHTML = `
+      <div class="ep-card-hdr">
+        <span class="ep-card-num">${r.id}</span>
+        <span class="ep-card-cat4">${escHtml(r.cat3)} · ${escHtml(r.cat4)}</span>
+        <span class="ep-card-unit">${r.unit || '—'}</span>
+      </div>
+      <div class="ep-card-body">
+        <span class="ep-label">현재값</span>
+        <input class="ep-input${curVal !== origVal ? ' changed' : ''}"
+               data-key="${key}" data-orig="${origVal ?? ''}"
+               value="${curVal ?? ''}"
+               placeholder="—" type="text"/>
+        <span class="ep-prev" title="원본값">${origVal ?? '—'}</span>
+      </div>`;
+    const inp = card.querySelector('.ep-input');
+    inp.addEventListener('input', () => {
+      const newVal = inp.value;
+      if(newVal === String(origVal ?? '')) {
+        delete editData[key];
+        inp.classList.remove('changed');
+      } else {
+        editData[key] = newVal;
+        inp.classList.add('changed');
+      }
+      updateChangedCount();
+    });
+    body.appendChild(card);
+  });
+}
+
+function updateChangedCount(){
+  document.getElementById('ep-changed-cnt').textContent = Object.keys(editData).length;
+}
+
+function saveEdits(){
+  let count = 0;
+  Object.entries(editData).forEach(([key, val]) => {
+    const [rid, yk] = key.split('_y');
+    const r = RAW.find(x => x.id === +rid);
+    if(!r) return;
+    const parsed = parseFloat(val);
+    r['y' + yk] = isNaN(parsed) ? (val || null) : parsed;
+    count++;
+  });
+  editData = {};
+  buildTable();
+  buildEpBody(activeYk);
+  updateChangedCount();
+  showToast(`${count}개 항목이 저장되었습니다`, 'ok');
+}
+
+/* ════════════════════════════════════════
+   YEAR HEADER CLICK → open panel
+════════════════════════════════════════ */
+function initYrHeaders(){
+  document.querySelectorAll('th.col-yr .thi').forEach(el => {
+    el.addEventListener('click', () => openEditPanel(el.dataset.yk));
+  });
+}
+
+/* ════════════════════════════════════════
+   BOOT
+════════════════════════════════════════ */
+document.addEventListener('DOMContentLoaded', () => {
+  buildTable();
+  initChips();
+  initYrHeaders();
+});
+document.addEventListener('keydown', e => {
+  if((e.ctrlKey || e.metaKey) && e.key === 's'){ e.preventDefault(); saveEdits(); }
+  if(e.key === 'Escape' && activeYk){ closeEditPanel(); }
+});
+</script>
+</body>
+</html>

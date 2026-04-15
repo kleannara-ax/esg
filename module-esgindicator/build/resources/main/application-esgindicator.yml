@@ -1,0 +1,27 @@
+# ── module-esgindicator 전용 설정 ──────────────────────────────────────────
+# Core의 application.yml 을 상속하며, 이 파일의 값이 override 됨.
+# spring.profiles.include=esgindicator 로 활성화.
+
+spring:
+  # Thymeleaf
+  thymeleaf:
+    prefix: classpath:/templates/
+    suffix: .html
+    cache: false      # 개발 시 템플릿 캐시 비활성화 (운영: true)
+    encoding: UTF-8
+
+  # 파일 업로드 제한
+  servlet:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 25MB
+
+  # JPA 추가 설정 (DDL none 유지)
+  jpa:
+    hibernate:
+      ddl-auto: none
+
+# ── 로깅 ──────────────────────────────────────────────────────────────────────
+logging:
+  level:
+    com.company.module.esgindicator: DEBUG

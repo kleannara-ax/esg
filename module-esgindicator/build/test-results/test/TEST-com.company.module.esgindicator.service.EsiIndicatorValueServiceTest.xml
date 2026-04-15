@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.company.module.esgindicator.service.EsiIndicatorValueServiceTest" tests="2" skipped="0" failures="0" errors="0" timestamp="2026-04-14T23:43:31" hostname="e2b.local" time="0.486">
+  <properties/>
+  <testcase name="신규 지표값 저장 - NOT_STARTED → IN_PROGRESS" classname="com.company.module.esgindicator.service.EsiIndicatorValueServiceTest" time="0.456"/>
+  <testcase name="확정된 지표값 수정 시 예외" classname="com.company.module.esgindicator.service.EsiIndicatorValueServiceTest" time="0.02"/>
+  <system-out><![CDATA[2026-04-14T23:43:31.638Z  INFO 5846 --- [esg-management-system] [    Test worker] c.c.m.e.s.EsiIndicatorValueService       : [ESI] 지표값 저장: indicatorId=1, deptId=1, year=2024, value=315306
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

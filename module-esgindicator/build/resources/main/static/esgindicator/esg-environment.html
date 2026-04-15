@@ -1,0 +1,1549 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>ESG 환경지표 — 깨끗한나라</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" crossorigin="anonymous"/>
+<style>
+/* ══════════════════════════════════════════════
+   TOKENS
+══════════════════════════════════════════════ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --sw:208px;
+  --bg:#edf1f7;
+  --card:#fff;
+  --border:#d8e0ea;
+  --border2:#bcc8d6;
+  --sb:#0b1929;
+  --sb2:#0f2236;
+  --accent:#1a65c0;
+  --accent-lt:#dceeff;
+  --eg:#15803d;
+  --eg-lt:#f0fdf4;
+  --txt:#18273a;
+  --txt2:#354d66;
+  --muted:#5c7490;
+  --light:#8fa3bc;
+  /* revenue */
+  --rh:#0f2a4a;
+  --rh2:#132e52;
+  --rh3:#1a3a62;
+  /* table header */
+  --th:#172840;
+  --th-cat:#1c3050;
+  --th-yr:#1b2e54;
+  --th-yr-cur:#1a3c6e;
+  --th-rem:#162440;
+  /* group merge visual */
+  --grp-border:#3a6abf;
+  /* filter highlight */
+  --hl:#fff8e1;
+  --hl-bd:#f59e0b;
+  --dim:.2;
+  /* edit panel */
+  --ep-w:420px;
+  /* sc = primary action color */
+  --sc:#1a65c0;
+  --gc:#6d28d9;
+}
+body{font-family:'Pretendard','Noto Sans KR',-apple-system,sans-serif;font-size:13px;background:var(--bg);color:var(--txt)}
+
+/* ══ SIDEBAR ══ */
+#sb{
+  width:var(--sw);min-height:100vh;position:fixed;top:0;left:0;z-index:400;
+  background:linear-gradient(180deg,var(--sb) 0%,var(--sb2) 100%);
+  display:flex;flex-direction:column;
+  box-shadow:2px 0 16px rgba(0,0,0,.28);
+}
+.sb-brand{padding:13px 13px 11px;display:flex;align-items:center;gap:9px;border-bottom:1px solid rgba(255,255,255,.06)}
+.sb-icon{width:30px;height:30px;border-radius:7px;background:var(--eg);display:flex;align-items:center;justify-content:center;font-size:15px;color:#fff;flex-shrink:0}
+.sb-ttl{font-size:11.5px;font-weight:700;color:#f1f5f9;line-height:1.35}
+.sb-sub{font-size:9.5px;color:#64748b;margin-top:1px}
+.sb-grp{font-size:9px;text-transform:uppercase;letter-spacing:.1em;color:#475569;padding:11px 13px 4px;font-weight:700}
+.sb-a{display:flex;align-items:center;gap:8px;padding:7px 10px;margin:1px 6px;border-radius:5px;color:#94a3b8;font-size:12px;cursor:pointer;text-decoration:none;transition:all .12s}
+.sb-a:hover{background:rgba(255,255,255,.07);color:#e2e8f0}
+.sb-a.on{background:rgba(21,128,61,.2);color:#4ade80;font-weight:600}
+.sb-a.on i{color:#4ade80}
+.sb-a i{font-size:12px;flex-shrink:0;color:#64748b;width:15px;text-align:center}
+.sb-n{margin-left:auto;background:rgba(255,255,255,.12);color:#e2e8f0;font-size:9.5px;font-weight:700;padding:1px 6px;border-radius:9px}
+.sb-div{height:1px;background:rgba(255,255,255,.05);margin:5px 12px}
+
+/* ══ MAIN ══ */
+#main{margin-left:var(--sw);display:flex;flex-direction:column;min-height:100vh;transition:margin-right .25s}
+#main.panel-open{margin-right:var(--ep-w)}
+
+/* ══ TOP NAV ══ */
+#topnav{
+  height:46px;background:var(--card);border-bottom:1px solid var(--border);
+  display:flex;align-items:center;padding:0 16px;gap:9px;
+  position:sticky;top:0;z-index:300;box-shadow:0 1px 3px rgba(0,0,0,.05);
+}
+.tnav-title{font-size:13px;font-weight:700;color:var(--txt);display:flex;align-items:center;gap:7px}
+.badge-e{background:var(--eg);color:#fff;font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;letter-spacing:.04em}
+.tnav-sep{width:1px;height:16px;background:var(--border);margin:0 2px}
+.tnav-space{flex:1}
+.btn{display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:5px;font-size:12px;font-weight:600;border:1px solid transparent;cursor:pointer;transition:all .12s;white-space:nowrap}
+.btn-outline{background:#fff;border-color:var(--border2);color:var(--txt2)}
+.btn-outline:hover{background:#f1f5f9;border-color:#b0bac8}
+.btn-primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn-primary:hover{background:#155faa}
+.btn i{font-size:12px}
+
+/* ══ REVENUE HEADER (요청 6,9) ══ */
+#rev-hdr{
+  background:#0f2a4a;border-bottom:2px solid #1e4a80;
+  overflow-x:auto;padding:0 16px 0;
+  box-shadow:0 2px 8px rgba(0,0,0,.18);
+}
+#rev-hdr::-webkit-scrollbar{height:4px}
+#rev-hdr::-webkit-scrollbar-thumb{background:#2a6aaa;border-radius:2px}
+.rev-tbl{table-layout:fixed;width:100%;min-width:740px;border-collapse:collapse;font-size:11.5px}
+.rev-tbl th,.rev-tbl td{padding:0;border:none;white-space:nowrap}
+.rev-tbl col.rev-col-lbl{width:180px}
+.rev-tbl col.rev-col-unit{width:52px}
+.rev-tbl col.rev-col-yr{width:90px}
+.rev-head-row th{background:#0f2a4a;border-bottom:2px solid #2a5a9a;padding:7px 10px}
+.rev-lbl-col{text-align:left;color:rgba(255,255,255,.55);font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase}
+.rev-unit-col{text-align:center;color:rgba(255,255,255,.4);font-size:9px}
+.rev-yr-col{text-align:right;color:rgba(255,255,255,.75);font-size:11px;font-weight:700;letter-spacing:.03em;cursor:pointer;transition:background .13s;border-radius:4px}
+.rev-yr-col:hover{color:#fff;background:rgba(255,255,255,.08)}
+.rev-yr-col.rev-yr-editing{background:#1d4e9a !important;color:#fff}
+.rev-row-yeon td{background:#132e52;border-bottom:1px solid rgba(255,255,255,.06)}
+.rev-row-byeol td{background:#1a3a62}
+.rev-label{display:flex;align-items:center;gap:8px;padding:7px 10px}
+.rev-pill{font-size:9.5px;font-weight:700;padding:2px 7px;border-radius:4px;background:rgba(255,255,255,.15);color:rgba(255,255,255,.8);letter-spacing:.04em}
+.rev-name{color:#e2eeff;font-size:12px;font-weight:600}
+.rev-note{color:rgba(255,255,255,.4);font-size:9.5px}
+.rev-val{
+  color:#7dd3fc;font-size:12px;font-weight:700;
+  font-variant-numeric:tabular-nums;
+  font-family:'SF Mono','JetBrains Mono',Consolas,monospace;
+  text-align:right;padding:7px 10px;cursor:pointer;transition:background .12s;
+}
+.rev-val:hover{background:rgba(255,255,255,.07);color:#bae6fd}
+.rev-val.cur{color:#86efac}
+.rev-val.rev-editing{background:#1d4e9a !important;outline:none}
+.rev-unit-cell{padding:7px 8px;text-align:center;color:rgba(255,255,255,.4);font-size:10px}
+
+/* ══ FILTER PANEL ══ */
+#filter-panel{
+  background:#f4f7fb;border:1px solid #d4dce8;border-radius:8px;
+  margin:10px 16px 0;padding:12px 16px 8px;
+  display:flex;flex-wrap:wrap;align-items:flex-start;gap:0;
+  box-shadow:0 1px 4px rgba(0,0,0,.04);
+}
+.fg{display:flex;flex-direction:column;gap:8px;padding:8px 18px 8px 0;}
+.fg:first-child{padding-left:0;}
+.fg-label{font-size:13.5px;font-weight:700;color:var(--txt);letter-spacing:.01em;white-space:nowrap;margin-bottom:6px;padding-bottom:4px;border-bottom:2px solid var(--accent-lt)}
+.fg-chips{display:flex;flex-wrap:wrap;gap:3px}
+
+/* width hints so filter groups expand properly */
+.fg-dept  {min-width:200px;max-width:240px}
+.fg-cat2  {min-width:340px;flex:1}
+.fg-cat3  {min-width:280px;flex:2}
+.fg-goal  {min-width:110px;max-width:140px}
+/* search box */
+.f-search-wrap{width:100%;padding:6px 0 2px;border-top:1px solid var(--border);margin-top:4px}
+.f-search{width:100%;max-width:420px;padding:5px 11px;font-size:12px;border:1px solid #c8d3e0;border-radius:6px;outline:none;background:#f8fafc;color:var(--txt);transition:border .13s}
+.f-search:focus{border-color:#0369a1;background:#fff}
+
+.chip{
+  display:inline-flex;align-items:center;gap:3px;
+  padding:3px 9px;border-radius:20px;font-size:11px;font-weight:500;
+  border:1px solid #d4dce8;background:#edf1f7;color:#3a4f68;
+  cursor:pointer;transition:all .13s;user-select:none;
+}
+.chip:hover{border-color:#8fa8c0;background:#dde5f0}
+.chip.active.c-dept{background:#7c3aed;border-color:#7c3aed;color:#fff}
+.chip.active.c-cat2{background:#0369a1;border-color:#0369a1;color:#fff}
+.chip.active.c-cat3{background:#0f766e;border-color:#0f766e;color:#fff}
+.chip.active.c-goal{background:#b45309;border-color:#b45309;color:#fff}
+.f-sep{width:1px;min-height:40px;background:var(--border);align-self:stretch;margin:4px 4px 4px 0;}
+.f-stats{width:100%;padding:6px 0 2px;display:flex;align-items:center;gap:10px;border-top:1px solid var(--border);margin-top:6px}
+.f-stats strong{color:var(--txt);font-weight:700}
+.f-stats span{font-size:11px;color:var(--muted)}
+.f-clear{font-size:11px;color:var(--accent);cursor:pointer;font-weight:600;display:flex;align-items:center;gap:3px;padding:3px 8px;border-radius:4px;border:1px solid var(--accent-lt);background:var(--accent-lt);transition:all .12s}
+.f-clear:hover{background:#d1e8ff}
+
+/* ══ TABLE AREA ══ */
+#tbl-area{flex:1;overflow:hidden;display:flex;flex-direction:column;padding:10px 16px 14px}
+.tbl-bar{display:flex;align-items:center;gap:8px;margin-bottom:7px}
+.tbl-info{font-size:11.5px;color:var(--muted);display:flex;align-items:center;gap:5px}
+.tbl-info strong{color:var(--txt);font-weight:700}
+
+.tbl-wrap{
+  flex:1;border:1px solid var(--border);border-radius:7px;
+  overflow:auto;background:var(--card);
+  box-shadow:0 1px 5px rgba(0,0,0,.04);
+  max-height:calc(100vh - 46px - 52px - 88px - 42px);
+  overflow-x:auto;
+}
+.tbl-wrap::-webkit-scrollbar{width:6px;height:6px}
+.tbl-wrap::-webkit-scrollbar-track{background:#f1f5f9}
+.tbl-wrap::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:3px}
+.tbl-wrap::-webkit-scrollbar-thumb:hover{background:#94a3b8}
+
+/* ══ MAIN TABLE ══ */
+#mtbl{border-collapse:collapse;min-width:1100px;width:100%;font-size:12px}
+
+/* repeated-value dimming: same value as prev row → lighter text */
+td.rep-val .tdi span{color:#b0bec8 !important;font-weight:400 !important}
+
+/* sticky header */
+#mtbl thead th{
+  position:sticky;top:0;z-index:10;
+  background:var(--th);color:rgba(255,255,255,.85);
+  font-size:10px;font-weight:700;letter-spacing:.03em;
+  border-bottom:2px solid rgba(255,255,255,.1);
+  white-space:nowrap;padding:0;
+}
+
+/* column widths */
+.col-no   {width:36px;min-width:36px}
+.col-dept {width:82px;min-width:82px}
+.col-cat2 {width:108px;min-width:108px}
+.col-cat3 {width:118px;min-width:118px}
+.col-cat4 {width:188px;min-width:188px}
+.col-unit {width:82px;min-width:82px}
+.col-yr   {width:88px;min-width:88px}
+
+/* sticky columns */
+.col-no  {position:sticky;left:0;z-index:12}
+.col-dept{position:sticky;left:36px;z-index:12}
+.col-cat2{position:sticky;left:118px;z-index:12}
+/* thead sticky cols: must be above both top-sticky and left-sticky */
+thead .col-no  {z-index:22}
+thead .col-dept{z-index:22}
+thead .col-cat2{z-index:22}
+
+/* year header — clickable */
+th.col-yr .thi{cursor:pointer;user-select:none;transition:background .13s}
+th.col-yr .thi:hover{background:#2a4870}
+th.col-yr .thi.active-yr{background:#1d5ba8 !important;color:#fff}
+th.col-yr .thi.active-yr::after{
+  content:'✎';font-size:8px;margin-left:4px;opacity:.7;
+}
+
+/* th inner */
+.thi{padding:8px 9px;border-right:1px solid rgba(255,255,255,.07);display:flex;align-items:center;height:100%}
+.thi.c{justify-content:center}
+.thi.r{justify-content:flex-end}
+.thi.yr{justify-content:flex-end;background:var(--th-yr)}
+.thi.yr.cur{background:var(--th-yr-cur)}
+
+thead .col-no   .thi{background:var(--th-cat)}
+thead .col-dept .thi{background:var(--th-cat)}
+thead .col-cat2 .thi{background:var(--th-cat)}
+thead .col-cat3 .thi{background:var(--th-cat)}
+thead .col-cat4 .thi{background:var(--th-cat)}
+thead .col-unit .thi{background:var(--th-cat)}
+
+/* ── tbody ── */
+#mtbl tbody tr{transition:opacity .16s,background .13s}
+#mtbl tbody tr:hover{background:#f6f9fd}
+#mtbl tbody td{border-bottom:1px solid var(--border);vertical-align:top;padding:0}
+
+/* group boundary: top border on dept change */
+#mtbl tbody tr.grp-start-dept td{border-top:2px solid #b0bfce}
+#mtbl tbody tr.grp-start-cat2 td{border-top:1px solid #dde6ef}
+
+/* 목표설정 행 스타일 */
+#mtbl tbody tr.row-goal td{background:#fffbf0}
+#mtbl tbody tr.row-goal .col-no,
+#mtbl tbody tr.row-goal .col-dept,
+#mtbl tbody tr.row-goal .col-cat2,
+#mtbl tbody tr.row-goal .cat3-txt{color:#92400e;font-weight:700}
+#mtbl tbody tr.row-goal .cat4-txt{color:#78350f;font-weight:600}
+#mtbl tbody tr.row-goal td:first-child{box-shadow:inset 3px 0 0 #f59e0b}
+.goal-badge{display:none}
+
+/* ── 원단위 행 스타일: 음영 없음 (배경·테두리 제거) ── */
+
+/* ── 자동계산 원단위 셀 구분 스타일 ── */
+td.auto-calc .tdi{background:#f5f8ff}
+td.auto-calc{background:#f5f8ff !important}
+td.auto-calc .yr-val{color:#1e40af;font-style:italic}
+td.auto-calc .yr-val.cur{color:#1a3a9a;font-style:italic}
+td.auto-calc .yr-val.null-v{color:#bfdbfe;font-style:normal}
+/* 자동계산 배지 */
+.calc-badge{
+  display:inline-flex;align-items:center;gap:2px;
+  font-size:8.5px;font-weight:700;padding:1px 4px;border-radius:3px;
+  background:#dbeafe;color:#1e40af;border:1px solid #93c5fd;
+  vertical-align:middle;margin-left:4px;white-space:nowrap;
+  letter-spacing:.02em;
+}
+/* 실적 수정 패널 내 자동계산 셀 */
+
+.ep-input{text-align:right}
+.ep-input.auto-calc-inp{
+  background:#eff6ff;color:#1e40af;font-style:italic;
+  border-color:#93c5fd;cursor:not-allowed;
+}
+.ep-input.auto-calc-inp:focus{border-color:#93c5fd;box-shadow:0 0 0 3px rgba(147,197,253,.2)}
+.ep-auto-label{
+  font-size:9.5px;color:#1e40af;font-weight:700;
+  display:flex;align-items:center;gap:3px;
+  white-space:nowrap;min-width:72px;justify-content:flex-end;
+}
+
+/* ── 편집 중인 연도 열 하이라이트 ── */
+td.col-yr-editing{background:#eef6ff !important}
+td.col-yr-editing .tdi{background:#eef6ff !important}
+
+.tdi{padding:6px 9px;border-right:1px solid var(--border);display:flex;align-items:flex-start;min-height:32px}
+.tdi.c{justify-content:center;align-items:center}
+.tdi.r{justify-content:flex-end;align-items:center;font-variant-numeric:tabular-nums;font-family:'JetBrains Mono',Consolas,monospace}
+.tdi.top{align-items:flex-start}
+
+/* sticky body cols bg */
+tbody .col-no  {background:#f7f9fb;border-right:1px solid var(--border2)}
+tbody .col-dept{background:#f7f9fb;border-right:1px solid var(--border2)}
+tbody .col-cat2{background:#f8fafc;border-right:1px solid var(--border2)}
+
+/* content styles */
+.row-no{color:var(--light);font-size:10.5px;font-variant-numeric:tabular-nums}
+.dept-badge{display:inline-flex;align-items:center;font-size:10px;font-weight:600;padding:2px 7px;border-radius:3px;white-space:nowrap;line-height:1.5}
+.dept-환경에너지팀{background:#ecfdf5;color:#065f46;border:1px solid #a7f3d0}
+.dept-경영기획팀{background:#eff6ff;color:#1e40af;border:1px solid #bfdbfe}
+.dept-HL기획팀{background:#fdf4ff;color:#7e22ce;border:1px solid #e9d5ff}
+.dept-PS기획팀{background:#fff7ed;color:#9a3412;border:1px solid #fed7aa}
+
+.cat2-txt{font-size:11.5px;font-weight:700;color:var(--txt);line-height:1.4}
+.cat3-txt{font-size:11.5px;font-weight:600;color:var(--txt2);line-height:1.4}
+.cat4-txt{font-size:12px;color:var(--txt);line-height:1.4}
+.cat4-txt.ind1{padding-left:10px;color:#374151}
+.cat4-txt.ind2{padding-left:18px;color:#4b5563}
+.unit-txt{color:var(--muted);font-size:10.5px}
+.yr-val{font-size:11.5px;font-weight:500;color:var(--txt);font-variant-numeric:tabular-nums;font-family:'JetBrains Mono',Consolas,monospace}
+.yr-val.cur{color:#1d4ed8;font-weight:700}
+.yr-val.null-v{color:#d1d5db;font-size:11px}
+.yr-val.str-v{color:#6b7280;font-size:11px;font-family:inherit;font-variant-numeric:normal;text-align:center}
+
+/* ── FILTER STATES ── */
+
+/* ── 필터 칩: 관련없는 칩 연하게 표시 (숨기지 않음) ── */
+.chip.dim{opacity:.35;border-color:#d4dce8}
+.chip.dim:hover{opacity:.7}
+
+/* ── 필터 강조 3단계 ── */
+/* 전체 조건 일치: 가장 진한 강조 (기존 row-hl 유지) */
+tr.row-hl-full{background:#fff8e1 !important}
+tr.row-hl-full td{border-bottom-color:#f0d060 !important}
+tr.row-hl-full .cat4-txt{font-weight:700;color:#78350f}
+tr.row-hl-full .yr-val{font-weight:700}
+tr.row-hl-full tbody .col-no,
+tr.row-hl-full tbody .col-dept,
+tr.row-hl-full tbody .col-cat2{background:#fff8e1 !important}
+tr.row-hl-full .tdi{background:#fff8e1}
+tr.row-hl-full td:first-child{box-shadow:inset 3px 0 0 #f59e0b}
+
+/* 부분 조건 일치: 중간 강조 */
+tr.row-hl-part{background:#f0f7ff !important}
+tr.row-hl-part td{border-bottom-color:#bfdbfe !important}
+tr.row-hl-part .cat4-txt{color:#1e40af}
+tr.row-hl-part tbody .col-no,
+tr.row-hl-part tbody .col-dept,
+tr.row-hl-part tbody .col-cat2{background:#f0f7ff !important}
+tr.row-hl-part .tdi{background:#f0f7ff}
+tr.row-hl-part td:first-child{box-shadow:inset 3px 0 0 #93c5fd}
+
+/* 관련없음: 흐리게 (기존 row-dim 유지) */
+tr.row-dim{opacity:var(--dim)}
+tr.row-dim{opacity:var(--dim)}
+tr.row-hl{background:var(--hl) !important}
+tr.row-hl td{border-bottom-color:#f0d060 !important}
+tr.row-hl .cat4-txt{font-weight:700;color:#78350f}
+tr.row-hl .yr-val{font-weight:700}
+tr.row-hl tbody .col-no,
+tr.row-hl tbody .col-dept,
+tr.row-hl tbody .col-cat2,
+tr.row-hl .tdi{background:var(--hl)}
+tr.row-hl td:first-child{box-shadow:inset 3px 0 0 var(--hl-bd)}
+
+/* ══════════════════════════════════════════════
+   실적 수정 PANEL (slides in from right)
+══════════════════════════════════════════════ */
+#edit-panel{
+  position:fixed;top:0;right:0;bottom:0;
+  width:var(--ep-w);z-index:500;
+  background:#fff;
+  border-left:2px solid #3b6fc4;
+  box-shadow:-4px 0 24px rgba(0,0,0,.16);
+  display:flex;flex-direction:column;
+  transform:translateX(100%);
+  transition:transform .25s cubic-bezier(.4,0,.2,1);
+  overflow:hidden;
+}
+#edit-panel.open{transform:translateX(0)}
+
+/* panel header */
+.ep-hdr{
+  background:linear-gradient(135deg,#1a2d46 0%,#1d3e70 100%);
+  padding:14px 16px 12px;
+  display:flex;align-items:center;gap:10px;
+  border-bottom:1px solid rgba(255,255,255,.1);
+  flex-shrink:0;
+}
+.ep-hdr-icon{
+  width:32px;height:32px;border-radius:8px;
+  background:rgba(255,255,255,.15);
+  display:flex;align-items:center;justify-content:center;
+  font-size:15px;color:#93c5fd;flex-shrink:0;
+}
+.ep-hdr-info{flex:1;min-width:0}
+.ep-title{font-size:13px;font-weight:700;color:#f1f5f9;line-height:1.3}
+.ep-sub{font-size:10.5px;color:rgba(255,255,255,.45);margin-top:2px}
+.ep-close{
+  width:28px;height:28px;border-radius:6px;
+  background:rgba(255,255,255,.1);border:none;color:rgba(255,255,255,.7);
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  font-size:16px;transition:all .13s;flex-shrink:0;
+}
+.ep-close:hover{background:rgba(255,255,255,.2);color:#fff}
+
+/* mode badge */
+.ep-mode{
+  display:inline-flex;align-items:center;gap:4px;
+  font-size:9.5px;font-weight:700;padding:2px 8px;border-radius:12px;
+  background:#1d5ba8;color:#bfdbfe;border:1px solid rgba(147,197,253,.3);
+  margin-top:4px;letter-spacing:.04em;
+}
+
+/* panel body */
+.ep-body{flex:1;overflow-y:auto;padding:14px 16px}
+.ep-body::-webkit-scrollbar{width:4px}
+.ep-body::-webkit-scrollbar-thumb{background:#c5cdd8;border-radius:2px}
+
+/* year selector tabs inside panel */
+.ep-yr-tabs{display:flex;gap:4px;margin-bottom:14px;flex-wrap:wrap}
+.ep-yr-tab{
+  padding:4px 12px;border-radius:5px;border:1px solid var(--border2);
+  font-size:11.5px;font-weight:600;cursor:pointer;
+  background:#f8fafc;color:var(--txt2);transition:all .13s;
+}
+.ep-yr-tab:hover{background:#e8f2ff;border-color:#93c5fd;color:#1a6dc5}
+.ep-yr-tab.active{background:#1a6dc5;border-color:#1a6dc5;color:#fff}
+
+/* row edit card */
+.ep-card{
+  border:1px solid var(--border);border-radius:8px;
+  margin-bottom:8px;overflow:hidden;
+  transition:box-shadow .13s;
+}
+.ep-card:hover{box-shadow:0 2px 8px rgba(0,0,0,.07)}
+.ep-card-hdr{
+  background:#f4f6fa;padding:7px 11px;
+  display:flex;align-items:center;gap:7px;
+  border-bottom:1px solid var(--border);
+}
+.ep-card-num{font-size:9.5px;color:var(--light);font-weight:600;min-width:18px}
+.ep-card-cat4{font-size:12px;font-weight:600;color:var(--txt);flex:1;min-width:0;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ep-card-unit{font-size:10px;color:var(--muted);white-space:nowrap}
+.ep-card-body{padding:9px 11px;display:flex;align-items:center;gap:8px}
+.ep-label{font-size:10.5px;color:var(--muted);min-width:56px}
+.ep-input{
+  flex:1;padding:5px 8px;border-radius:5px;border:1.5px solid var(--border);
+  font-size:13px;font-weight:500;color:var(--txt);
+  font-family:'JetBrains Mono',Consolas,monospace;
+  transition:border-color .13s;outline:none;
+  background:#fff;
+}
+.ep-input:focus{border-color:#1a6dc5;box-shadow:0 0 0 3px rgba(26,109,197,.12)}
+.ep-input.changed{border-color:#f59e0b;background:#fffbf0}
+.ep-input.is-goal{background:#fffbf4}
+.ep-prev{font-size:11px;color:var(--muted);min-width:72px;text-align:right;font-family:'JetBrains Mono',Consolas,monospace}
+
+/* section dividers */
+.ep-section{
+  font-size:9.5px;font-weight:700;color:var(--muted);
+  text-transform:uppercase;letter-spacing:.08em;
+  padding:4px 0 6px;margin-top:10px;
+  border-bottom:1px solid var(--border);margin-bottom:8px;
+  display:flex;align-items:center;gap:5px;
+}
+
+/* footer */
+.ep-footer{
+  padding:12px 16px;border-top:1px solid var(--border);
+  display:flex;align-items:center;gap:8px;flex-shrink:0;
+  background:#f8fafc;
+}
+.ep-info{flex:1;font-size:10.5px;color:var(--muted)}
+.ep-info strong{color:var(--txt)}
+.btn-save-panel{
+  background:#15803d;border-color:#15803d;color:#fff;
+  display:inline-flex;align-items:center;gap:5px;
+  padding:7px 16px;border-radius:6px;font-size:12px;font-weight:700;
+  border:1px solid transparent;cursor:pointer;transition:all .13s;
+}
+.btn-save-panel:hover{background:#166534}
+.btn-cancel-panel{
+  background:#fff;border:1px solid var(--border2);color:var(--txt2);
+  display:inline-flex;align-items:center;gap:5px;
+  padding:7px 14px;border-radius:6px;font-size:12px;font-weight:600;
+  cursor:pointer;transition:all .13s;
+}
+.btn-cancel-panel:hover{background:#f1f5f9}
+
+/* overlay (dim background when panel open) */
+#ep-overlay{
+  display:none;position:fixed;inset:0;z-index:499;
+  background:rgba(0,0,0,.08);
+}
+#ep-overlay.show{display:block}
+
+/* ── TOAST ── */
+#toast{
+  position:fixed;bottom:20px;right:20px;
+  background:#1e293b;color:#fff;
+  padding:9px 16px;border-radius:7px;font-size:12.5px;font-weight:500;
+  box-shadow:0 4px 18px rgba(0,0,0,.22);
+  opacity:0;transform:translateY(8px);transition:all .2s;
+  pointer-events:none;z-index:9999;
+  display:flex;align-items:center;gap:8px;
+}
+#toast.show{opacity:1;transform:translateY(0)}
+#toast.ok  .t-ic{color:#4ade80}
+#toast.err .t-ic{color:#f87171}
+
+@media(max-width:860px){#sb{display:none}#main{margin-left:0}}
+
+/* ══ 숫자 폰트 & 가독성 (요청 8) ══ */
+.yr-val, .rev-val, .ep-input, .ep-prev, .ep-auto-label,
+.tdi.r span, .tdi.c span.yr-val {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+  font-family: 'SF Mono','JetBrains Mono','Fira Mono',Consolas,'Courier New',monospace;
+  letter-spacing: -.01em;
+}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<nav id="sb">
+  <div class="sb-brand">
+    <div class="sb-icon"><i class="bi bi-leaf-fill"></i></div>
+    <div>
+      <div class="sb-ttl">ESG 지표 관리</div>
+      <div class="sb-sub">깨끗한나라</div>
+    </div>
+  </div>
+  <div class="sb-grp">ESG 카테고리</div>
+  <a class="sb-a on" href="esg-environment.html"><i class="bi bi-globe-americas"></i>환경 (Environment)<span class="sb-n">80</span></a>
+  <a class="sb-a" href="esg-social.html"><i class="bi bi-people"></i>사회 (Social)<span class="sb-n">83</span></a>
+  <a class="sb-a" href="esg-governance.html"><i class="bi bi-building-fill-gear"></i>거버넌스<span class="sb-n">24</span></a>
+  <div class="sb-div"></div>
+  <div class="sb-grp">관리</div>
+  <a class="sb-a" href="#"><i class="bi bi-table"></i>지표 마스터</a>
+  <a class="sb-a" href="#"><i class="bi bi-people-fill"></i>부서 관리</a>
+  <a class="sb-a" href="#"><i class="bi bi-clock-history"></i>이력 조회</a>
+  <div class="sb-div"></div>
+  <div class="sb-grp">데이터</div>
+  <a class="sb-a" href="#" onclick="downloadCsv();return false"><i class="bi bi-file-earmark-excel"></i>Fact Sheet 내보내기</a>
+  <a class="sb-a" href="#"><i class="bi bi-upload"></i>데이터 업로드</a>
+</nav>
+
+<!-- MAIN -->
+<div id="main">
+
+  <!-- TOP NAV -->
+  <header id="topnav">
+    <div class="tnav-title"><span class="badge-e">E</span>환경지표 현황</div>
+    <span class="tnav-sep"></span>
+    <span style="font-size:11.5px;color:var(--muted)">기준연도: <strong style="color:var(--txt)">2020 – 2025</strong></span>
+    <div class="tnav-space"></div>
+    <button class="btn btn-outline" onclick="downloadCsv()"><i class="bi bi-file-earmark-excel"></i>Excel 다운로드</button>
+    <button class="btn btn-primary" onclick="showToast('저장되었습니다.','ok')"><i class="bi bi-floppy-fill"></i>저장</button>
+  </header>
+
+  <!-- REVENUE HEADER -->
+  <div id="rev-hdr">
+    <table class="rev-tbl">
+      <colgroup>
+        <col class="rev-col-lbl"><col class="rev-col-unit">
+        <col class="rev-col-yr"><col class="rev-col-yr"><col class="rev-col-yr">
+        <col class="rev-col-yr"><col class="rev-col-yr"><col class="rev-col-yr">
+      </colgroup>
+      <thead>
+        <tr class="rev-head-row">
+          <th class="rev-lbl-col">매출액 <span style="font-size:9px;opacity:.6">*공시기준</span></th>
+          <th class="rev-unit-col">단위</th>
+          <th class="rev-yr-col" data-rev-yk="y2020" onclick="openRevEdit('y2020')">2020</th>
+          <th class="rev-yr-col" data-rev-yk="y2021" onclick="openRevEdit('y2021')">2021</th>
+          <th class="rev-yr-col" data-rev-yk="y2022" onclick="openRevEdit('y2022')">2022</th>
+          <th class="rev-yr-col" data-rev-yk="y2023" onclick="openRevEdit('y2023')">2023</th>
+          <th class="rev-yr-col" data-rev-yk="y2024" onclick="openRevEdit('y2024')">2024</th>
+          <th class="rev-yr-col" data-rev-yk="y2025" onclick="openRevEdit('y2025')">2025</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="rev-row-yeon" id="rev-row-yeon">
+          <td><div class="rev-label"><span class="rev-pill">연결</span><span class="rev-name">매출액</span><span class="rev-note">*공시기준</span></div></td>
+          <td class="rev-unit-cell">십억원</td>
+          <td class="rev-val" data-rev="yeon" data-rev-yk="y2020" onclick="openRevValEdit(this)">591.6</td>
+          <td class="rev-val" data-rev="yeon" data-rev-yk="y2021" onclick="openRevValEdit(this)">578.7</td>
+          <td class="rev-val" data-rev="yeon" data-rev-yk="y2022" onclick="openRevValEdit(this)">606.5</td>
+          <td class="rev-val" data-rev="yeon" data-rev-yk="y2023" onclick="openRevValEdit(this)">514.9</td>
+          <td class="rev-val cur" data-rev="yeon" data-rev-yk="y2024" onclick="openRevValEdit(this)">537.0</td>
+          <td class="rev-val" data-rev="yeon" data-rev-yk="y2025" onclick="openRevValEdit(this)">508.2</td>
+        </tr>
+        <tr class="rev-row-byeol" id="rev-row-byeol">
+          <td><div class="rev-label"><span class="rev-pill">별도</span><span class="rev-name">매출액</span><span class="rev-note">*공시기준</span></div></td>
+          <td class="rev-unit-cell">십억원</td>
+          <td class="rev-val" data-rev="byeol" data-rev-yk="y2020" onclick="openRevValEdit(this)">590.2</td>
+          <td class="rev-val" data-rev="byeol" data-rev-yk="y2021" onclick="openRevValEdit(this)">576.7</td>
+          <td class="rev-val" data-rev="byeol" data-rev-yk="y2022" onclick="openRevValEdit(this)">605.9</td>
+          <td class="rev-val" data-rev="byeol" data-rev-yk="y2023" onclick="openRevValEdit(this)">515.2</td>
+          <td class="rev-val cur" data-rev="byeol" data-rev-yk="y2024" onclick="openRevValEdit(this)">536.2</td>
+          <td class="rev-val" data-rev="byeol" data-rev-yk="y2025" onclick="openRevValEdit(this)">507.5</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- FILTER PANEL: 담당부서 | Category 2 | Category 3 (Category 4 removed) -->
+  <div id="filter-panel">
+    <!-- 담당부서 -->
+    <div class="fg fg-dept">
+      <div class="fg-label">담당부서</div>
+      <div class="fg-chips" id="chips-dept"></div>
+    </div>
+    <div class="f-sep"></div>
+    <!-- Category 2 -->
+    <div class="fg fg-cat2">
+      <div class="fg-label">Category 1</div>
+      <div class="fg-chips" id="chips-cat2"></div>
+    </div>
+    <div class="f-sep"></div>
+    <!-- Category 3 -->
+    <div class="fg fg-cat3">
+      <div class="fg-label">Category 2</div>
+      <div class="fg-chips" id="chips-cat3"></div>
+    </div>
+    <div class="f-sep"></div>
+    <!-- 목표설정 -->
+    <div class="fg fg-goal">
+      <div class="fg-label">목표설정</div>
+      <div class="fg-chips" id="chips-goal"></div>
+    </div>
+    <!-- stats row -->
+    <div class="f-search-wrap">
+      <input type="text" class="f-search" id="f-search-input" placeholder="담당부서, 카테고리, 지표명 검색" oninput="applyFilter()">
+    </div>
+    <div class="f-stats">
+      <span><strong id="vis-cnt">80</strong> / 80개 표시</span>
+      <span class="f-clear" id="clear-btn" onclick="clearFilters()" style="display:none"><i class="bi bi-x-circle"></i>초기화</span>
+    </div>
+  </div>
+
+  <!-- TABLE AREA -->
+  <div id="tbl-area">
+    <div class="tbl-bar">
+      <div class="tbl-info"><i class="bi bi-table" style="color:var(--eg)"></i>&nbsp;환경지표 <strong>80</strong>개 항목 · 연도별 값 (2020 – 2025) <span style="font-size:10px;color:var(--muted);margin-left:4px">· 연도 헤더 클릭 시 실적 수정</span></div>
+      <div style="flex:1"></div>
+      <button class="btn btn-outline" style="font-size:11px;padding:4px 10px" onclick="toggleCompact()"><i class="bi bi-layout-three-columns"></i>&nbsp;<span id="compact-lbl">컴팩트</span></button>
+    </div>
+
+    <div class="tbl-wrap" id="tbl-wrap">
+      <table id="mtbl">
+        <thead>
+          <tr>
+            <th class="col-no" ><div class="thi c" style="font-size:9px">#</div></th>
+            <th class="col-dept"><div class="thi">담당부서</div></th>
+            <th class="col-cat2"><div class="thi">Category 2</div></th>
+            <th class="col-cat3"><div class="thi">Category 3</div></th>
+            <th class="col-cat4"><div class="thi">Category 4 (소제목)</div></th>
+            <th class="col-unit"><div class="thi c">단위</div></th>
+            <th class="col-yr" data-yk="y2020"><div class="thi yr" data-yk="y2020">2020</div></th>
+            <th class="col-yr" data-yk="y2021"><div class="thi yr" data-yk="y2021">2021</div></th>
+            <th class="col-yr" data-yk="y2022"><div class="thi yr" data-yk="y2022">2022</div></th>
+            <th class="col-yr" data-yk="y2023"><div class="thi yr" data-yk="y2023">2023</div></th>
+            <th class="col-yr" data-yk="y2024"><div class="thi yr cur" data-yk="y2024">2024</div></th>
+            <th class="col-yr" data-yk="y2025"><div class="thi yr" data-yk="y2025">2025</div></th>
+          </tr>
+        </thead>
+        <tbody id="mtbody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- EDIT PANEL OVERLAY -->
+<div id="ep-overlay" onclick="closeEditPanel()"></div>
+
+<!-- 실적 수정 PANEL -->
+<div id="edit-panel">
+  <div class="ep-hdr">
+    <div class="ep-hdr-icon"><i class="bi bi-pencil-square"></i></div>
+    <div class="ep-hdr-info">
+      <div class="ep-title" id="ep-title">실적 수정</div>
+      <div class="ep-sub" id="ep-sub">연도를 선택하여 수정할 수 있습니다</div>
+      <div class="ep-mode"><i class="bi bi-pencil"></i> 편집 모드</div>
+    </div>
+    <button class="ep-close" onclick="closeEditPanel()"><i class="bi bi-x-lg"></i></button>
+  </div>
+
+  <!-- year selector tabs -->
+  <div style="padding:10px 16px 0;border-bottom:1px solid var(--border);background:#f8fafc;flex-shrink:0">
+    <div style="font-size:9.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px">연도 선택</div>
+    <div class="ep-yr-tabs" id="ep-yr-tabs"></div>
+  </div>
+
+  <div class="ep-body" id="ep-body">
+    <div style="text-align:center;padding:30px 0;color:var(--muted);font-size:12px">
+      <i class="bi bi-calendar3" style="font-size:28px;display:block;margin-bottom:8px;opacity:.4"></i>
+      위에서 연도를 선택하세요
+    </div>
+  </div>
+
+  <div class="ep-footer">
+    <div class="ep-info">변경된 항목: <strong id="ep-changed-cnt">0</strong>개</div>
+    <button class="btn-cancel-panel" onclick="closeEditPanel()"><i class="bi bi-x"></i>닫기</button>
+    <button class="btn-save-panel" onclick="saveEdits()"><i class="bi bi-floppy-fill"></i>저장</button>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast"><span class="t-ic bi bi-check-circle-fill"></span><span id="toast-msg"></span></div>
+
+<script>
+/* ════════════════════════════════════════════════════════
+   DATA  — 기준 파일 A5:M85 그대로 (항목명 변경 금지)
+   출처: 20260327_깨끗한나라 25년 ESG Fact sheet_업로드용(환경).xlsx
+════════════════════════════════════════════════════════ */
+const RAW = [
+  {id:1,dept:"환경에너지팀",cat1:"기후위기 대응",cat2:"온실가스 배출",cat3:"온실가스",cat4:"총 배출량(Scope 1 & 2)",unit:"tCO2eq",y2020:383459.9,y2021:348372.029,y2022:345326,y2023:322953,y2024:315306,y2025:null,bigo:null},
+  {id:2,dept:"환경에너지팀",cat1:"기후위기 대응",cat2:"온실가스 배출",cat3:"온실가스",cat4:"- 직접 배출량(Scope 1)",unit:"tCO2eq",y2020:210454.438,y2021:207058.256,y2022:205838,y2023:195855,y2024:187125,y2025:null,bigo:null},
+  {id:3,dept:"환경에너지팀",cat1:"기후위기 대응",cat2:"온실가스 배출",cat3:"온실가스",cat4:"- 간접 배출량(Scope 2)",unit:"tCO2eq",y2020:173005.462,y2021:141313.773,y2022:139489,y2023:127098,y2024:128181,y2025:null,bigo:null},
+  {id:4,dept:"환경에너지팀",cat1:"기후위기 대응",cat2:"온실가스 배출",cat3:"온실가스",cat4:"원단위",unit:"tCO2eq/십억원",y2020:649.695280533365,y2021:604.0889021831485,y2022:569.9389338174617,y2023:626.8497670807453,y2024:588.0380455054084,y2025:null,bigo:null},
+  {id:5,dept:"환경에너지팀",cat1:"기후위기 대응",cat2:"온실가스 배출",cat3:"온실가스 배출 목표",cat4:"온실가스 배출 목표",unit:"tCO2eq",y2020:22068,y2021:35088,y2022:3046.0289999999804,y2023:22373,y2024:7647,y2025:null,bigo:null,isGoal:true},
+  {id:6,dept:"환경에너지팀",cat1:"기후위기 대응",cat2:"에너지 소비",cat3:"일반에너지",cat4:"총 소비량",unit:"TJ",y2020:4843,y2021:4667,y2022:4752,y2023:4343,y2024:4353,y2025:null,bigo:null},
+  {id:7,dept:"환경에너지팀",cat1:"기후위기 대응",cat2:"에너지 소비",cat3:"일반에너지",cat4:"직접에너지 소비량",unit:"TJ",y2020:1347.369,y2021:1348.156,y2022:1482.109,y2023:1373.842,y2024:1372.814,y2025:null,bigo:null},
+  {id:8,dept:"환경에너지팀",cat1:"기후위기 대응",cat2:"에너지 소비",cat3:"일반에너지",cat4:"- 도시가스(LNG)",unit:"Nm3",y2020:5219062,y2021:4607653,y2022:6447458,y2023:4968397,y2024:4651998,y2025:null,bigo:null},
+  {id:9,dept:"환경에너지팀",cat1:"기후위기 대응",cat2:"에너지 소비",cat3:"일반에너지",cat4:"- 휘발유",unit:"L",y2020:14358,y2021:16116,y2022:33631,y2023:35277,y2024:34251,y2025:null,bigo:null},
+  {id:10,dept:"환경에너지팀",cat1:"기후위기 대응",cat2:"에너지 소비",cat3:"일반에너지",cat4:"- 경유",unit:"L",y2020:632566,y2021:573925,y2022:544028,y2023:489261,y2024:484058,y2025:null,bigo:null},
+  {id:11,dept:"환경에너지팀",cat1:"기후위기 대응",cat2:"에너지 소비",cat3:"일반에너지",cat4:"- 등유",unit:"L",y2020:0,y2021:328,y2022:6600,y2023:4690,y2024:0,y2025:null,bigo:null},
+  {id:12,dept:"환경에너지팀",cat1:"기후위기 대응",cat2:"에너지 소비",cat3:"일반에너지",cat4:"- LPG",unit:"kg",y2020:4175,y2021:0,y2022:0,y2023:0,y2024:0,y2025:null,bigo:null},
+  {id:13,dept:"환경에너지팀",cat1:"기후위기 대응",cat2:"에너지 소비",cat3:"일반에너지",cat4:"- 부생유",unit:"L",y2020:40900,y2021:19800,y2022:39000,y2023:68000,y2024:68707,y2025:null,bigo:null},
+  {id:14,dept:"환경에너지팀",cat1:"기후위기 대응",cat2:"에너지 소비",cat3:"일반에너지",cat4:"- SRF",unit:"ton",y2020:106279.8,y2021:109318.67,y2022:114557.68,y2023:110290.66,y2024:111547.12,y2025:null,bigo:null},
+  {id:15,dept:"환경에너지팀",cat1:"기후위기 대응",cat2:"에너지 소비",cat3:"일반에너지",cat4:"간접에너지 소비량",unit:"TJ",y2020:3498.464,y2021:3319.994,y2022:3271.14,y2023:2970.173,y2024:2981.084,y2025:null,bigo:null},
+  {id:16,dept:"환경에너지팀",cat1:"기후위기 대응",cat2:"에너지 소비",cat3:"일반에너지",cat4:"- 전력",unit:"TJ",y2020:3106.17,y2021:2952.941,y2022:2914.817,y2023:2655.898,y2024:2678.524,y2025:null,bigo:null},
+  {id:17,dept:"환경에너지팀",cat1:"기후위기 대응",cat2:"에너지 소비",cat3:"일반에너지",cat4:"- 스팀",unit:"TJ",y2020:392.294,y2021:367.053,y2022:356.321,y2023:314.275,y2024:302.56,y2025:null,bigo:null},
+  {id:18,dept:"환경에너지팀",cat1:"기후위기 대응",cat2:"에너지 소비",cat3:"일반에너지",cat4:"원단위",unit:"TJ/십억원",y2020:8.205484442110079,y2021:8.09273613206402,y2022:7.842878362766133,y2023:8.42973602484472,y2024:8.118239462886981,y2025:null,bigo:null},
+  {id:19,dept:"환경에너지팀",cat1:"기후위기 대응",cat2:"에너지 소비",cat3:"에너지 소비 목표",cat4:"에너지 소비 목표",unit:"TJ",y2020:null,y2021:null,y2022:null,y2023:null,y2024:null,y2025:null,bigo:null,isGoal:true},
+  {id:20,dept:"환경에너지팀",cat1:"자원사용 및 오염저감",cat2:"용수",cat3:"취수",cat4:"총 취수량",unit:"ton",y2020:7136441,y2021:7098803,y2022:6745281,y2023:7058336,y2024:6899202,y2025:null,bigo:null},
+  {id:21,dept:"환경에너지팀",cat1:"자원사용 및 오염저감",cat2:"용수",cat3:"취수",cat4:"지하수",unit:"ton",y2020:59273,y2021:66159,y2022:72968,y2023:77269,y2024:71655,y2025:null,bigo:null},
+  {id:22,dept:"환경에너지팀",cat1:"자원사용 및 오염저감",cat2:"용수",cat3:"취수",cat4:"상수",unit:"ton",y2020:10738,y2021:15879,y2022:14729,y2023:22061,y2024:22776,y2025:null,bigo:null},
+  {id:23,dept:"환경에너지팀",cat1:"자원사용 및 오염저감",cat2:"용수",cat3:"취수",cat4:"복류수",unit:"ton",y2020:7066430,y2021:7016765,y2022:6657584,y2023:6959006,y2024:6804771,y2025:null,bigo:null},
+  {id:24,dept:"환경에너지팀",cat1:"자원사용 및 오염저감",cat2:"용수",cat3:"취수",cat4:"원단위(수정)",unit:"ton/십억원",y2020:12091.256575993493,y2021:12309.564930898749,y2022:11132.663805908565,y2023:13700.186335403725,y2024:12866.844461022005,y2025:null,bigo:null},
+  {id:25,dept:"환경에너지팀",cat1:"자원사용 및 오염저감",cat2:"용수",cat3:"용수사용 및 재활용",cat4:"총 사용량",unit:"ton",y2020:17156074,y2021:16465961,y2022:18039634,y2023:18371581,y2024:17370481,y2025:null,bigo:null},
+  {id:26,dept:"환경에너지팀",cat1:"자원사용 및 오염저감",cat2:"용수",cat3:"용수사용 및 재활용",cat4:"재활용량",unit:"ton",y2020:11069720,y2021:10339720,y2022:12338095,y2023:12085629,y2024:11425685,y2025:null,bigo:null},
+  {id:27,dept:"환경에너지팀",cat1:"자원사용 및 오염저감",cat2:"용수",cat3:"용수사용 및 재활용",cat4:"재활용률",unit:"%",y2020:64,y2021:63,y2022:68,y2023:65.78437098037453,y2024:65.7764456839163,y2025:null,bigo:null},
+  {id:28,dept:"환경에너지팀",cat1:"자원사용 및 오염저감",cat2:"용수",cat3:"용수사용 및 재활용",cat4:"원단위(수정)",unit:"ton/십억원",y2020:29067.499131672354,y2021:28552.534290520034,y2022:29773.286020795513,y2023:35659.12461180124,y2024:32395.525923162997,y2025:null,bigo:null},
+  {id:29,dept:"환경에너지팀",cat1:"자원사용 및 오염저감",cat2:"용수",cat3:"총 취수량 목표",cat4:"총 취수량 목표",unit:"ton/십억원",y2020:null,y2021:null,y2022:null,y2023:null,y2024:null,y2025:null,bigo:null,isGoal:true},
+  {id:30,dept:"환경에너지팀",cat1:"자원사용 및 오염저감",cat2:"대기오염물질 배출",cat3:"질소산화물질(NOx)",cat4:"배출량",unit:"ton",y2020:155.989,y2021:132.752,y2022:130.746,y2023:108.964,y2024:117.143,y2025:null,bigo:null},
+  {id:31,dept:"환경에너지팀",cat1:"자원사용 및 오염저감",cat2:"대기오염물질 배출",cat3:"질소산화물질(NOx)",cat4:"원단위",unit:"ton/십억원",y2020:0.26429182586006794,y2021:0.2301964660389464,y2022:0.2157880838422182,y2023:0.2114984472049689,y2024:0.2184688549048862,y2025:null,bigo:null},
+  {id:32,dept:"환경에너지팀",cat1:"자원사용 및 오염저감",cat2:"대기오염물질 배출",cat3:"질소산화물질(NOx)",cat4:"배출농도",unit:"ppm",y2020:34.32,y2021:31.03,y2022:33.096,y2023:28.265,y2024:31.93,y2025:null,bigo:null},
+  {id:33,dept:"환경에너지팀",cat1:"자원사용 및 오염저감",cat2:"대기오염물질 배출",cat3:"황산화물질(SOx)",cat4:"배출량",unit:"ton",y2020:1.995,y2021:1.12,y2022:2.155,y2023:4.152,y2024:3.794,y2025:null,bigo:null},
+  {id:34,dept:"환경에너지팀",cat1:"자원사용 및 오염저감",cat2:"대기오염물질 배출",cat3:"황산화물질(SOx)",cat4:"원단위",unit:"ton/십억원",y2020:0.0033801241920317173,y2021:0.0019421179489847232,y2022:0.0035566925235187325,y2023:0.008059006211180124,y2024:0.007075718015665796,y2025:null,bigo:null},
+  {id:35,dept:"환경에너지팀",cat1:"자원사용 및 오염저감",cat2:"대기오염물질 배출",cat3:"황산화물질(SOx)",cat4:"배출농도",unit:"ppm",y2020:0.13,y2021:0.27,y2022:0.402,y2023:1.412,y2024:1.09,y2025:null,bigo:null},
+  {id:36,dept:"환경에너지팀",cat1:"자원사용 및 오염저감",cat2:"대기오염물질 배출",cat3:"먼지(PM10)",cat4:"배출량",unit:"ton",y2020:3.007,y2021:2.592,y2022:4.213,y2023:4.643596,y2024:4.041245,y2025:null,bigo:null},
+  {id:37,dept:"환경에너지팀",cat1:"자원사용 및 오염저감",cat2:"대기오염물질 배출",cat3:"먼지(PM10)",cat4:"원단위",unit:"ton/십억원",y2020:0.005094753606736528,y2021:0.004494615824793216,y2022:0.006953292622544975,y2023:0.009013190993788818,y2024:0.007536823946288697,y2025:null,bigo:null},
+  {id:38,dept:"환경에너지팀",cat1:"자원사용 및 오염저감",cat2:"대기오염물질 배출",cat3:"먼지(PM10)",cat4:"배출농도",unit:"ppm",y2020:1.35,y2021:1.14,y2022:0.956,y2023:1,y2024:0.99,y2025:null,bigo:null},
+  {id:39,dept:"환경에너지팀",cat1:"자원사용 및 오염저감",cat2:"수질오염물질 배출",cat3:"화학적 산소요구량(COD)",cat4:"배출량",unit:"ton",y2020:null,y2021:null,y2022:null,y2023:110.49,y2024:173.01,y2025:null,bigo:null},
+  {id:40,dept:"환경에너지팀",cat1:"자원사용 및 오염저감",cat2:"수질오염물질 배출",cat3:"화학적 산소요구량(COD)",cat4:"원단위",unit:"ton/십억원",y2020:null,y2021:null,y2022:null,y2023:0.21446040372670805,y2024:0.3226594554270794,y2025:null,bigo:null},
+  {id:41,dept:"환경에너지팀",cat1:"자원사용 및 오염저감",cat2:"수질오염물질 배출",cat3:"생화학적 산소요구량(BOD)",cat4:"배출량",unit:"ton",y2020:15.42,y2021:13.142,y2022:10.2,y2023:22.41,y2024:40.93,y2025:null,bigo:null},
+  {id:42,dept:"환경에너지팀",cat1:"자원사용 및 오염저감",cat2:"수질오염물질 배출",cat3:"생화학적 산소요구량(BOD)",cat4:"원단위",unit:"ton/십억원",y2020:0.02612607270232034,y2021:0.022788673290676097,y2022:0.016834461132200034,y2023:0.04349767080745341,y2024:0.07633345766505034,y2025:null,bigo:null},
+  {id:43,dept:"환경에너지팀",cat1:"자원사용 및 오염저감",cat2:"수질오염물질 배출",cat3:"부유물질량(SS)",cat4:"배출량",unit:"ton",y2020:40.424,y2021:35.942,y2022:21.83349,y2023:22.77,y2024:28.34,y2025:null,bigo:null},
+  {id:44,dept:"환경에너지팀",cat1:"자원사용 및 오염저감",cat2:"수질오염물질 배출",cat3:"부유물질량(SS)",cat4:"원단위",unit:"ton/십억원",y2020:0.06849029590911786,y2021:0.06232464582357939,y2022:0.03603480772404687,y2023:0.04419642857142857,y2024:0.052853412905632224,y2025:null,bigo:null},
+  {id:45,dept:"환경에너지팀",cat1:"자원사용 및 오염저감",cat2:"수질오염물질 배출",cat3:"T-N",cat4:"배출량",unit:"ton",y2020:104.22,y2021:97.588,y2022:88.32192,y2023:99.6,y2024:106.69,y2025:null,bigo:null},
+  {id:46,dept:"환경에너지팀",cat1:"자원사용 및 오염저감",cat2:"수질오염물질 배출",cat3:"T-N",cat4:"원단위",unit:"ton/십억원",y2020:0.17657972094914565,y2021:0.16922089857635816,y2022:0.14576979699620402,y2023:0.1933229813664596,y2024:0.19897426333457663,y2025:null,bigo:null},
+  {id:47,dept:"환경에너지팀",cat1:"자원사용 및 오염저감",cat2:"수질오염물질 배출",cat3:"T-P",cat4:"배출량",unit:null,y2020:2.653,y2021:5.61278,y2022:2.08411,y2023:1.5,y2024:1.07,y2025:null,bigo:null},
+  {id:48,dept:"환경에너지팀",cat1:"자원사용 및 오염저감",cat2:"수질오염물질 배출",cat3:"T-P",cat4:"원단위",unit:null,y2020:0.004494972171157968,y2021:0.009732750697948636,y2022:0.003439693018649942,y2023:0.0029114906832298135,y2024:0.0019955240581872435,y2025:null,bigo:null},
+  {id:49,dept:"환경에너지팀",cat1:"자원사용 및 오염저감",cat2:"수질오염물질 배출",cat3:"폐수",cat4:"배출량",unit:"ton",y2020:6086410,y2021:6126165,y2022:5701510,y2023:5761063,y2024:5957258,y2025:null,bigo:null},
+  {id:50,dept:"환경에너지팀",cat1:"자원사용 및 오염저감",cat2:"수질오염물질 배출",cat3:"폐수",cat4:"원단위(수정)",unit:"ton/십억원",y2020:10312.191320112162,y2021:10622.977682983925,y2022:9409.985146063707,y2023:11182.187499999998,y2024:11110.141738157403,y2025:null,bigo:null},
+  {id:51,dept:"환경에너지팀",cat1:"자원사용 및 오염저감",cat2:"폐기물",cat3:"폐기물",cat4:"배출량",unit:"ton",y2020:174843.29,y2021:159620.85,y2022:175742.86,y2023:146272.6,y2024:139498.79,y2025:null,bigo:null},
+  {id:52,dept:"환경에너지팀",cat1:"자원사용 및 오염저감",cat2:"폐기물",cat3:"폐기물",cat4:"- 일반 폐기물",unit:"ton",y2020:169902.48,y2021:155803.86,y2022:171901.45,y2023:142434.65,y2024:135746.89,y2025:null,bigo:null},
+  {id:53,dept:"환경에너지팀",cat1:"자원사용 및 오염저감",cat2:"폐기물",cat3:"폐기물",cat4:"- 지정 폐기물(유해 폐기물)",unit:"ton",y2020:4940.81,y2021:3816.99,y2022:3841.41,y2023:3837.95,y2024:3751.9,y2025:null,bigo:null},
+  {id:54,dept:"환경에너지팀",cat1:"자원사용 및 오염저감",cat2:"폐기물",cat3:"폐기물",cat4:"원단위",unit:"ton/십억원",y2020:296.23660869344224,y2021:276.787962336784,y2022:290.0525829344777,y2023:283.91420807453414,y2024:260.1618612458038,y2025:null,bigo:null},
+  {id:55,dept:"환경에너지팀",cat1:"자원사용 및 오염저감",cat2:"폐기물",cat3:"폐기물",cat4:"처리량",unit:"ton",y2020:174037.968,y2021:161171.481,y2022:175659.26,y2023:146195.25,y2024:139149.19,y2025:null,bigo:null},
+  {id:56,dept:"환경에너지팀",cat1:"자원사용 및 오염저감",cat2:"폐기물",cat3:"폐기물",cat4:"- 재활용",unit:"ton",y2020:72331.848,y2021:77465.591,y2022:67949.87,y2023:64075.61,y2024:63742.49,y2025:null,bigo:null},
+  {id:57,dept:"환경에너지팀",cat1:"자원사용 및 오염저감",cat2:"폐기물",cat3:"폐기물",cat4:"- 소각",unit:"ton",y2020:88390.93,y2021:76994.27,y2022:103314.39,y2023:75824.44,y2024:70674.81,y2025:null,bigo:null},
+  {id:58,dept:"환경에너지팀",cat1:"자원사용 및 오염저감",cat2:"폐기물",cat3:"폐기물",cat4:"- 매립",unit:"ton",y2020:11833.89,y2021:3882.53,y2022:1245.04,y2023:3415.33,y2024:4709.99,y2025:null,bigo:null},
+  {id:59,dept:"환경에너지팀",cat1:"자원사용 및 오염저감",cat2:"폐기물",cat3:"폐기물",cat4:"- 중간처분*",unit:"ton",y2020:1481.3,y2021:2829.09,y2022:3149.96,y2023:2879.87,y2024:21.9,y2025:null,bigo:null},
+  {id:60,dept:"환경에너지팀",cat1:"자원사용 및 오염저감",cat2:"폐기물",cat3:"폐기물",cat4:"재활용률",unit:"%",y2020:41.56095869839161,y2021:48.06408089034064,y2022:38.682771406414886,y2023:43.82879060708198,y2024:45.80873952625956,y2025:null,bigo:null},
+  {id:61,dept:"환경에너지팀",cat1:"자원사용 및 오염저감",cat2:"폐기물",cat3:"폐기물 배출량 목표",cat4:"폐기물 배출량 목표",unit:"ton",y2020:null,y2021:null,y2022:null,y2023:null,y2024:null,y2025:null,bigo:null,isGoal:true},
+  {id:62,dept:"환경에너지팀",cat1:"환경참여",cat2:"환경참여",cat3:"환경투자",cat4:"환경투자비",unit:"억원",y2020:14.25,y2021:51.82,y2022:14.43,y2023:85.3832,y2024:128.81,y2025:null,bigo:null},
+  {id:63,dept:"HL기획팀",cat1:"환경참여",cat2:"환경참여",cat3:"친환경 및 환경성개선 제품",cat4:"Home & Life 사업파트 매출액",unit:"억원",y2020:110,y2021:185.43,y2022:324.57,y2023:541.55,y2024:487,y2025:null,bigo:null},
+  {id:64,dept:"PS기획팀",cat1:"환경참여",cat2:"환경참여",cat3:"친환경 및 환경성개선 제품",cat4:"Paper Solution 사업 매출액",unit:null,y2020:null,y2021:2886,y2022:2976,y2023:2335,y2024:2580,y2025:null,bigo:null},
+  {id:65,dept:"환경에너지팀",cat1:"환경참여",cat2:"환경참여",cat3:"환경교육*",cat4:"대상인원",unit:"명",y2020:381,y2021:385,y2022:405,y2023:387,y2024:391,y2025:null,bigo:null},
+  {id:66,dept:"환경에너지팀",cat1:"환경참여",cat2:"환경참여",cat3:"환경교육*",cat4:"직원 1인당 교육시간",unit:"시간",y2020:3.65,y2021:2.4,y2022:2.22,y2023:2.63,y2024:2.81,y2025:null,bigo:null},
+  {id:67,dept:"환경에너지팀",cat1:"환경참여",cat2:"환경참여",cat3:"환경교육*",cat4:"직원 1인당 교육비용",unit:"원",y2020:9067,y2021:3575,y2022:4030,y2023:2218,y2024:3971,y2025:null,bigo:null},
+  {id:68,dept:"환경에너지팀",cat1:"환경참여",cat2:"환경참여",cat3:"환경교육*",cat4:"교육 이수율",unit:"%",y2020:100,y2021:100,y2022:100,y2023:100,y2024:100,y2025:null,bigo:null},
+  {id:69,dept:"환경에너지팀",cat1:"환경참여",cat2:"환경참여",cat3:"환경교육*",cat4:"환경사고 대응훈련",unit:"V",y2020:"V",y2021:"V",y2022:"V",y2023:"V",y2024:"V",y2025:null,bigo:null},
+  {id:70,dept:"환경에너지팀",cat1:"환경참여",cat2:"환경참여",cat3:"환경인증",cat4:"ISO 14001",unit:"%",y2020:100,y2021:100,y2022:100,y2023:100,y2024:100,y2025:null,bigo:null},
+  {id:71,dept:"경영기획팀",cat1:"환경참여",cat2:"환경참여",cat3:"환경인증",cat4:"FSC",unit:"V",y2020:"일부",y2021:"일부",y2022:"V",y2023:"V",y2024:"V",y2025:null,bigo:null},
+  {id:72,dept:"환경에너지팀",cat1:"환경참여",cat2:"환경참여",cat3:"환경법규 위반",cat4:"법규 위반",unit:"건",y2020:4,y2021:1,y2022:5,y2023:5,y2024:1,y2025:null,bigo:null},
+  {id:73,dept:"환경에너지팀",cat1:"환경참여",cat2:"환경참여",cat3:"환경법규 위반",cat4:"벌금 및 과태료",unit:"백만 원",y2020:4.2,y2021:0.4,y2022:2.5,y2023:1.1,y2024:0,y2025:null,bigo:null},
+  {id:74,dept:"환경에너지팀",cat1:"환경참여",cat2:"환경참여",cat3:"환경법규 위반",cat4:"환경 책임보험 가입",unit:"V",y2020:"V",y2021:"V",y2022:"V",y2023:"V",y2024:"V",y2025:null,bigo:null},
+  {id:75,dept:"경영기획팀",cat1:"원부재료",cat2:"원부재료",cat3:"원부재료",cat4:"총 원재료 사용량",unit:"ton",y2020:503125.784,y2021:492656.279307,y2022:459846.9406,y2023:400855.343,y2024:414314.262,y2025:null,bigo:null},
+  {id:76,dept:"경영기획팀",cat1:"원부재료",cat2:"원부재료",cat3:"원부재료",cat4:"종이자원 사용량",unit:"ton",y2020:432434.905,y2021:426713.041,y2022:392357.061,y2023:341669.684,y2024:354544.657,y2025:null,bigo:null},
+  {id:77,dept:"경영기획팀",cat1:"원부재료",cat2:"원부재료",cat3:"원부재료",cat4:"펄프사용량",unit:"ton",y2020:70690.879,y2021:65943.238307,y2022:67489.8796,y2023:59185.659,y2024:59769.605,y2025:null,bigo:null},
+  {id:78,dept:"경영기획팀",cat1:"원부재료",cat2:"원부재료",cat3:"원부재료",cat4:"총 원재료 매입액",unit:"백만원",y2020:0,y2021:154784,y2022:181505,y2023:139353,y2024:130646,y2025:null,bigo:null},
+  {id:79,dept:"경영기획팀",cat1:"원부재료",cat2:"원부재료",cat3:"원부재료",cat4:"종이자원 매입액",unit:"백만원",y2020:null,y2021:45985,y2022:71426,y2023:62645,y2024:79057,y2025:null,bigo:null},
+  {id:80,dept:"경영기획팀",cat1:"원부재료",cat2:"원부재료",cat3:"원부재료",cat4:"펄프 매입액",unit:"백만원",y2020:null,y2021:108799,y2022:110079,y2023:76708,y2024:51589,y2025:null,bigo:null}
+];
+
+/* ════════════════════════════════════════
+   별도 매출액 (십억원) — 자동계산 기준
+════════════════════════════════════════ */
+const SALES_BYEOL = {
+  y2020: 590.2,
+  y2021: 576.7,
+  y2022: 605.9,
+  y2023: 515.2,
+  y2024: 536.2,
+  y2025: 507.5
+};
+
+/* ════════════════════════════════════════
+   원단위 자동계산 매핑 테이블
+   dwId   : 원단위 행 id (자동계산 대상)
+   baseId : 기준 총량 행 id
+   ─ 수식: RAW[dwId][yk] = RAW[baseId][yk] / SALES_BYEOL[yk]
+════════════════════════════════════════ */
+const DW_MAP = [
+  { dwId:  4, baseId:  1 },  // 온실가스 원단위       ← 총 배출량(Scope 1&2)
+  { dwId: 18, baseId:  6 },  // 일반에너지 원단위      ← 총 소비량
+  { dwId: 24, baseId: 20 },  // 취수 원단위(수정)     ← 총 취수량
+  { dwId: 28, baseId: 25 },  // 용수사용 원단위(수정) ← 총 사용량
+  { dwId: 31, baseId: 30 },  // NOx 원단위            ← 배출량
+  { dwId: 34, baseId: 33 },  // SOx 원단위            ← 배출량
+  { dwId: 37, baseId: 36 },  // PM10 원단위           ← 배출량
+  { dwId: 40, baseId: 39 },  // COD 원단위            ← 배출량
+  { dwId: 42, baseId: 41 },  // BOD 원단위            ← 배출량
+  { dwId: 44, baseId: 43 },  // SS 원단위             ← 배출량
+  { dwId: 46, baseId: 45 },  // T-N 원단위            ← 배출량
+  { dwId: 48, baseId: 47 },  // T-P 원단위            ← 배출량
+  { dwId: 50, baseId: 49 },  // 폐수 원단위(수정)     ← 배출량
+  { dwId: 54, baseId: 51 },  // 폐기물 원단위         ← 배출량
+];
+
+// 자동계산 대상 id Set (빠른 조회용)
+const AUTO_IDS = new Set(DW_MAP.map(m => m.dwId));
+
+/* 원단위 전체 재계산 — RAW 배열에 값을 직접 기록 */
+function recalcAll(){
+  const rawById = Object.fromEntries(RAW.map(r => [r.id, r]));
+  DW_MAP.forEach(({ dwId, baseId }) => {
+    const dw   = rawById[dwId];
+    const base = rawById[baseId];
+    if(!dw || !base) return;
+    ['y2020','y2021','y2022','y2023','y2024','y2025'].forEach(yk => {
+      const bv  = base[yk];
+      const sv  = SALES_BYEOL[yk];
+      dw[yk] = (bv !== null && bv !== undefined && sv && sv > 0)
+               ? bv / sv
+               : null;
+    });
+  });
+}
+
+/* 특정 연도키에 대해서만 재계산 (실적 수정 저장 후 호출) */
+function recalcYear(yk){
+  const rawById = Object.fromEntries(RAW.map(r => [r.id, r]));
+  DW_MAP.forEach(({ dwId, baseId }) => {
+    const dw   = rawById[dwId];
+    const base = rawById[baseId];
+    if(!dw || !base) return;
+    const bv = base[yk];
+    const sv = SALES_BYEOL[yk];
+    dw[yk] = (bv !== null && bv !== undefined && sv && sv > 0)
+             ? bv / sv
+             : null;
+  });
+}
+
+/* ════════════════════════════════════════
+   FILTER STATE
+   cat2 = 기존 cat2(대제목) → 필터 "Category 1"
+   cat3 = 기존 cat3(중제목) → 필터 "Category 2"
+   goal = 목표설정 (환경 전용)
+════════════════════════════════════════ */
+const F = { dept: new Set(), cat2: new Set(), cat3: new Set(), goal: new Set() };
+
+// 목표설정 필터 전용 목록 (isGoal=true 행의 cat3 레이블)
+const GOAL_ROWS = RAW.filter(r => r.isGoal).map(r => r.cat3);
+
+function uniqOrdered(key){
+  const seen = new Set();
+  const result = [];
+  RAW.forEach(r => {
+    const v = r[key];
+    if(v && !seen.has(v)){ seen.add(v); result.push(v); }
+  });
+  return result;
+}
+
+function initChips(){
+  mkChips('chips-dept', uniqOrdered('dept'), 'c-dept', F.dept);
+  mkChips('chips-cat2', uniqOrdered('cat2'), 'c-cat2', F.cat2);
+  const cat3Vals = uniqOrdered('cat3').filter(v => !GOAL_ROWS.includes(v));
+  mkChips('chips-cat3', cat3Vals, 'c-cat3', F.cat3);
+  mkChips('chips-goal', GOAL_ROWS, 'c-goal', F.goal);
+}
+
+function mkChips(containerId, vals, cls, stateSet){
+  const el = document.getElementById(containerId);
+  el.innerHTML = '';
+  vals.forEach(v => {
+    const c = document.createElement('span');
+    c.className = `chip ${cls}`;
+    c.textContent = v;
+    c.addEventListener('click', () => {
+      stateSet.has(v) ? stateSet.delete(v) : stateSet.add(v);
+      c.classList.toggle('active', stateSet.has(v));
+      applyFilter();
+    });
+    el.appendChild(c);
+  });
+}
+
+function isFiltering(){ return F.dept.size || F.cat2.size || F.cat3.size || F.goal.size; }
+
+/* 행이 각 활성 조건에 몇 개 일치하는지 계산 (0 ~ total) */
+function matchScore(r){
+  let score = 0, total = 0;
+  if(F.dept.size){ total++; if(F.dept.has(r.dept)) score++; }
+  if(F.cat2.size){ total++; if(F.cat2.has(r.cat2)) score++; }
+  // cat3 + goal 은 하나의 조건으로 묶음
+  const catActive = F.cat3.size || F.goal.size;
+  if(catActive){
+    total++;
+    const inCat3 = F.cat3.size && F.cat3.has(r.cat3);
+    const inGoal = F.goal.size && F.goal.has(r.cat3);
+    if(inCat3 || inGoal) score++;
+  }
+  return { score, total };
+}
+
+function getSearchQ(){
+  const el = document.getElementById('f-search-input');
+  return el ? el.value.trim().toLowerCase() : '';
+}
+function searchMatch(r, q){
+  if(!q) return true;
+  const ql = q.toLowerCase();
+  // 담당부서: 2글자 이상일 때만 부분 일치 (1글자 입력 반응 차단)
+  const deptOk = ql.length >= 2 ? (r.dept||'').toLowerCase().includes(ql) : false;
+  // 카테고리/지표명: 길이 무관 포함 검색
+  const catOk = [r.cat2||'', r.cat3||'', r.cat4||''].some(v => v.toLowerCase().includes(ql));
+  return deptOk || catOk;
+}
+function applyFilter(){
+  const filtering = isFiltering();
+  const q = getSearchQ();
+  const trs = document.querySelectorAll('#mtbody tr[data-id]');
+  let vis = 0;
+  trs.forEach(tr => {
+    const id = +tr.dataset.id;
+    const r = RAW[id - 1];
+    if(!r) return;
+    tr.classList.remove('row-hl','row-hl-full','row-hl-part','row-dim');
+    const srchOk = searchMatch(r, q);
+    if(!filtering && !q){ vis++; return; }
+    const { score, total } = matchScore(r);
+    const chipOk = !filtering || score > 0;
+    if(srchOk && score === total){
+      tr.classList.add('row-hl-full'); vis++;
+    } else if(srchOk && score > 0){
+      tr.classList.add('row-hl-part'); vis++;
+    } else if(srchOk && !filtering){
+      tr.classList.add('row-hl-part'); vis++;
+    } else {
+      tr.classList.add('row-dim');
+    }
+  });
+  document.getElementById('vis-cnt').textContent = (filtering||q) ? vis : RAW.length;
+  document.getElementById('clear-btn').style.display = (filtering||q) ? 'flex' : 'none';
+  syncChipDim();
+}
+
+/* 활성 필터 기준으로 관련 없는 칩을 dim 처리 */
+function syncChipDim(){
+  if(!isFiltering()){
+    document.querySelectorAll('.chip.dim').forEach(c => c.classList.remove('dim'));
+    return;
+  }
+  const relatedCat2 = new Set();
+  const relatedCat3 = new Set();
+  RAW.forEach(r => {
+    const deptOk = !F.dept.size || F.dept.has(r.dept);
+    const cat2Ok = !F.cat2.size || F.cat2.has(r.cat2);
+    if(deptOk && cat2Ok){
+      relatedCat2.add(r.cat2);
+      relatedCat3.add(r.cat3);
+    }
+  });
+  document.querySelectorAll('#chips-cat2 .chip').forEach(c => {
+    if(F.cat2.has(c.textContent)){ c.classList.remove('dim'); }
+    else{ c.classList.toggle('dim', !relatedCat2.has(c.textContent)); }
+  });
+  document.querySelectorAll('#chips-cat3 .chip, #chips-goal .chip').forEach(c => {
+    const inGoal = GOAL_ROWS.includes(c.textContent);
+    const active = inGoal ? F.goal.has(c.textContent) : F.cat3.has(c.textContent);
+    if(active){ c.classList.remove('dim'); }
+    else{ c.classList.toggle('dim', !relatedCat3.has(c.textContent)); }
+  });
+}
+
+function clearFilters(){
+  F.dept.clear(); F.cat2.clear(); F.cat3.clear(); F.goal.clear();
+  document.querySelectorAll('.chip.active').forEach(c => c.classList.remove('active'));
+  document.querySelectorAll('.chip.dim').forEach(c => c.classList.remove('dim'));
+  const si = document.getElementById('f-search-input'); if(si) si.value='';
+  applyFilter();
+}
+
+/* ════════════════════════════════════════
+   NUMBER FORMAT
+════════════════════════════════════════ */
+function fmtNum(v){
+  // 원단위 제외 일반 수치: 소수점 없이 + 천단위 구분 (요청 1)
+  if(v === null || v === undefined) return null;
+  if(typeof v === 'string') return v;
+  if(typeof v === 'number'){
+    return Math.round(v).toLocaleString('ko-KR');
+  }
+  return String(v);
+}
+
+/* ════════════════════════════════════════
+   원단위 전용 포맷
+   - 정수 수준(abs≥1) : 소수점 없음, 천단위 구분자
+   - 소수 수준(abs<1)  : 유효숫자 4자리 (소수 표기 불가피)
+════════════════════════════════════════ */
+function fmtDw(v){
+  if(v === null || v === undefined) return null;
+  if(typeof v !== 'number') return String(v);
+  const abs = Math.abs(v);
+  if(abs === 0)    return '0';
+  if(abs >= 1)     return Math.round(v).toLocaleString('ko-KR');
+  if(abs >= 0.1)   return v.toFixed(4);
+  if(abs >= 0.01)  return v.toFixed(4);
+  if(abs >= 0.001) return v.toFixed(5);
+  return v.toFixed(6);
+}
+
+/* ════════════════════════════════════════
+   CAT4 INDENT
+════════════════════════════════════════ */
+function cat4cls(cat4){
+  if(!cat4) return '';
+  const s = String(cat4).trim();
+  if(s.startsWith('-- ') || s.startsWith('  - ')) return 'ind2';
+  if(s.startsWith('- ')) return 'ind1';
+  return '';
+}
+
+
+
+/* ════════════════════════════════════════
+   DETECT GROUP STARTS (no rowspan)
+   Used only for top-border visual hint.
+════════════════════════════════════════ */
+function computeGroupStarts(){
+  return RAW.map((r, i) => ({
+    dept: i === 0 || RAW[i-1].dept !== r.dept,
+    cat2: i === 0 || RAW[i-1].dept !== r.dept || RAW[i-1].cat2 !== r.cat2,
+    cat3: i === 0 || RAW[i-1].dept !== r.dept || RAW[i-1].cat2 !== r.cat2 || RAW[i-1].cat3 !== r.cat3
+  }));
+}
+
+/* ════════════════════════════════════════
+   BUILD TABLE
+════════════════════════════════════════ */
+const YKEYS = ['y2020','y2021','y2022','y2023','y2024','y2025'];
+const YR_LABELS = {y2020:'2020',y2021:'2021',y2022:'2022',y2023:'2023',y2024:'2024',y2025:'2025'};
+
+function buildTable(){
+  const tbody = document.getElementById('mtbody');
+  tbody.innerHTML = '';
+  const gs = computeGroupStarts();
+
+  RAW.forEach((r, idx) => {
+    const g = gs[idx];
+    const tr = document.createElement('tr');
+    tr.dataset.id = r.id;
+
+    // top-border on group boundaries
+    if(g.dept) tr.classList.add('grp-start-dept');
+    else if(g.cat2) tr.classList.add('grp-start-cat2');
+
+    // 목표설정 행 스타일
+    if(r.isGoal) tr.classList.add('row-goal');
+
+    // ── # (row number)
+    const tdNo = mkTd('col-no');
+    tdNo.innerHTML = `<div class="tdi c"><span class="row-no">${idx + 1}</span></div>`;
+    tr.appendChild(tdNo);
+
+    // ── 담당부서 (every row, full value)
+    const tdDept = mkTd('col-dept');
+    tdDept.innerHTML = `<div class="tdi"><span class="dept-badge dept-${r.dept}">${r.dept}</span></div>`;
+    tr.appendChild(tdDept);
+
+    // ── cat2 (every row)
+    const tdCat2 = mkTd('col-cat2');
+    tdCat2.innerHTML = `<div class="tdi"><span class="cat2-txt">${escHtml(r.cat2)}</span></div>`;
+    tr.appendChild(tdCat2);
+
+    // ── cat3 (every row) — 목표설정 행은 배지 추가
+    const tdCat3 = mkTd('col-cat3');
+    const goalBadge = r.isGoal ? '<span class="goal-badge"><i class="bi bi-bullseye"></i> 목표설정</span>' : '';
+    tdCat3.innerHTML = `<div class="tdi" style="align-items:center;flex-wrap:wrap;gap:3px"><span class="cat3-txt">${escHtml(r.cat3)}</span>${goalBadge}</div>`;
+    tr.appendChild(tdCat3);
+
+    // ── cat4 (every row)
+    const tdCat4 = mkTd('col-cat4');
+    const ic = cat4cls(r.cat4);
+    const autoBadge = AUTO_IDS.has(r.id)
+      ? '<span class="calc-badge"><i class="bi bi-calculator"></i>자동계산</span>' : '';
+    tdCat4.innerHTML = `<div class="tdi"><span class="cat4-txt ${ic}">${escHtml(r.cat4)}</span>${autoBadge}</div>`;
+    tr.appendChild(tdCat4);
+
+    // ── unit
+    const tdUnit = mkTd('col-unit');
+    tdUnit.innerHTML = `<div class="tdi c"><span class="unit-txt">${r.unit || '—'}</span></div>`;
+    tr.appendChild(tdUnit);
+
+    // ── year values
+    const isAutoRow = AUTO_IDS.has(r.id);
+    YKEYS.forEach((yk) => {
+      const val = r[yk];
+      const isCur = yk === 'y2024';
+      const isNull = (val === null || val === undefined);
+      const isStr  = typeof val === 'string';
+      const td = mkTd('col-yr');
+      td.dataset.yk    = yk;
+      td.dataset.rowId = r.id;
+      if(isAutoRow) td.classList.add('auto-calc');
+      let cls = 'yr-val';
+      if(isNull)     cls += ' null-v';
+      else if(isStr) cls += ' str-v';
+      else if(isCur) cls += ' cur';
+      const fmt     = isAutoRow ? fmtDw(val) : fmtNum(val);
+      const display = isNull ? '—' : fmt;
+      const align   = isStr ? 'c' : 'r';
+      td.innerHTML  = `<div class="tdi ${align}"><span class="${cls}">${display}</span></div>`;
+      tr.appendChild(td);
+    });
+
+
+    tbody.appendChild(tr);
+  });
+}
+
+function mkTd(cls){
+  const td = document.createElement('td');
+  td.className = cls;
+  return td;
+}
+
+function escHtml(s){
+  if(!s) return '';
+  return String(s)
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;');
+}
+
+/* ════════════════════════════════════════
+   COMPACT TOGGLE
+════════════════════════════════════════ */
+let compact = false;
+function toggleCompact(){
+  compact = !compact;
+  document.querySelectorAll('#mtbl .tdi').forEach(d => {
+    d.style.minHeight = compact ? '22px' : '';
+    d.style.padding   = compact ? '2px 8px' : '';
+  });
+  document.getElementById('compact-lbl').textContent = compact ? '일반 뷰' : '컴팩트';
+}
+
+/* ════════════════════════════════════════
+   CSV / EXCEL DOWNLOAD
+════════════════════════════════════════ */
+function downloadCsv(){
+  const hdr = ['#','담당부서','표 대제목(cat2)','표 중제목(cat3)','표 소제목(cat4)','단위','2020','2021','2022','2023','2024','2025'];
+  const rows = RAW.map((r, i) => [
+    i + 1, r.dept, r.cat2, r.cat3, r.cat4, r.unit || '',
+    r.y2020 ?? '', r.y2021 ?? '', r.y2022 ?? '', r.y2023 ?? '', r.y2024 ?? '', r.y2025 ?? ''
+  ]);
+  const csv = [hdr, ...rows].map(row =>
+    row.map(v => `"${String(v).replace(/"/g,'""')}"`).join(',')
+  ).join('\n');
+  const blob = new Blob(['\uFEFF' + csv], {type:'text/csv;charset=utf-8'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = '깨끗한나라_ESG환경지표.csv';
+  a.click();
+  showToast('CSV 다운로드 시작','ok');
+}
+
+/* ════════════════════════════════════════
+   TOAST
+════════════════════════════════════════ */
+let _tt = null;
+function showToast(msg, type = 'ok'){
+  const el = document.getElementById('toast');
+  const ic = el.querySelector('.t-ic');
+  document.getElementById('toast-msg').textContent = msg;
+  el.className = `show ${type}`;
+  ic.className = `t-ic bi ${type === 'ok' ? 'bi-check-circle-fill' : 'bi-exclamation-triangle-fill'}`;
+  clearTimeout(_tt);
+  _tt = setTimeout(() => el.classList.remove('show'), 2800);
+}
+
+/* ════════════════════════════════════════════════════════════
+   실적 수정 PANEL  — year header click
+════════════════════════════════════════════════════════════ */
+let activeYk = null;         // currently selected year key in panel
+let editData  = {};          // { rowId_yk : newValue }
+const EDIT_DATA_ORIG = {};   // original values snapshot
+
+function openEditPanel(yk){
+  activeYk = yk;
+  const yr = YR_LABELS[yk];
+
+  // panel title
+  document.getElementById('ep-title').textContent = `${yr}년 실적 수정`;
+  document.getElementById('ep-sub').textContent = `환경지표 ${RAW.length}개 항목의 ${yr}년 실적값을 수정합니다`;
+
+  // highlight active year header
+  document.querySelectorAll('th.col-yr .thi').forEach(el => {
+    el.classList.toggle('active-yr', el.dataset.yk === yk);
+  });
+
+  // highlight body cells for this year
+  document.querySelectorAll('td.col-yr').forEach(td => {
+    td.classList.toggle('col-yr-editing', td.dataset.yk === yk);
+  });
+
+  // build year tabs
+  buildYrTabs(yk);
+
+  // build row cards
+  buildEpBody(yk);
+
+  // open panel
+  document.getElementById('edit-panel').classList.add('open');
+  document.getElementById('ep-overlay').classList.add('show');
+  document.getElementById('main').classList.add('panel-open');
+
+  updateChangedCount();
+}
+
+
+/* ════════════════════════════════════════════════════════════════
+   매출액 인라인 수정 (요청 6)
+════════════════════════════════════════════════════════════════ */
+function openRevEdit(yk){
+  // 연도 헤더 클릭 시 해당 열의 모든 rev-val 편집 모드
+  document.querySelectorAll('th.rev-yr-col').forEach(th => {
+    th.classList.toggle('rev-yr-editing', th.dataset.revYk === yk);
+  });
+  document.querySelectorAll('td.rev-val').forEach(td => {
+    if(td.dataset.revYk === yk){
+      makeRevEditable(td);
+    }
+  });
+}
+function openRevValEdit(td){
+  makeRevEditable(td);
+}
+function makeRevEditable(td){
+  if(td.querySelector('input')) return; // already editing
+  const cur = td.textContent.trim().replace(/,/g,'');
+  td.classList.add('rev-editing');
+  const inp = document.createElement('input');
+  inp.type = 'text';
+  inp.value = cur;
+  inp.style.cssText = 'width:100%;background:transparent;border:none;outline:none;color:inherit;font:inherit;text-align:right;padding:0';
+  td.innerHTML = '';
+  td.appendChild(inp);
+  inp.focus(); inp.select();
+  function commit(){
+    const raw = inp.value.trim();
+    const num = parseFloat(raw.replace(/,/g,''));
+    const display = isNaN(num) ? raw : num.toLocaleString('ko-KR',{minimumFractionDigits:1,maximumFractionDigits:1});
+    td.classList.remove('rev-editing');
+    td.innerHTML = display;
+    td.onclick = function(){ openRevValEdit(td); };
+    // 별도 매출액 변경 시 DW 자동재계산 트리거
+    if(td.dataset.rev === 'byeol' && !isNaN(num)){
+      const yk = td.dataset.revYk;
+      updateDwForYk(yk, num);
+    }
+    // 연도 헤더 highlight 제거
+    document.querySelectorAll('th.rev-yr-col').forEach(th => th.classList.remove('rev-yr-editing'));
+    showToast('매출액 저장됨', 'ok');
+  }
+  inp.addEventListener('blur', commit);
+  inp.addEventListener('keydown', e => {
+    if(e.key === 'Enter'){ inp.blur(); }
+    if(e.key === 'Escape'){ td.classList.remove('rev-editing'); td.innerHTML = cur; td.onclick = function(){ openRevValEdit(td); }; }
+  });
+}
+function updateDwForYk(yk, newSv){
+  // 별도매출액 변경 시 AUTO_IDS 행 원단위 재계산 후 셀 갱신
+  if(!newSv || newSv <= 0) return;
+  RAW.forEach(r => {
+    if(!AUTO_IDS.has(r.id)) return;
+    // find parent non-auto row with same cat2+cat3 group
+    const parentIdx = RAW.findIndex(p => !AUTO_IDS.has(p.id) && p.cat2 === r.cat2 && p.cat3 === r.cat3 && p.id < r.id);
+    if(parentIdx < 0) return;
+    const bv = RAW[parentIdx][yk];
+    if(bv == null) return;
+    const newDw = bv / newSv;
+    r[yk] = newDw;
+    // update cell
+    const td = document.querySelector(`td.col-yr[data-yk="${yk}"][data-row-id="${r.id}"]`);
+    if(td){
+      const span = td.querySelector('span.yr-val');
+      if(span) span.textContent = fmtDw(newDw);
+    }
+  });
+}
+
+function closeEditPanel(){
+  document.getElementById('edit-panel').classList.remove('open');
+  document.getElementById('ep-overlay').classList.remove('show');
+  document.getElementById('main').classList.remove('panel-open');
+
+  // remove header highlight
+  document.querySelectorAll('th.col-yr .thi').forEach(el => el.classList.remove('active-yr'));
+  // remove cell highlight
+  document.querySelectorAll('td.col-yr').forEach(td => td.classList.remove('col-yr-editing'));
+
+  activeYk = null;
+}
+
+function buildYrTabs(selectedYk){
+  const container = document.getElementById('ep-yr-tabs');
+  container.innerHTML = '';
+  YKEYS.forEach(yk => {
+    const tab = document.createElement('button');
+    tab.className = 'ep-yr-tab' + (yk === selectedYk ? ' active' : '');
+    tab.textContent = YR_LABELS[yk];
+    tab.addEventListener('click', () => {
+      activeYk = yk;
+      buildYrTabs(yk);
+      buildEpBody(yk);
+      // update column highlight
+      document.querySelectorAll('th.col-yr .thi').forEach(el => {
+        el.classList.toggle('active-yr', el.dataset.yk === yk);
+      });
+      document.querySelectorAll('td.col-yr').forEach(td => {
+        td.classList.toggle('col-yr-editing', td.dataset.yk === yk);
+      });
+    });
+    container.appendChild(tab);
+  });
+}
+
+function buildEpBody(yk){
+  const body = document.getElementById('ep-body');
+  body.innerHTML = '';
+  const yr = YR_LABELS[yk];
+
+  // Group rows by cat2 for readability
+  let lastCat2 = null;
+
+  RAW.forEach(r => {
+    // Section divider on cat2 change
+    if(r.cat2 !== lastCat2){
+      lastCat2 = r.cat2;
+      const sec = document.createElement('div');
+      sec.className = 'ep-section';
+      sec.innerHTML = `<i class="bi bi-tag" style="font-size:9px"></i>${escHtml(r.cat2)}`;
+      body.appendChild(sec);
+    }
+
+    // store original value snapshot once
+    const key = `${r.id}_${yk}`;
+    if(!(key in EDIT_DATA_ORIG)){
+      EDIT_DATA_ORIG[key] = r[yk];
+    }
+
+    const origVal = EDIT_DATA_ORIG[key];
+    const curVal  = (key in editData) ? editData[key] : r[yk];
+
+    const card = document.createElement('div');
+    card.className = 'ep-card';
+
+    const isGoalRow = !!r.isGoal;
+    const isAutoRow = AUTO_IDS.has(r.id);
+
+    // 자동계산 행: 계산값 표시, readonly
+    const dispVal = isAutoRow
+      ? (curVal !== null && curVal !== undefined ? fmtDw(curVal) : '—')
+      : (curVal !== null && curVal !== undefined ? curVal : '');
+
+    card.innerHTML = `
+      <div class="ep-card-hdr">
+        <span class="ep-card-num">${r.id}</span>
+        <span class="ep-card-cat4${isGoalRow?' goal-style':''}">${escHtml(r.cat4)}</span>
+        ${isAutoRow ? '<span class="calc-badge"><i class="bi bi-calculator"></i>자동계산</span>' : ''}
+        <span class="ep-card-unit">${r.unit || '—'}</span>
+      </div>
+      <div class="ep-card-body">
+        <span class="ep-label">${yr}년 실적</span>
+        <input class="ep-input${isGoalRow?' is-goal':''}${isAutoRow?' auto-calc-inp':''}"
+          type="text"
+          id="inp_${key}"
+          data-key="${key}" data-orig="${origVal ?? ''}"
+          value="${dispVal}"
+          placeholder="—"
+          ${isAutoRow ? 'readonly title="자동계산값 — 기준 총량 수정 시 자동 반영됩니다"' : ''}
+        />
+        <span class="${isAutoRow ? 'ep-auto-label' : 'ep-prev'}" title="${isAutoRow ? '자동계산: 총량 ÷ 별도매출액' : '원본값'}">
+          ${isAutoRow ? '<i class="bi bi-calculator"></i>자동' : (origVal !== null && origVal !== undefined ? fmtNum(origVal) : '—')}
+        </span>
+      </div>
+    `;
+
+    // 자동계산 행은 이벤트 없음; 일반 행만 changed detection
+    if(!isAutoRow){
+      const inp = card.querySelector('input');
+      inp.addEventListener('input', () => {
+        const raw = inp.value.trim();
+        editData[key] = raw === '' ? null : raw;
+        const isChanged = String(origVal ?? '') !== raw;
+        inp.classList.toggle('changed', isChanged && raw !== '');
+        updateChangedCount();
+      });
+    }
+
+    body.appendChild(card);
+  });
+}
+
+function updateChangedCount(){
+  const cnt = Object.keys(editData).filter(k => {
+    const raw = editData[k];
+    const orig = EDIT_DATA_ORIG[k];
+    return raw !== null && String(orig ?? '') !== String(raw ?? '');
+  }).length;
+  document.getElementById('ep-changed-cnt').textContent = cnt;
+}
+
+function saveEdits(){
+  // 1) Apply editData back into RAW
+  let savedCount = 0;
+  const changedYks = new Set();
+
+  Object.keys(editData).forEach(key => {
+    const parts = key.split('_');
+    const yk  = parts[parts.length - 1];           // y2020 … y2025
+    const idStr = parts.slice(0, parts.length - 1).join('_');
+    const id  = parseInt(idStr, 10);
+    const r   = RAW.find(x => x.id === id);
+    if(!r) return;
+    if(AUTO_IDS.has(id)) return;                   // 자동계산 행은 직접 저장 불가
+    const newRaw = editData[key];
+    const parsed = (newRaw === null || newRaw === '')
+                   ? null
+                   : isNaN(Number(newRaw)) ? newRaw : Number(newRaw);
+    if(String(r[yk] ?? '') !== String(parsed ?? '')){
+      r[yk] = parsed;
+      savedCount++;
+      changedYks.add(yk);
+      renderCell(id, yk, r);
+    }
+  });
+
+  // 2) 변경된 연도키에 대해 원단위 재계산 → RAW 갱신 → 셀 재렌더
+  changedYks.forEach(yk => {
+    recalcYear(yk);
+    DW_MAP.forEach(({ dwId }) => {
+      const r = RAW.find(x => x.id === dwId);
+      if(r) renderCell(dwId, yk, r);
+    });
+  });
+
+  // 3) clear
+  Object.keys(editData).forEach(k => delete editData[k]);
+  Object.keys(EDIT_DATA_ORIG).forEach(k => delete EDIT_DATA_ORIG[k]);
+
+  showToast(savedCount > 0 ? `${savedCount}개 항목 저장 · 원단위 자동 재계산 완료` : '변경된 항목이 없습니다.', 'ok');
+  closeEditPanel();
+}
+
+/* 단일 셀 재렌더 헬퍼 */
+function renderCell(id, yk, r){
+  const td = document.querySelector(`td.col-yr[data-yk="${yk}"][data-row-id="${id}"]`);
+  if(!td) return;
+  const val     = r[yk];
+  const isAuto  = AUTO_IDS.has(id);
+  const isCur   = yk === 'y2024';
+  const isNull  = (val === null || val === undefined);
+  const isStr   = typeof val === 'string';
+  let cls = 'yr-val';
+  if(isNull) cls += ' null-v';
+  else if(isStr) cls += ' str-v';
+  else if(isCur) cls += ' cur';
+  const fmt     = isAuto ? fmtDw(val) : fmtNum(val);
+  const display = isNull ? '—' : fmt;
+  const align   = isStr ? 'c' : 'r';
+  td.innerHTML  = `<div class="tdi ${align}"><span class="${cls}">${display}</span></div>`;
+  if(activeYk === yk) td.classList.add('col-yr-editing');
+}
+
+/* ════════════════════════════════════════
+   YEAR HEADER CLICK SETUP
+════════════════════════════════════════ */
+function initYrHeaders(){
+  document.querySelectorAll('th.col-yr .thi[data-yk]').forEach(el => {
+    el.addEventListener('click', () => {
+      const yk = el.dataset.yk;
+      if(document.getElementById('edit-panel').classList.contains('open') && activeYk === yk){
+        closeEditPanel();
+      } else {
+        openEditPanel(yk);
+      }
+    });
+  });
+}
+
+/* ════════════════════════════════════════
+   BOOT
+════════════════════════════════════════ */
+document.addEventListener('DOMContentLoaded', () => {
+  recalcAll();      // ① 원단위 자동계산값 RAW에 반영
+  buildTable();     // ② 테이블 렌더
+  initChips();
+  initYrHeaders();
+});
+document.addEventListener('keydown', e => {
+  if(e.key === 'Escape' && document.getElementById('edit-panel').classList.contains('open')){
+    closeEditPanel();
+    return;
+  }
+  if((e.ctrlKey || e.metaKey) && e.key === 's'){
+    e.preventDefault();
+    if(document.getElementById('edit-panel').classList.contains('open')){
+      saveEdits();
+    } else {
+      showToast('저장되었습니다. (Ctrl+S)','ok');
+    }
+  }
+});
+</script>
+</body>
+</html>
