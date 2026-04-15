@@ -1,0 +1,32 @@
+// ── module-esgindicator/build.gradle ──────────────────────────────────────
+// ESG 관리지표 입력/조회 업무 모듈
+// URL Prefix  : /esgindicator-api/**
+// Table Prefix: MOD_ESGINDICATOR_
+// Package     : com.company.module.esgindicator
+
+dependencies {
+    // core 모듈 의존 (Security/Exception/Logging/BaseEntity 자동 포함)
+    implementation project(':core')
+
+    // Web / JPA / Validation
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+    // Thymeleaf (화면 렌더링)
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+    implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
+
+    // Apache POI (엑셀 업로드 / 다운로드)
+    implementation 'org.apache.poi:poi-ooxml:5.2.5'
+
+    // Test
+    testRuntimeOnly 'com.h2database:h2'
+}
+
+// QueryDSL Q클래스 생성 디렉토리 정리 (사용하지 않을 경우)
+// 필요시 아래 주석 해제 후 querydsl-apt 의존성 추가
+// configurations { annotationProcessor }
+
+// 업무 모듈: root build.gradle 에서 bootJar=false / jar=true 설정됨

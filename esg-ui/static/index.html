@@ -1,0 +1,1150 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>ESG 관리시스템 — 깨끗한나라</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"/>
+<style>
+/* ━━━━━━━━━━ CSS 변수 ━━━━━━━━━━ */
+:root{
+  --sidebar-w:230px;
+  --header-h:56px;
+  --clr-bg:#f0f2f7;
+  --clr-sidebar:#0f1f3d;
+  --clr-sidebar-hover:#1a3460;
+  --clr-e:#1e8449;
+  --clr-s:#1a5276;
+  --clr-g:#6c3483;
+  --clr-accent:#2563eb;
+}
+*{box-sizing:border-box;}
+body{margin:0;font-family:'Malgun Gothic',sans-serif;font-size:13px;background:var(--clr-bg);color:#222;}
+
+/* ━━━━━━━━━━ 사이드바 ━━━━━━━━━━ */
+#sidebar{
+  width:var(--sidebar-w);min-height:100vh;
+  background:var(--clr-sidebar);
+  position:fixed;top:0;left:0;z-index:1000;
+  display:flex;flex-direction:column;
+  overflow-y:auto;
+}
+.sidebar-brand{
+  padding:18px 20px 14px;
+  border-bottom:1px solid rgba(255,255,255,.1);
+  color:#fff;
+}
+.sidebar-brand .logo{font-size:1.05rem;font-weight:700;letter-spacing:-.3px;}
+.sidebar-brand .sub{font-size:.7rem;color:rgba(255,255,255,.5);margin-top:2px;}
+.nav-section{
+  font-size:.65rem;font-weight:700;letter-spacing:.08em;
+  text-transform:uppercase;color:rgba(255,255,255,.35);
+  padding:14px 20px 4px;
+}
+.nav-item-esg{list-style:none;padding:0;margin:0;}
+.nav-link-esg{
+  display:flex;align-items:center;gap:9px;
+  padding:9px 20px;color:rgba(255,255,255,.72);
+  text-decoration:none;border-radius:0;
+  cursor:pointer;transition:all .15s;
+  border-left:3px solid transparent;
+}
+.nav-link-esg:hover{background:var(--clr-sidebar-hover);color:#fff;}
+.nav-link-esg.active{color:#fff;border-left-color:currentColor;}
+.nav-link-esg.nav-e.active{background:rgba(30,132,73,.25);border-left-color:#27ae60;}
+.nav-link-esg.nav-s.active{background:rgba(26,82,118,.25);border-left-color:#2980b9;}
+.nav-link-esg.nav-g.active{background:rgba(108,52,131,.25);border-left-color:#8e44ad;}
+.nav-link-esg .icon-badge{
+  width:22px;height:22px;border-radius:4px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:.7rem;font-weight:700;flex-shrink:0;
+}
+.badge-e{background:var(--clr-e);color:#fff;}
+.badge-s{background:var(--clr-s);color:#fff;}
+.badge-g{background:var(--clr-g);color:#fff;}
+.badge-admin{background:#555;color:#fff;}
+.sidebar-footer{margin-top:auto;padding:14px 20px;border-top:1px solid rgba(255,255,255,.08);font-size:.7rem;color:rgba(255,255,255,.3);}
+
+/* ━━━━━━━━━━ 탑바 ━━━━━━━━━━ */
+#topbar{
+  height:var(--header-h);position:fixed;top:0;
+  left:var(--sidebar-w);right:0;z-index:999;
+  background:#fff;border-bottom:1px solid #dee2e6;
+  display:flex;align-items:center;padding:0 20px;gap:12px;
+  box-shadow:0 1px 4px rgba(0,0,0,.06);
+}
+#topbar .page-title{font-size:.95rem;font-weight:700;color:#111;margin-right:auto;}
+#topbar .year-chip{
+  display:flex;align-items:center;gap:6px;
+  background:#f8f9fa;border:1px solid #dee2e6;
+  border-radius:8px;padding:4px 10px;
+}
+#topbar .year-chip label{font-size:.7rem;color:#888;margin:0;}
+#topbar .year-chip select{
+  border:none;background:none;font-size:.82rem;font-weight:600;
+  color:#111;cursor:pointer;padding:0 4px;
+}
+
+/* ━━━━━━━━━━ 메인 콘텐츠 ━━━━━━━━━━ */
+#main{
+  margin-left:var(--sidebar-w);
+  padding-top:var(--header-h);
+  min-height:100vh;
+}
+.content-area{padding:18px 20px;}
+
+/* ━━━━━━━━━━ 탭 ━━━━━━━━━━ */
+.esg-tab{display:flex;gap:2px;border-bottom:2px solid #dee2e6;margin-bottom:16px;}
+.esg-tab-btn{
+  padding:8px 18px;border:none;background:none;
+  font-size:.82rem;font-weight:600;color:#888;
+  cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;
+  transition:all .15s;
+}
+.esg-tab-btn:hover{color:#333;}
+.esg-tab-btn.active-e{color:var(--clr-e);border-bottom-color:var(--clr-e);}
+.esg-tab-btn.active-s{color:var(--clr-s);border-bottom-color:var(--clr-s);}
+.esg-tab-btn.active-g{color:var(--clr-g);border-bottom-color:var(--clr-g);}
+
+/* ━━━━━━━━━━ 요약 카드 ━━━━━━━━━━ */
+.summary-row{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;}
+.summary-card{
+  background:#fff;border-radius:10px;padding:14px 18px;
+  border-left:4px solid;min-width:130px;flex:1;
+  box-shadow:0 1px 3px rgba(0,0,0,.07);
+}
+.summary-card .s-label{font-size:.68rem;color:#888;font-weight:600;text-transform:uppercase;letter-spacing:.04em;}
+.summary-card .s-value{font-size:1.6rem;font-weight:800;line-height:1.1;margin-top:4px;}
+.summary-card .s-sub{font-size:.7rem;color:#aaa;margin-top:2px;}
+.card-total  {border-color:#6c757d;} .card-total .s-value{color:#343a40;}
+.card-done   {border-color:#198754;} .card-done .s-value{color:#198754;}
+.card-partial{border-color:#ffc107;} .card-partial .s-value{color:#856404;}
+.card-missing{border-color:#dc3545;} .card-missing .s-value{color:#dc3545;}
+.card-rate   {border-color:#0d6efd;} .card-rate .s-value{color:#0d6efd;}
+
+/* ━━━━━━━━━━ 필터바 ━━━━━━━━━━ */
+.filter-bar{
+  background:#fff;border-radius:10px;padding:10px 16px;
+  margin-bottom:14px;display:flex;align-items:center;
+  gap:12px;flex-wrap:wrap;box-shadow:0 1px 3px rgba(0,0,0,.06);
+}
+.filter-bar label{font-size:.72rem;color:#666;margin:0;}
+.filter-bar select,.filter-bar input{
+  font-size:.78rem;border:1px solid #dee2e6;border-radius:6px;
+  padding:4px 8px;background:#fff;
+}
+.dept-tabs{display:flex;gap:6px;flex-wrap:wrap;}
+.dept-tab{
+  padding:4px 12px;border:1px solid #dee2e6;border-radius:20px;
+  font-size:.72rem;cursor:pointer;background:#fff;color:#555;
+  transition:all .15s;
+}
+.dept-tab:hover,.dept-tab.active{
+  background:var(--clr-accent);color:#fff;border-color:var(--clr-accent);
+}
+
+/* ━━━━━━━━━━ 지표 테이블 ━━━━━━━━━━ */
+.table-wrap{
+  background:#fff;border-radius:10px;overflow:hidden;
+  box-shadow:0 1px 3px rgba(0,0,0,.07);
+}
+.table-scroll{overflow-x:auto;max-height:calc(100vh - 310px);overflow-y:auto;}
+table.esi-table{border-collapse:collapse;width:100%;font-size:.78rem;}
+.esi-table th{
+  background:#1e3a5f;color:#fff;
+  padding:9px 10px;white-space:nowrap;
+  position:sticky;top:0;z-index:20;
+  border-right:1px solid rgba(255,255,255,.1);
+  font-weight:600;font-size:.72rem;
+}
+.esi-table th.sticky-col-1{left:0;z-index:30;}
+.esi-table th.sticky-col-2{left:110px;z-index:30;}
+.esi-table th.sticky-col-3{left:240px;z-index:30;}
+.esi-table th.sticky-col-4{left:380px;z-index:30;}
+.esi-table td{
+  padding:7px 10px;border-bottom:1px solid #f0f0f0;
+  border-right:1px solid #f3f3f3;vertical-align:middle;
+}
+.esi-table td.sticky-col-1{position:sticky;left:0;background:#fff;z-index:10;min-width:110px;max-width:110px;font-weight:600;}
+.esi-table td.sticky-col-2{position:sticky;left:110px;background:#fff;z-index:10;min-width:130px;max-width:130px;}
+.esi-table td.sticky-col-3{position:sticky;left:240px;background:#fff;z-index:10;min-width:140px;max-width:140px;}
+.esi-table td.sticky-col-4{position:sticky;left:380px;background:#fff;z-index:10;min-width:55px;max-width:55px;color:#888;font-size:.7rem;}
+.esi-table tr:hover td{background:#f8fbff;}
+.esi-table tr.group-header td{background:#f0f4ff;font-weight:700;color:#1e3a5f;}
+.esi-table tr.sub-item td.sticky-col-3{color:#555;padding-left:16px;}
+
+/* 입력 셀 */
+.val-input{
+  width:100%;min-width:90px;
+  border:1px solid transparent;border-radius:4px;
+  padding:4px 6px;text-align:right;font-size:.78rem;
+  background:transparent;transition:all .15s;
+}
+.val-input:focus{
+  background:#fffde7;border-color:#ffc107;outline:none;
+  box-shadow:0 0 0 2px rgba(255,193,7,.25);
+}
+.val-input.has-value{background:#f0fff4;}
+.val-input.confirmed{background:#f8f9fa;color:#888;cursor:not-allowed;}
+
+/* 상태 배지 */
+.status-badge{
+  display:inline-block;padding:2px 7px;border-radius:10px;
+  font-size:.65rem;font-weight:700;white-space:nowrap;
+}
+.st-0{background:#fef2f2;color:#991b1b;} /* 미입력 */
+.st-1{background:#fff7ed;color:#92400e;} /* 입력중 */
+.st-2{background:#eff6ff;color:#1d4ed8;} /* 제출완료 */
+.st-3{background:#f0fdf4;color:#166534;} /* 최종확정 */
+
+/* ━━━━━━━━━━ 하단 액션바 ━━━━━━━━━━ */
+.action-bar{
+  position:fixed;bottom:0;left:var(--sidebar-w);right:0;
+  background:#fff;border-top:1px solid #dee2e6;
+  padding:10px 20px;display:flex;align-items:center;gap:10px;
+  z-index:500;box-shadow:0 -2px 8px rgba(0,0,0,.06);
+}
+.save-info{font-size:.75rem;color:#888;margin-right:auto;}
+
+/* ━━━━━━━━━━ 현황 화면 ━━━━━━━━━━ */
+.status-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;margin-bottom:20px;}
+.dept-status-card{
+  background:#fff;border-radius:10px;padding:16px;
+  box-shadow:0 1px 3px rgba(0,0,0,.07);
+}
+.dept-status-card .dept-name{font-weight:700;font-size:.88rem;margin-bottom:10px;}
+.progress-bar-wrap{background:#f0f0f0;border-radius:4px;height:8px;overflow:hidden;margin-bottom:6px;}
+.progress-fill{height:100%;border-radius:4px;transition:width .3s;}
+.fill-e{background:linear-gradient(90deg,#27ae60,#2ecc71);}
+.fill-s{background:linear-gradient(90deg,#2980b9,#3498db);}
+.fill-g{background:linear-gradient(90deg,#8e44ad,#9b59b6);}
+.dept-counts{display:flex;gap:8px;font-size:.7rem;}
+.cnt{display:flex;align-items:center;gap:3px;}
+
+/* ━━━━━━━━━━ 모달 ━━━━━━━━━━ */
+.modal-header-e{background:var(--clr-e)!important;color:#fff!important;}
+.modal-header-s{background:var(--clr-s)!important;color:#fff!important;}
+.modal-header-g{background:var(--clr-g)!important;color:#fff!important;}
+
+/* ━━━━━━━━━━ 섹션 전환 ━━━━━━━━━━ */
+.page-section{display:none;}
+.page-section.active{display:block;}
+
+/* ━━━━━━━━━━ 토스트 ━━━━━━━━━━ */
+#toast-container{position:fixed;bottom:70px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:8px;}
+.toast-msg{
+  background:#1e3a5f;color:#fff;padding:10px 18px;border-radius:8px;
+  font-size:.8rem;box-shadow:0 4px 12px rgba(0,0,0,.2);
+  animation:slideIn .2s ease;
+}
+@keyframes slideIn{from{transform:translateX(60px);opacity:0;}to{transform:none;opacity:1;}}
+</style>
+</head>
+<body>
+
+<!-- ██████████ 사이드바 ██████████ -->
+<nav id="sidebar">
+  <div class="sidebar-brand">
+    <div class="logo"><i class="bi bi-leaf-fill text-success me-1"></i>ESG 관리시스템</div>
+    <div class="sub">깨끗한나라 | 2025 Fact Book</div>
+  </div>
+
+  <div class="nav-section">지표 입력</div>
+  <ul class="nav-item-esg">
+    <li><a class="nav-link-esg nav-e active" onclick="showPage('env')">
+      <span class="icon-badge badge-e">E</span> 환경 지표
+    </a></li>
+    <li><a class="nav-link-esg nav-s" onclick="showPage('soc')">
+      <span class="icon-badge badge-s">S</span> 사회 지표
+    </a></li>
+    <li><a class="nav-link-esg nav-g" onclick="showPage('gov')">
+      <span class="icon-badge badge-g">G</span> 지배구조 지표
+    </a></li>
+  </ul>
+
+  <div class="nav-section">관리</div>
+  <ul class="nav-item-esg">
+    <li><a class="nav-link-esg" onclick="showPage('status')">
+      <span class="icon-badge badge-admin"><i class="bi bi-bar-chart-fill"></i></span> 입력현황
+    </a></li>
+    <li><a class="nav-link-esg" onclick="showPage('export')">
+      <span class="icon-badge badge-admin"><i class="bi bi-file-earmark-excel"></i></span> Fact Book 출력
+    </a></li>
+    <li><a class="nav-link-esg" onclick="showPage('dept')">
+      <span class="icon-badge badge-admin"><i class="bi bi-diagram-3"></i></span> 부서 관리
+    </a></li>
+    <li><a class="nav-link-esg" onclick="showPage('master')">
+      <span class="icon-badge badge-admin"><i class="bi bi-list-check"></i></span> 지표 마스터
+    </a></li>
+  </ul>
+
+  <div class="sidebar-footer">v1.0.0 &nbsp;|&nbsp; 2025 ESG Fact Book</div>
+</nav>
+
+<!-- ██████████ 탑바 ██████████ -->
+<header id="topbar">
+  <div class="page-title" id="page-title">
+    <span class="text-success me-1">●</span> 환경(E) 지표 입력
+  </div>
+
+  <div class="year-chip">
+    <label>기준연도</label>
+    <select id="yearSelect" onchange="changeYear()">
+      <option value="2025">2025</option>
+      <option value="2024" selected>2024</option>
+      <option value="2023">2023</option>
+      <option value="2022">2022</option>
+      <option value="2021">2021</option>
+      <option value="2020">2020</option>
+    </select>
+  </div>
+
+  <div class="year-chip">
+    <label>이전연도 참고</label>
+    <select id="refYearSelect">
+      <option value="2023" selected>2023</option>
+      <option value="2022">2022</option>
+    </select>
+  </div>
+
+  <button class="btn btn-sm btn-outline-secondary" onclick="showPage('status')">
+    <i class="bi bi-bar-chart-line"></i> 현황
+  </button>
+  <button class="btn btn-sm btn-outline-success" onclick="downloadExcel()">
+    <i class="bi bi-file-earmark-excel"></i> Excel
+  </button>
+  <button class="btn btn-sm btn-primary" onclick="saveAll()">
+    <i class="bi bi-save2"></i> 저장
+  </button>
+
+  <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center" style="width:32px;height:32px;font-size:.7rem;flex-shrink:0">관리</div>
+</header>
+
+<!-- ██████████ 메인 콘텐츠 ██████████ -->
+<main id="main">
+  <div class="content-area">
+
+    <!-- ════════ 환경(E) 페이지 ════════ -->
+    <div id="page-env" class="page-section active">
+      <!-- 요약 -->
+      <div class="summary-row">
+        <div class="summary-card card-total"><div class="s-label">전체 지표</div><div class="s-value" id="e-total">87</div><div class="s-sub">개 지표항목</div></div>
+        <div class="summary-card card-done"><div class="s-label">입력완료</div><div class="s-value" id="e-done">52</div><div class="s-sub">최종확정 포함</div></div>
+        <div class="summary-card card-partial"><div class="s-label">입력중</div><div class="s-value" id="e-partial">18</div><div class="s-sub">저장 전</div></div>
+        <div class="summary-card card-missing"><div class="s-label">미입력</div><div class="s-value" id="e-missing">17</div><div class="s-sub">입력 필요</div></div>
+        <div class="summary-card card-rate"><div class="s-label">입력완료율</div><div class="s-value" id="e-rate">59.8%</div><div class="s-sub">2024년 기준</div></div>
+      </div>
+
+      <!-- 필터 -->
+      <div class="filter-bar">
+        <label><i class="bi bi-funnel"></i> 담당부서</label>
+        <div class="dept-tabs" id="e-dept-tabs">
+          <span class="dept-tab active" onclick="filterDept(this,'env','all')">전체</span>
+          <span class="dept-tab" onclick="filterDept(this,'env','환경에너지팀')">환경에너지팀</span>
+          <span class="dept-tab" onclick="filterDept(this,'env','경영기획팀')">경영기획팀</span>
+          <span class="dept-tab" onclick="filterDept(this,'env','HL기획팀')">HL기획팀</span>
+          <span class="dept-tab" onclick="filterDept(this,'env','PS기획팀')">PS기획팀</span>
+        </div>
+        <div class="ms-auto d-flex gap-2">
+          <select class="form-select form-select-sm" style="width:130px" onchange="filterStatus(this,'env')">
+            <option value="">전체 상태</option>
+            <option value="0">미입력</option>
+            <option value="1">입력중</option>
+            <option value="2">제출완료</option>
+            <option value="3">최종확정</option>
+          </select>
+          <input class="form-control form-control-sm" style="width:160px" placeholder="지표명 검색…" oninput="filterSearch(this,'env')"/>
+        </div>
+      </div>
+
+      <!-- 테이블 -->
+      <div class="table-wrap">
+        <div class="table-scroll">
+          <table class="esi-table" id="tbl-env">
+            <thead>
+              <tr>
+                <th class="sticky-col-1" style="min-width:110px">대구분</th>
+                <th class="sticky-col-2" style="min-width:130px">중구분</th>
+                <th class="sticky-col-3" style="min-width:140px">지표명(소)</th>
+                <th class="sticky-col-4" style="min-width:55px">단위</th>
+                <th style="min-width:65px">2022</th>
+                <th style="min-width:65px">2023</th>
+                <th style="min-width:100px;background:#1a3460;">2024 입력</th>
+                <th style="min-width:100px">2025 입력</th>
+                <th style="min-width:80px">상태</th>
+                <th style="min-width:110px">담당부서</th>
+                <th style="min-width:130px">비고/산식</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-env"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════ 사회(S) 페이지 ════════ -->
+    <div id="page-soc" class="page-section">
+      <div class="summary-row">
+        <div class="summary-card card-total"><div class="s-label">전체 지표</div><div class="s-value">83</div></div>
+        <div class="summary-card card-done"><div class="s-label">입력완료</div><div class="s-value">0</div></div>
+        <div class="summary-card card-missing"><div class="s-label">미입력</div><div class="s-value">83</div></div>
+        <div class="summary-card card-rate"><div class="s-label">입력완료율</div><div class="s-value">0%</div></div>
+      </div>
+      <div class="filter-bar">
+        <label><i class="bi bi-funnel"></i> 담당부서</label>
+        <div class="dept-tabs" id="s-dept-tabs">
+          <span class="dept-tab active" onclick="filterDept(this,'soc','all')">전체</span>
+          <span class="dept-tab" onclick="filterDept(this,'soc','HR팀')">HR팀</span>
+          <span class="dept-tab" onclick="filterDept(this,'soc','안전보건팀')">안전보건팀</span>
+          <span class="dept-tab" onclick="filterDept(this,'soc','대외협력팀')">대외협력팀</span>
+          <span class="dept-tab" onclick="filterDept(this,'soc','정보보안팀')">정보보안팀</span>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <div class="table-scroll">
+          <table class="esi-table" id="tbl-soc">
+            <thead>
+              <tr>
+                <th class="sticky-col-1">대구분</th>
+                <th class="sticky-col-2">중구분</th>
+                <th class="sticky-col-3">지표명(소)</th>
+                <th class="sticky-col-4">단위</th>
+                <th style="min-width:65px">2022</th>
+                <th style="min-width:65px">2023</th>
+                <th style="min-width:100px;background:#1a3460;">2024 입력</th>
+                <th style="min-width:100px">2025 입력</th>
+                <th style="min-width:80px">상태</th>
+                <th style="min-width:110px">담당부서</th>
+                <th style="min-width:130px">비고/산식</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-soc"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════ 지배구조(G) 페이지 ════════ -->
+    <div id="page-gov" class="page-section">
+      <div class="summary-row">
+        <div class="summary-card card-total"><div class="s-label">전체 지표</div><div class="s-value">25</div></div>
+        <div class="summary-card card-done"><div class="s-label">입력완료</div><div class="s-value">0</div></div>
+        <div class="summary-card card-missing"><div class="s-label">미입력</div><div class="s-value">25</div></div>
+        <div class="summary-card card-rate"><div class="s-label">입력완료율</div><div class="s-value">0%</div></div>
+      </div>
+      <div class="filter-bar">
+        <label><i class="bi bi-funnel"></i> 담당부서</label>
+        <div class="dept-tabs">
+          <span class="dept-tab active" onclick="filterDept(this,'gov','all')">전체</span>
+          <span class="dept-tab" onclick="filterDept(this,'gov','자산관리파트')">자산관리파트</span>
+          <span class="dept-tab" onclick="filterDept(this,'gov','진실경영팀')">진실경영팀</span>
+          <span class="dept-tab" onclick="filterDept(this,'gov','HR팀')">HR팀</span>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <div class="table-scroll">
+          <table class="esi-table" id="tbl-gov">
+            <thead>
+              <tr>
+                <th class="sticky-col-1">대구분</th>
+                <th class="sticky-col-2">중구분</th>
+                <th class="sticky-col-3">지표명(소)</th>
+                <th class="sticky-col-4">단위</th>
+                <th style="min-width:65px">2022</th>
+                <th style="min-width:65px">2023</th>
+                <th style="min-width:100px;background:#1a3460;">2024 입력</th>
+                <th style="min-width:100px">2025 입력</th>
+                <th style="min-width:80px">상태</th>
+                <th style="min-width:110px">담당부서</th>
+                <th style="min-width:130px">비고/산식</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-gov"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════ 입력현황 페이지 ════════ -->
+    <div id="page-status" class="page-section">
+      <h5 class="fw-bold mb-3">📊 부서별 입력현황 — 2024년</h5>
+      <div class="esg-tab mb-3">
+        <button class="esg-tab-btn active-e" onclick="statusTab(this,'E')">환경(E)</button>
+        <button class="esg-tab-btn" onclick="statusTab(this,'S')">사회(S)</button>
+        <button class="esg-tab-btn" onclick="statusTab(this,'G')">지배구조(G)</button>
+        <button class="esg-tab-btn" onclick="statusTab(this,'ALL')">전체</button>
+      </div>
+      <div class="status-grid" id="status-grid"></div>
+
+      <h6 class="fw-bold mt-4 mb-3">전체 진행 현황</h6>
+      <div class="table-wrap">
+        <table class="table table-sm table-bordered mb-0" style="font-size:.8rem">
+          <thead class="table-dark">
+            <tr>
+              <th>구분</th><th>담당부서</th><th>전체</th><th>입력완료</th><th>입력중</th><th>미입력</th><th>완료율</th><th>최종확정</th>
+            </tr>
+          </thead>
+          <tbody id="status-table-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ════════ Fact Book 출력 페이지 ════════ -->
+    <div id="page-export" class="page-section">
+      <h5 class="fw-bold mb-3">📁 Fact Book 데이터 출력</h5>
+      <div class="row g-3">
+        <div class="col-md-4">
+          <div class="card border-0 shadow-sm">
+            <div class="card-body">
+              <h6 class="fw-bold text-success"><i class="bi bi-file-earmark-excel"></i> Excel 다운로드</h6>
+              <p class="text-muted small">연도별 전체 지표값을 엑셀로 출력합니다.</p>
+              <div class="mb-2">
+                <label class="form-label small">출력 연도 선택</label>
+                <select class="form-select form-select-sm">
+                  <option>2020~2025 (전체)</option>
+                  <option>2024 (단년도)</option>
+                  <option>2023~2024 (2개년)</option>
+                </select>
+              </div>
+              <div class="mb-2">
+                <label class="form-label small">시트 선택</label>
+                <div><label><input type="checkbox" checked class="me-1"/>환경(E)</label></div>
+                <div><label><input type="checkbox" checked class="me-1"/>사회(S)</label></div>
+                <div><label><input type="checkbox" checked class="me-1"/>지배구조(G)</label></div>
+              </div>
+              <button class="btn btn-success btn-sm w-100 mt-2" onclick="downloadExcel()">
+                <i class="bi bi-download"></i> 다운로드
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card border-0 shadow-sm">
+            <div class="card-body">
+              <h6 class="fw-bold text-primary"><i class="bi bi-upload"></i> 입력양식 업로드</h6>
+              <p class="text-muted small">부서별 입력양식을 업로드합니다.</p>
+              <div class="mb-2">
+                <label class="form-label small">담당부서</label>
+                <select class="form-select form-select-sm">
+                  <option>환경에너지팀</option>
+                  <option>HR팀</option>
+                  <option>안전보건팀</option>
+                </select>
+              </div>
+              <div class="mb-2">
+                <input type="file" class="form-control form-control-sm" accept=".xlsx"/>
+              </div>
+              <button class="btn btn-primary btn-sm w-100" onclick="showToast('업로드가 완료되었습니다.')">
+                <i class="bi bi-upload"></i> 업로드
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card border-0 shadow-sm">
+            <div class="card-body">
+              <h6 class="fw-bold text-warning"><i class="bi bi-printer"></i> 인쇄 미리보기</h6>
+              <p class="text-muted small">Fact Book 출력물 형태로 미리보기합니다.</p>
+              <button class="btn btn-outline-warning btn-sm w-100" onclick="window.print()">
+                <i class="bi bi-printer"></i> 인쇄
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 미리보기 테이블 -->
+      <h6 class="fw-bold mt-4 mb-2">Fact Book 미리보기 — 환경(E) 2024</h6>
+      <div class="table-wrap">
+        <div class="table-scroll" style="max-height:400px;">
+          <table class="table table-bordered table-sm" style="font-size:.75rem;" id="preview-table">
+            <thead class="table-secondary">
+              <tr>
+                <th>대구분</th><th>중구분</th><th>지표명</th><th>단위</th>
+                <th>2020</th><th>2021</th><th>2022</th><th>2023</th><th>2024</th>
+              </tr>
+            </thead>
+            <tbody id="preview-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════ 부서 관리 페이지 ════════ -->
+    <div id="page-dept" class="page-section">
+      <div class="d-flex align-items-center mb-3">
+        <h5 class="fw-bold mb-0">🏢 부서 마스터 관리</h5>
+        <button class="btn btn-sm btn-primary ms-auto" data-bs-toggle="modal" data-bs-target="#deptModal">
+          <i class="bi bi-plus"></i> 부서 추가
+        </button>
+      </div>
+      <div class="table-wrap">
+        <table class="table table-sm table-bordered table-hover mb-0" style="font-size:.8rem">
+          <thead class="table-dark">
+            <tr><th>#</th><th>부서코드</th><th>부서명</th><th>ESG구분</th><th>정렬</th><th>사용여부</th><th>관리</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td><td>ENV_ENERGY</td><td>환경에너지팀</td><td><span class="badge bg-success">E</span></td><td>10</td><td><span class="badge bg-primary">사용</span></td><td><button class="btn btn-xs btn-outline-secondary">수정</button></td></tr>
+            <tr><td>2</td><td>HR</td><td>HR팀</td><td><span class="badge bg-primary">S</span></td><td>20</td><td><span class="badge bg-primary">사용</span></td><td><button class="btn btn-xs btn-outline-secondary">수정</button></td></tr>
+            <tr><td>3</td><td>SAFETY</td><td>안전보건팀</td><td><span class="badge bg-primary">S</span></td><td>30</td><td><span class="badge bg-primary">사용</span></td><td><button class="btn btn-xs btn-outline-secondary">수정</button></td></tr>
+            <tr><td>4</td><td>ASSET</td><td>자산관리파트</td><td><span class="badge bg-purple" style="background:#6c3483">G</span></td><td>40</td><td><span class="badge bg-primary">사용</span></td><td><button class="btn btn-xs btn-outline-secondary">수정</button></td></tr>
+            <tr><td>5</td><td>ETHICS</td><td>진실경영팀</td><td><span class="badge bg-purple" style="background:#6c3483">G</span></td><td>50</td><td><span class="badge bg-primary">사용</span></td><td><button class="btn btn-xs btn-outline-secondary">수정</button></td></tr>
+            <tr><td>6</td><td>EXTERNAL</td><td>대외협력팀</td><td><span class="badge bg-primary">S</span></td><td>60</td><td><span class="badge bg-primary">사용</span></td><td><button class="btn btn-xs btn-outline-secondary">수정</button></td></tr>
+            <tr><td>7</td><td>INFO_SEC</td><td>정보보안팀</td><td><span class="badge bg-primary">S</span></td><td>70</td><td><span class="badge bg-primary">사용</span></td><td><button class="btn btn-xs btn-outline-secondary">수정</button></td></tr>
+            <tr><td>8</td><td>HL_PLAN</td><td>HL기획팀</td><td><span class="badge bg-success">E</span></td><td>80</td><td><span class="badge bg-primary">사용</span></td><td><button class="btn btn-xs btn-outline-secondary">수정</button></td></tr>
+            <tr><td>9</td><td>PS_PLAN</td><td>PS기획팀</td><td><span class="badge bg-success">E</span></td><td>90</td><td><span class="badge bg-primary">사용</span></td><td><button class="btn btn-xs btn-outline-secondary">수정</button></td></tr>
+            <tr><td>10</td><td>MGMT</td><td>경영기획팀</td><td><span class="badge bg-success">E</span></td><td>100</td><td><span class="badge bg-primary">사용</span></td><td><button class="btn btn-xs btn-outline-secondary">수정</button></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ════════ 지표 마스터 페이지 ════════ -->
+    <div id="page-master" class="page-section">
+      <div class="d-flex align-items-center mb-3">
+        <h5 class="fw-bold mb-0">📋 지표 마스터 관리</h5>
+        <div class="ms-auto d-flex gap-2">
+          <select class="form-select form-select-sm" style="width:120px" onchange="filterMasterCat(this.value)">
+            <option value="all">전체</option>
+            <option value="E">환경(E)</option>
+            <option value="S">사회(S)</option>
+            <option value="G">지배구조(G)</option>
+          </select>
+          <button class="btn btn-sm btn-primary">
+            <i class="bi bi-plus"></i> 지표 추가
+          </button>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <div class="table-scroll" style="max-height:600px;">
+          <table class="table table-sm table-bordered mb-0" style="font-size:.75rem">
+            <thead class="table-dark">
+              <tr><th>구분</th><th>대제목</th><th>중제목</th><th>소제목(지표명)</th><th>단위</th><th>담당부서</th><th>필수여부</th><th>정렬</th><th>사용</th></tr>
+            </thead>
+            <tbody id="master-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content-area -->
+</main>
+
+<!-- 하단 액션바 -->
+<div class="action-bar" id="action-bar">
+  <div class="save-info" id="save-info">
+    <i class="bi bi-clock text-muted me-1"></i> 마지막 저장: 방금 전
+  </div>
+  <button class="btn btn-sm btn-outline-secondary" onclick="submitAll()">
+    <i class="bi bi-send"></i> 전체 제출
+  </button>
+  <button class="btn btn-sm btn-outline-success" onclick="downloadExcel()">
+    <i class="bi bi-file-earmark-excel"></i> Excel 다운로드
+  </button>
+  <button class="btn btn-primary btn-sm px-4" onclick="saveAll()">
+    <i class="bi bi-save2"></i> 저장
+  </button>
+</div>
+
+<!-- 토스트 컨테이너 -->
+<div id="toast-container"></div>
+
+<!-- 상세 입력 모달 -->
+<div class="modal fade" id="detailModal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header modal-header-e" id="modal-header-esg">
+        <h5 class="modal-title text-white" id="modal-title">지표 상세 입력</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row g-3">
+          <div class="col-12">
+            <div class="alert alert-light border">
+              <strong id="modal-indicator-name">지표명</strong>
+              <span class="ms-2 text-muted small" id="modal-indicator-unit"></span>
+              <span class="ms-2 badge" id="modal-indicator-dept"></span>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small fw-bold">2022 실적</label>
+            <input class="form-control form-control-sm" id="modal-v2022" readonly/>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small fw-bold">2023 실적</label>
+            <input class="form-control form-control-sm" id="modal-v2023" readonly/>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small fw-bold text-primary">2024 입력 ★</label>
+            <input class="form-control form-control-sm border-primary" id="modal-v2024" type="number" step="any"/>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small fw-bold">2025 입력</label>
+            <input class="form-control form-control-sm" id="modal-v2025" type="number" step="any"/>
+          </div>
+          <div class="col-12">
+            <label class="form-label small fw-bold">산식/비고</label>
+            <textarea class="form-control form-control-sm" id="modal-remark" rows="2" placeholder="계산 근거, 참고사항 등"></textarea>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label small fw-bold">첨부파일</label>
+            <input type="file" class="form-control form-control-sm"/>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label small fw-bold">입력 상태</label>
+            <select class="form-select form-select-sm" id="modal-status">
+              <option value="0">미입력</option>
+              <option value="1">입력중</option>
+              <option value="2" selected>제출완료</option>
+              <option value="3">최종확정</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">닫기</button>
+        <button type="button" class="btn btn-primary btn-sm" onclick="saveModal()">저장</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 부서 추가 모달 -->
+<div class="modal fade" id="deptModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-dark text-white">
+        <h5 class="modal-title">부서 추가</h5>
+        <button class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-2"><label class="form-label small">부서코드</label><input class="form-control form-control-sm" placeholder="예: ENV_ENERGY"/></div>
+        <div class="mb-2"><label class="form-label small">부서명</label><input class="form-control form-control-sm" placeholder="예: 환경에너지팀"/></div>
+        <div class="mb-2"><label class="form-label small">ESG 구분</label>
+          <select class="form-select form-select-sm"><option>E (환경)</option><option>S (사회)</option><option>G (지배구조)</option></select>
+        </div>
+        <div class="mb-2"><label class="form-label small">정렬순서</label><input type="number" class="form-control form-control-sm"/></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary btn-sm" data-bs-dismiss="modal">취소</button>
+        <button class="btn btn-primary btn-sm" onclick="showToast('부서가 등록되었습니다.')">저장</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 실제 엑셀 파일 기반 지표 데이터
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+const DATA = {
+  E: [
+    // 온실가스 배출
+    {id:'E001',major:'온실가스 배출',mid:'온실가스',minor:'총 배출량(Scope 1 & 2)',unit:'tCO2eq',dept:'환경에너지팀',v2022:345326,v2023:322953,v2024:315306,v2025:null,status:2,remark:'Scope1+Scope2 합산'},
+    {id:'E002',major:'온실가스 배출',mid:'온실가스',minor:'- 직접 배출량(Scope 1)',unit:'tCO2eq',dept:'환경에너지팀',v2022:205838,v2023:195855,v2024:187125,v2025:null,status:2,remark:'LNG, 경유 등 직접연소'},
+    {id:'E003',major:'온실가스 배출',mid:'온실가스',minor:'- 간접 배출량(Scope 2)',unit:'tCO2eq',dept:'환경에너지팀',v2022:139489,v2023:127098,v2024:128181,v2025:null,status:2,remark:'전력 구매량 기반'},
+    {id:'E004',major:'온실가스 배출',mid:'온실가스',minor:'원단위',unit:'tCO2eq/십억원',dept:'환경에너지팀',v2022:570.2,v2023:627.9,v2024:588.0,v2025:null,status:2,remark:'배출량/매출액'},
+    {id:'E005',major:'온실가스 배출',mid:'온실가스 감축량',minor:'총 감축량(Scope1&2&3)',unit:'tCO2eq',dept:'환경에너지팀',v2022:null,v2023:null,v2024:7647,v2025:null,status:2,remark:''},
+    {id:'E006',major:'온실가스 배출',mid:'온실가스 감축량',minor:'- 직접 감축량(Scope 1)',unit:'tCO2eq',dept:'환경에너지팀',v2022:null,v2023:null,v2024:8730,v2025:null,status:2,remark:''},
+    {id:'E007',major:'온실가스 배출',mid:'온실가스 감축량',minor:'- 간접 감축량(Scope 2)',unit:'tCO2eq',dept:'환경에너지팀',v2022:null,v2023:null,v2024:-1083,v2025:null,status:2,remark:''},
+    // 에너지 소비
+    {id:'E008',major:'에너지 소비',mid:'일반에너지',minor:'총 소비량',unit:'TJ',dept:'환경에너지팀',v2022:null,v2023:4588,v2024:4353,v2025:null,status:2,remark:''},
+    {id:'E009',major:'에너지 소비',mid:'일반에너지',minor:'직접에너지 소비량',unit:'TJ',dept:'환경에너지팀',v2022:null,v2023:1601.3,v2024:1372.8,v2025:null,status:2,remark:''},
+    {id:'E010',major:'에너지 소비',mid:'일반에너지',minor:'- 도시가스(LNG)',unit:'Nm3',dept:'환경에너지팀',v2022:null,v2023:5102342,v2024:4651998,v2025:null,status:2,remark:''},
+    {id:'E011',major:'에너지 소비',mid:'일반에너지',minor:'- 휘발유',unit:'L',dept:'환경에너지팀',v2022:null,v2023:32000,v2024:34251,v2025:null,status:2,remark:''},
+    {id:'E012',major:'에너지 소비',mid:'일반에너지',minor:'- 경유',unit:'L',dept:'환경에너지팀',v2022:null,v2023:520000,v2024:484058,v2025:null,status:2,remark:''},
+    {id:'E013',major:'에너지 소비',mid:'일반에너지',minor:'- SRF',unit:'ton',dept:'환경에너지팀',v2022:null,v2023:105200,v2024:111547.1,v2025:null,status:2,remark:''},
+    {id:'E014',major:'에너지 소비',mid:'일반에너지',minor:'간접에너지 소비량',unit:'TJ',dept:'환경에너지팀',v2022:null,v2023:2987.0,v2024:2981.1,v2025:null,status:2,remark:''},
+    {id:'E015',major:'에너지 소비',mid:'일반에너지',minor:'- 전력',unit:'TJ',dept:'환경에너지팀',v2022:null,v2023:2673.2,v2024:2678.5,v2025:null,status:2,remark:''},
+    {id:'E016',major:'에너지 소비',mid:'일반에너지',minor:'원단위',unit:'TJ/십억원',dept:'환경에너지팀',v2022:null,v2023:8.91,v2024:8.12,v2025:null,status:2,remark:''},
+    // 용수
+    {id:'E017',major:'용수',mid:'취수',minor:'총 취수량',unit:'ton',dept:'환경에너지팀',v2022:null,v2023:7124500,v2024:6899202,v2025:null,status:2,remark:''},
+    {id:'E018',major:'용수',mid:'취수',minor:'지하수',unit:'ton',dept:'환경에너지팀',v2022:null,v2023:75200,v2024:71655,v2025:null,status:2,remark:''},
+    {id:'E019',major:'용수',mid:'취수',minor:'상수',unit:'ton',dept:'환경에너지팀',v2022:null,v2023:25100,v2024:22776,v2025:null,status:2,remark:''},
+    {id:'E020',major:'용수',mid:'취수',minor:'복류수',unit:'ton',dept:'환경에너지팀',v2022:null,v2023:7024200,v2024:6804771,v2025:null,status:2,remark:''},
+    {id:'E021',major:'용수',mid:'사용 및 재활용',minor:'총 사용량',unit:'ton',dept:'환경에너지팀',v2022:null,v2023:17892000,v2024:17370481,v2025:null,status:2,remark:''},
+    {id:'E022',major:'용수',mid:'사용 및 재활용',minor:'재활용량',unit:'ton',dept:'환경에너지팀',v2022:null,v2023:10850000,v2024:11425685,v2025:null,status:2,remark:''},
+    {id:'E023',major:'용수',mid:'사용 및 재활용',minor:'재활용률',unit:'%',dept:'환경에너지팀',v2022:null,v2023:60.6,v2024:65.78,v2025:null,status:2,remark:''},
+    // 대기오염물질
+    {id:'E024',major:'대기오염물질 배출',mid:'질소산화물질(NOx)',minor:'배출량',unit:'ton',dept:'환경에너지팀',v2022:null,v2023:141.5,v2024:117.1,v2025:null,status:2,remark:''},
+    {id:'E025',major:'대기오염물질 배출',mid:'질소산화물질(NOx)',minor:'원단위',unit:'ton/십억원',dept:'환경에너지팀',v2022:null,v2023:0.275,v2024:0.218,v2025:null,status:2,remark:''},
+    {id:'E026',major:'대기오염물질 배출',mid:'황산화물질(SOx)',minor:'배출량',unit:'ton',dept:'환경에너지팀',v2022:null,v2023:4.1,v2024:3.8,v2025:null,status:2,remark:''},
+    {id:'E027',major:'대기오염물질 배출',mid:'먼지(PM10)',minor:'배출량',unit:'ton',dept:'환경에너지팀',v2022:null,v2023:4.8,v2024:4.04,v2025:null,status:2,remark:''},
+    // 수질오염물질
+    {id:'E028',major:'수질오염물질 배출',mid:'COD',minor:'배출량',unit:'ton',dept:'환경에너지팀',v2022:null,v2023:188.4,v2024:173.0,v2025:null,status:2,remark:''},
+    {id:'E029',major:'수질오염물질 배출',mid:'BOD',minor:'배출량',unit:'ton',dept:'환경에너지팀',v2022:null,v2023:43.2,v2024:40.9,v2025:null,status:2,remark:''},
+    {id:'E030',major:'수질오염물질 배출',mid:'폐수',minor:'배출량',unit:'ton',dept:'환경에너지팀',v2022:null,v2023:5982000,v2024:5957258,v2025:null,status:2,remark:''},
+    // 폐기물
+    {id:'E031',major:'폐기물',mid:'폐기물',minor:'배출량',unit:'ton',dept:'환경에너지팀',v2022:null,v2023:145200,v2024:139499,v2025:null,status:2,remark:''},
+    {id:'E032',major:'폐기물',mid:'폐기물',minor:'- 일반 폐기물',unit:'ton',dept:'환경에너지팀',v2022:null,v2023:141500,v2024:135747,v2025:null,status:2,remark:''},
+    {id:'E033',major:'폐기물',mid:'폐기물',minor:'- 지정 폐기물',unit:'ton',dept:'환경에너지팀',v2022:null,v2023:3700,v2024:3751.9,v2025:null,status:2,remark:''},
+    {id:'E034',major:'폐기물',mid:'폐기물',minor:'재활용률',unit:'%',dept:'환경에너지팀',v2022:null,v2023:43.2,v2024:45.8,v2025:null,status:2,remark:''},
+    {id:'E035',major:'폐기물',mid:'환경투자',minor:'환경투자비',unit:'억원',dept:'환경에너지팀',v2022:null,v2023:98.5,v2024:128.81,v2025:null,status:2,remark:''},
+    {id:'E036',major:'폐기물',mid:'환경투자',minor:'친환경 구매액',unit:'억원',dept:'경영기획팀',v2022:null,v2023:null,v2024:null,v2025:null,status:0,remark:''},
+    {id:'E037',major:'폐기물',mid:'친환경 제품',minor:'Home & Life 매출액',unit:'억원',dept:'HL기획팀',v2022:null,v2023:510,v2024:487,v2025:null,status:2,remark:''},
+    {id:'E038',major:'폐기물',mid:'친환경 제품',minor:'Paper Solution 매출액',unit:'억원',dept:'PS기획팀',v2022:null,v2023:2450,v2024:2580,v2025:null,status:2,remark:''},
+    {id:'E039',major:'폐기물',mid:'환경교육',minor:'대상인원',unit:'명',dept:'환경에너지팀',v2022:null,v2023:380,v2024:391,v2025:null,status:2,remark:''},
+    {id:'E040',major:'폐기물',mid:'환경교육',minor:'교육 이수율',unit:'%',dept:'환경에너지팀',v2022:null,v2023:100,v2024:100,v2025:null,status:3,remark:''},
+    {id:'E041',major:'폐기물',mid:'환경인증',minor:'ISO 14001',unit:'%',dept:'환경에너지팀',v2022:100,v2023:100,v2024:100,v2025:null,status:3,remark:'전 사업장 인증'},
+    {id:'E042',major:'폐기물',mid:'환경법규 위반',minor:'법규 위반',unit:'건',dept:'환경에너지팀',v2022:null,v2023:0,v2024:1,v2025:null,status:2,remark:''},
+    {id:'E043',major:'폐기물',mid:'원재료',minor:'총 원재료 사용량',unit:'ton',dept:'경영기획팀',v2022:null,v2023:420100,v2024:414314,v2025:null,status:2,remark:''},
+    {id:'E044',major:'폐기물',mid:'원재료',minor:'종이자원 사용량',unit:'ton',dept:'경영기획팀',v2022:null,v2023:360000,v2024:354545,v2025:null,status:2,remark:''}
+  ],
+  S: [
+    {id:'S001',major:'노동조합',mid:'노조가입률',minor:null,unit:'%',dept:'HR팀',v2022:59.71,v2023:null,v2024:null,v2025:null,status:0,remark:''},
+    {id:'S002',major:'임직원 수',mid:'전체 임직원 수',minor:null,unit:'명',dept:'HR팀',v2022:613,v2023:null,v2024:null,v2025:null,status:0,remark:'정규직+비정규직'},
+    {id:'S003',major:'임직원 수',mid:'연령별',minor:'만 30세 미만',unit:'명(%)',dept:'HR팀',v2022:null,v2023:null,v2024:null,v2025:null,status:0,remark:''},
+    {id:'S004',major:'임직원 수',mid:'고용형태별',minor:'정규직',unit:'명(%)',dept:'HR팀',v2022:null,v2023:null,v2024:null,v2025:null,status:0,remark:''},
+    {id:'S005',major:'임직원 수',mid:'고용형태별',minor:'비정규직',unit:'명(%)',dept:'HR팀',v2022:null,v2023:null,v2024:null,v2025:null,status:0,remark:''},
+    {id:'S006',major:'인력 다양성',mid:'성비균형',minor:'전체여성',unit:'명(%)',dept:'HR팀',v2022:null,v2023:null,v2024:null,v2025:null,status:0,remark:''},
+    {id:'S007',major:'인력 다양성',mid:'성비균형',minor:'관리직 여성',unit:'명(%)',dept:'HR팀',v2022:null,v2023:null,v2024:null,v2025:null,status:0,remark:''},
+    {id:'S008',major:'채용 및 근속',mid:'채용',minor:'전체 신규입사자',unit:'명',dept:'HR팀',v2022:null,v2023:null,v2024:null,v2025:null,status:0,remark:''},
+    {id:'S009',major:'채용 및 근속',mid:'이직',minor:'이직자',unit:'명(%)',dept:'HR팀',v2022:null,v2023:null,v2024:null,v2025:null,status:0,remark:''},
+    {id:'S010',major:'채용 및 근속',mid:'근속',minor:'평균근속',unit:'년',dept:'HR팀',v2022:null,v2023:null,v2024:null,v2025:null,status:0,remark:''},
+    {id:'S011',major:'구성원 교육',mid:'교육비',minor:'직원 1인당 교육비용',unit:'천 원',dept:'HR팀',v2022:null,v2023:null,v2024:null,v2025:null,status:0,remark:''},
+    {id:'S012',major:'출산육아',mid:'육아휴직자 수',minor:'남성',unit:'명',dept:'HR팀',v2022:null,v2023:null,v2024:null,v2025:null,status:0,remark:''},
+    {id:'S013',major:'출산육아',mid:'육아휴직자 수',minor:'여성',unit:'명',dept:'HR팀',v2022:null,v2023:null,v2024:null,v2025:null,status:0,remark:''},
+    {id:'S014',major:'산업재해',mid:'총 근로시간',minor:'구성원',unit:'시간',dept:'안전보건팀',v2022:null,v2023:null,v2024:null,v2025:null,status:0,remark:''},
+    {id:'S015',major:'산업재해',mid:'산업재해율',minor:'구성원',unit:'%',dept:'안전보건팀',v2022:null,v2023:null,v2024:null,v2025:null,status:0,remark:''},
+    {id:'S016',major:'산업재해',mid:'사망자수',minor:'구성원',unit:'명',dept:'안전보건팀',v2022:null,v2023:null,v2024:null,v2025:null,status:0,remark:''},
+    {id:'S017',major:'산업재해',mid:'근로손실재해건수(LTI)',minor:'합계',unit:'건',dept:'안전보건팀',v2022:null,v2023:null,v2024:null,v2025:null,status:0,remark:''},
+    {id:'S018',major:'산업재해',mid:'근로손실재해율(LTIFR)',minor:'구성원',unit:'100만 근로시간',dept:'안전보건팀',v2022:null,v2023:null,v2024:null,v2025:null,status:0,remark:''},
+    {id:'S019',major:'인증 및 교육',mid:'국제인증',minor:'ISO 45001',unit:'%',dept:'안전보건팀',v2022:null,v2023:null,v2024:null,v2025:null,status:0,remark:''},
+    {id:'S020',major:'법규위반',mid:'안전사고',minor:'중대재해 사고 건수',unit:'건',dept:'안전보건팀',v2022:null,v2023:null,v2024:null,v2025:null,status:0,remark:''},
+    {id:'S021',major:'인권교육',mid:'전체',minor:'교육 이수율',unit:'%',dept:'HR팀',v2022:null,v2023:null,v2024:null,v2025:null,status:0,remark:''},
+    {id:'S022',major:'투자',mid:'사회투자 금액',minor:null,unit:'억 원',dept:'대외협력팀',v2022:null,v2023:null,v2024:null,v2025:null,status:0,remark:''},
+    {id:'S023',major:'봉사활동',mid:'직원 1인당 봉사시간',minor:null,unit:'시간',dept:'대외협력팀',v2022:null,v2023:null,v2024:null,v2025:null,status:0,remark:''},
+    {id:'S024',major:'유출',mid:'총 정보유출 건수',minor:null,unit:'건',dept:'정보보안팀',v2022:null,v2023:null,v2024:null,v2025:null,status:0,remark:''},
+    {id:'S025',major:'교육',mid:'정보보안 교육',minor:'직원 1인당 교육시간',unit:'시간',dept:'정보보안팀',v2022:null,v2023:null,v2024:null,v2025:null,status:0,remark:''}
+  ],
+  G: [
+    {id:'G001',major:'구성',mid:'독립성',minor:'이사회의 사외이사 비율',unit:'%',dept:'자산관리파트',v2022:null,v2023:null,v2024:null,v2025:null,status:0,remark:''},
+    {id:'G002',major:'구성',mid:'다양성',minor:'여성이사',unit:'%',dept:'자산관리파트',v2022:null,v2023:null,v2024:null,v2025:null,status:0,remark:''},
+    {id:'G003',major:'구성',mid:'전문성',minor:'산업경험 보유 이사',unit:'%',dept:'자산관리파트',v2022:null,v2023:null,v2024:null,v2025:null,status:0,remark:''},
+    {id:'G004',major:'구성',mid:'효율성',minor:'평균임기',unit:'년',dept:'자산관리파트',v2022:null,v2023:null,v2024:null,v2025:null,status:0,remark:''},
+    {id:'G005',major:'구성',mid:'효율성',minor:'참석률',unit:'%',dept:'자산관리파트',v2022:null,v2023:null,v2024:null,v2025:null,status:0,remark:''},
+    {id:'G006',major:'운영',mid:'개최',minor:'개최 건수',unit:'회',dept:'자산관리파트',v2022:null,v2023:null,v2024:null,v2025:null,status:0,remark:''},
+    {id:'G007',major:'운영',mid:'보고 및 의결',minor:'보고안건 수',unit:'건',dept:'자산관리파트',v2022:null,v2023:null,v2024:null,v2025:null,status:0,remark:''},
+    {id:'G008',major:'운영',mid:'보고 및 의결',minor:'의결안건 수',unit:'건',dept:'자산관리파트',v2022:null,v2023:null,v2024:null,v2025:null,status:0,remark:''},
+    {id:'G009',major:'운영',mid:'안건별 의견',minor:'찬성',unit:'건(%)',dept:'자산관리파트',v2022:null,v2023:null,v2024:null,v2025:null,status:0,remark:''},
+    {id:'G010',major:'운영',mid:'안건별 의견',minor:'반대',unit:'건(%)',dept:'자산관리파트',v2022:null,v2023:null,v2024:null,v2025:null,status:0,remark:''},
+    {id:'G011',major:'책임',mid:'책임감경',minor:'손해배상책임보험 가입',unit:'V',dept:'자산관리파트',v2022:null,v2023:null,v2024:null,v2025:null,status:0,remark:''},
+    {id:'G012',major:'책임',mid:'이사교육',minor:'사내교육 참가',unit:'V',dept:'HR팀',v2022:null,v2023:null,v2024:null,v2025:null,status:0,remark:''},
+    {id:'G013',major:'평가 및 보수',mid:'보수',minor:'CEO 성과지표에 ESG 포함',unit:'V',dept:'자산관리파트',v2022:null,v2023:null,v2024:null,v2025:null,status:0,remark:''},
+    {id:'G014',major:'평가 및 보수',mid:'주식',minor:'최대주주 지분율',unit:'%',dept:'자산관리파트',v2022:null,v2023:null,v2024:null,v2025:null,status:0,remark:'KCGS 기준'},
+    {id:'G015',major:'주주권리 강화',mid:'의결권 행사',minor:'전자투표제 도입',unit:'V',dept:'자산관리파트',v2022:null,v2023:null,v2024:null,v2025:null,status:0,remark:''},
+    {id:'G016',major:'주주권리 강화',mid:'의결권 행사',minor:'전체 주주 의결권대리 권유',unit:'V',dept:'자산관리파트',v2022:null,v2023:null,v2024:null,v2025:null,status:0,remark:''},
+    {id:'G017',major:'주주권리 강화',mid:'주주권 보호',minor:'주총 전 안건 통지',unit:'V',dept:'자산관리파트',v2022:null,v2023:null,v2024:null,v2025:null,status:0,remark:''},
+    {id:'G018',major:'윤리경영 노력',mid:'윤리 및 반부패 교육',minor:'직원 1인당 교육시간',unit:'시간',dept:'진실경영팀',v2022:null,v2023:null,v2024:null,v2025:null,status:0,remark:''},
+    {id:'G019',major:'윤리경영 노력',mid:'윤리 및 반부패 교육',minor:'이수율',unit:'%',dept:'진실경영팀',v2022:null,v2023:null,v2024:null,v2025:null,status:0,remark:''},
+    {id:'G020',major:'신고 및 위반',mid:'법규위반',minor:'합계',unit:'건',dept:'진실경영팀',v2022:null,v2023:null,v2024:null,v2025:null,status:0,remark:''}
+  ]
+};
+
+// 상태 설정
+const STATUS_LABELS = ['미입력','입력중','제출완료','최종확정'];
+const STATUS_CLS    = ['st-0','st-1','st-2','st-3'];
+let currentPage = 'env';
+let modalRow = null;
+
+// ━━━━━━━━━━ 테이블 렌더링 ━━━━━━━━━━
+function fmt(v) {
+  if(v===null||v===undefined) return '';
+  if(typeof v==='number') return v.toLocaleString('ko-KR',{maximumFractionDigits:4});
+  return v;
+}
+
+function renderTable(cat, filter={}) {
+  const tbody = document.getElementById('tbody-'+{E:'env',S:'soc',G:'gov'}[cat]);
+  let rows = DATA[cat];
+  if(filter.dept && filter.dept!=='all') rows = rows.filter(r=>r.dept===filter.dept);
+  if(filter.status!==undefined && filter.status!=='') rows = rows.filter(r=>r.status===+filter.status);
+  if(filter.q) { const q=filter.q.toLowerCase(); rows=rows.filter(r=>(r.minor||r.mid||'').toLowerCase().includes(q)||(r.major||'').toLowerCase().includes(q)); }
+
+  let html=''; let lastMajor=''; let lastMid='';
+  rows.forEach(row=>{
+    const isNewMajor = row.major!==lastMajor;
+    const isNewMid   = row.mid!==lastMid;
+    if(isNewMajor){lastMajor=row.major;lastMid='';}
+    if(isNewMid)  {lastMid=row.mid;}
+    const indName = row.minor || row.mid || '';
+    const hasVal = row.v2024!==null;
+    const inputCls = hasVal?'has-value':'';
+    const confirmedCls = row.status===3?'confirmed':'';
+    html+=`<tr data-id="${row.id}" data-dept="${row.dept}" data-status="${row.status}">
+      <td class="sticky-col-1">${isNewMajor?row.major:''}</td>
+      <td class="sticky-col-2">${isNewMid?row.mid:''}  </td>
+      <td class="sticky-col-3">${indName}</td>
+      <td class="sticky-col-4">${row.unit||''}</td>
+      <td class="text-end text-muted">${fmt(row.v2022)}</td>
+      <td class="text-end text-muted">${fmt(row.v2023)}</td>
+      <td><input type="number" step="any" class="val-input ${inputCls} ${confirmedCls}"
+           value="${row.v2024??''}" ${row.status===3?'readonly':''}
+           data-id="${row.id}" data-year="2024"
+           onchange="onValueChange(this,'${row.id}',2024)"
+           onclick="openDetail('${row.id}','${cat}')"/></td>
+      <td><input type="number" step="any" class="val-input"
+           value="${row.v2025??''}"
+           data-id="${row.id}" data-year="2025"
+           onchange="onValueChange(this,'${row.id}',2025)"/></td>
+      <td><span class="status-badge ${STATUS_CLS[row.status]}">${STATUS_LABELS[row.status]}</span></td>
+      <td class="text-muted" style="font-size:.7rem">${row.dept}</td>
+      <td><input class="form-control form-control-sm border-0" style="font-size:.7rem"
+           value="${row.remark||''}" placeholder="비고/산식" onchange="onRemarkChange(this,'${row.id}')"/></td>
+    </tr>`;
+  });
+  tbody.innerHTML = html || '<tr><td colspan="11" class="text-center text-muted py-4">표시할 지표가 없습니다.</td></tr>';
+  updateSummary(cat);
+}
+
+function updateSummary(cat) {
+  const rows = DATA[cat];
+  const total = rows.length;
+  const done = rows.filter(r=>r.status>=2).length;
+  const partial = rows.filter(r=>r.status===1).length;
+  const missing = rows.filter(r=>r.status===0).length;
+  const rate = total>0?(done/total*100).toFixed(1):'0';
+  const pfx = {E:'e',S:'s',G:'g'}[cat];
+  const set = (id,v)=>{ const el=document.getElementById(id); if(el) el.textContent=v; };
+  set(`${pfx}-total`,total); set(`${pfx}-done`,done);
+  set(`${pfx}-partial`,partial); set(`${pfx}-missing`,missing); set(`${pfx}-rate`,rate+'%');
+}
+
+// ━━━━━━━━━━ 값 변경 핸들러 ━━━━━━━━━━
+function onValueChange(input, id, year) {
+  const cat = id.charAt(0);
+  const row = DATA[cat].find(r=>r.id===id);
+  if(!row) return;
+  const v = input.value===''?null:parseFloat(input.value);
+  row['v'+year] = v;
+  if(row.status===0 && v!==null) { row.status=1; }
+  input.classList.toggle('has-value', v!==null);
+  // 상태 배지 갱신
+  const tr = input.closest('tr');
+  if(tr) {
+    const badge = tr.querySelector('.status-badge');
+    if(badge) { badge.className='status-badge '+STATUS_CLS[row.status]; badge.textContent=STATUS_LABELS[row.status]; }
+  }
+  updateSummary(cat);
+  updateStatusGrid();
+}
+
+function onRemarkChange(input, id) {
+  const cat = id.charAt(0);
+  const row = DATA[cat].find(r=>r.id===id);
+  if(row) row.remark = input.value;
+}
+
+// ━━━━━━━━━━ 상세 모달 ━━━━━━━━━━
+function openDetail(id, cat) {
+  const row = DATA[cat].find(r=>r.id===id);
+  if(!row) return;
+  modalRow = {row, cat};
+  const clrMap = {E:'modal-header-e',S:'modal-header-s',G:'modal-header-g'};
+  document.getElementById('modal-header-esg').className = 'modal-header '+clrMap[cat];
+  document.getElementById('modal-title').textContent = row.major+' > '+(row.mid||'')+(row.minor?' > '+row.minor:'');
+  document.getElementById('modal-indicator-name').textContent = row.minor||row.mid||'';
+  document.getElementById('modal-indicator-unit').textContent = row.unit?'('+row.unit+')':'';
+  document.getElementById('modal-indicator-dept').textContent = row.dept;
+  document.getElementById('modal-v2022').value = row.v2022??'';
+  document.getElementById('modal-v2023').value = row.v2023??'';
+  document.getElementById('modal-v2024').value = row.v2024??'';
+  document.getElementById('modal-v2025').value = row.v2025??'';
+  document.getElementById('modal-remark').value = row.remark||'';
+  document.getElementById('modal-status').value = row.status;
+  new bootstrap.Modal(document.getElementById('detailModal')).show();
+}
+
+function saveModal() {
+  if(!modalRow) return;
+  const {row, cat} = modalRow;
+  const v24 = document.getElementById('modal-v2024').value;
+  const v25 = document.getElementById('modal-v2025').value;
+  row.v2024 = v24===''?null:parseFloat(v24);
+  row.v2025 = v25===''?null:parseFloat(v25);
+  row.remark = document.getElementById('modal-remark').value;
+  row.status = +document.getElementById('modal-status').value;
+  const catKey = {E:'env',S:'soc',G:'gov'}[cat];
+  renderTable(cat);
+  bootstrap.Modal.getInstance(document.getElementById('detailModal')).hide();
+  showToast('저장되었습니다.');
+  updateStatusGrid();
+}
+
+// ━━━━━━━━━━ 페이지 전환 ━━━━━━━━━━
+const PAGE_TITLES = {
+  env:'<span class="text-success me-1">●</span> 환경(E) 지표 입력',
+  soc:'<span class="text-primary me-1">●</span> 사회(S) 지표 입력',
+  gov:'<span style="color:#6c3483" class="me-1">●</span> 지배구조(G) 지표 입력',
+  status:'📊 입력현황',export:'📁 Fact Book 출력',
+  dept:'🏢 부서 관리',master:'📋 지표 마스터'
+};
+function showPage(id) {
+  currentPage = id;
+  document.querySelectorAll('.page-section').forEach(el=>el.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  document.querySelectorAll('.nav-link-esg').forEach(el=>el.classList.remove('active'));
+  event.currentTarget && event.currentTarget.classList.add('active');
+  document.getElementById('page-title').innerHTML = PAGE_TITLES[id]||'';
+  document.getElementById('action-bar').style.display = ['env','soc','gov'].includes(id)?'flex':'none';
+  if(id==='status') renderStatusGrid('E');
+  if(id==='export') renderPreviewTable();
+  if(id==='master') renderMasterTable();
+}
+
+// ━━━━━━━━━━ 필터 ━━━━━━━━━━
+const filters = {env:{},soc:{},gov:{}};
+function filterDept(el, pageKey, dept) {
+  el.closest('.dept-tabs').querySelectorAll('.dept-tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  filters[pageKey].dept = dept;
+  const cat = {env:'E',soc:'S',gov:'G'}[pageKey];
+  renderTable(cat, filters[pageKey]);
+}
+function filterStatus(sel, pageKey) {
+  filters[pageKey].status = sel.value;
+  const cat = {env:'E',soc:'S',gov:'G'}[pageKey];
+  renderTable(cat, filters[pageKey]);
+}
+function filterSearch(inp, pageKey) {
+  filters[pageKey].q = inp.value;
+  const cat = {env:'E',soc:'S',gov:'G'}[pageKey];
+  renderTable(cat, filters[pageKey]);
+}
+
+// ━━━━━━━━━━ 저장 / 제출 ━━━━━━━━━━
+function saveAll() {
+  // 실제 구현: fetch('/esgindicator-api/values/bulk', ...)
+  document.getElementById('save-info').innerHTML =
+    '<i class="bi bi-check-circle-fill text-success me-1"></i> 방금 저장됨 '+new Date().toLocaleTimeString();
+  showToast('✅ 모든 입력값이 저장되었습니다.');
+}
+function submitAll() {
+  const cat = currentPage==='env'?'E':currentPage==='soc'?'S':'G';
+  DATA[cat].forEach(r=>{ if(r.status===1&&r.v2024!==null) r.status=2; });
+  renderTable(cat);
+  showToast('📤 제출완료 처리되었습니다.');
+}
+
+// ━━━━━━━━━━ 입력현황 ━━━━━━━━━━
+function statusTab(el, cat) {
+  document.querySelectorAll('.esg-tab-btn').forEach(b=>b.className='esg-tab-btn');
+  const cls = {E:'active-e',S:'active-s',G:'active-g',ALL:'active-e'}[cat];
+  el.className = 'esg-tab-btn '+cls;
+  renderStatusGrid(cat);
+}
+
+function renderStatusGrid(cat) {
+  const grid = document.getElementById('status-grid');
+  const tbody = document.getElementById('status-table-body');
+  const clrMap = {E:'fill-e',S:'fill-s',G:'fill-g'};
+  const depts = [...new Set([...DATA.E,...DATA.S,...DATA.G].map(r=>r.dept))];
+  let html=''; let thtml='';
+  const cats = cat==='ALL'?['E','S','G']:[cat];
+  cats.forEach(c=>{
+    const deptSet = [...new Set(DATA[c].map(r=>r.dept))];
+    deptSet.forEach(dept=>{
+      const rows = DATA[c].filter(r=>r.dept===dept);
+      const total = rows.length;
+      const done = rows.filter(r=>r.status>=2).length;
+      const partial = rows.filter(r=>r.status===1).length;
+      const missing = rows.filter(r=>r.status===0).length;
+      const confirmed = rows.filter(r=>r.status===3).length;
+      const rate = total>0?Math.round(done/total*100):0;
+      const catLabel = {E:'환경',S:'사회',G:'지배구조'}[c];
+      html+=`<div class="dept-status-card">
+        <div class="dept-name"><span class="badge me-1" style="background:${{E:'#27ae60',S:'#2980b9',G:'#8e44ad'}[c]}">${c}</span>${dept}</div>
+        <div style="font-size:.7rem;color:#888;margin-bottom:4px">${catLabel} 지표 ${total}개</div>
+        <div class="progress-bar-wrap"><div class="progress-fill ${clrMap[c]}" style="width:${rate}%"></div></div>
+        <div class="d-flex justify-content-between" style="font-size:.7rem;color:#555"><span>입력완료율</span><strong>${rate}%</strong></div>
+        <div class="dept-counts mt-1">
+          <span class="cnt"><span class="text-danger">●</span> 미입력 ${missing}</span>
+          <span class="cnt"><span class="text-warning">●</span> 입력중 ${partial}</span>
+          <span class="cnt"><span class="text-success">●</span> 완료 ${done}</span>
+        </div>
+      </div>`;
+      thtml+=`<tr>
+        <td><span class="badge" style="background:${{E:'#27ae60',S:'#2980b9',G:'#8e44ad'}[c]}">${c}</span></td>
+        <td>${dept}</td><td>${total}</td>
+        <td class="text-success">${done}</td>
+        <td class="text-warning">${partial}</td>
+        <td class="text-danger">${missing}</td>
+        <td>${rate}%</td>
+        <td class="text-success">${confirmed}</td>
+      </tr>`;
+    });
+  });
+  grid.innerHTML = html;
+  tbody.innerHTML = thtml;
+}
+function updateStatusGrid() { if(currentPage==='status') renderStatusGrid('E'); }
+
+// ━━━━━━━━━━ Fact Book 미리보기 ━━━━━━━━━━
+function renderPreviewTable() {
+  const tbody = document.getElementById('preview-tbody');
+  let html='';
+  DATA.E.forEach(row=>{
+    html+=`<tr>
+      <td>${row.major}</td><td>${row.mid}</td>
+      <td>${row.minor||row.mid}</td><td>${row.unit||''}</td>
+      <td class="text-end">${fmt(row.v2022)}</td>
+      <td class="text-end">${fmt(row.v2023)}</td>
+      <td class="text-end">${fmt(row.v2024)}</td>
+      <td class="text-end">${fmt(row.v2025)}</td>
+      <td class="text-end">${fmt(row.v2024)}</td>
+    </tr>`;
+  });
+  tbody.innerHTML = html;
+}
+
+// ━━━━━━━━━━ 지표 마스터 ━━━━━━━━━━
+function renderMasterTable(cat='all') {
+  const tbody = document.getElementById('master-tbody');
+  let rows = [];
+  ['E','S','G'].forEach(c=>{ if(cat==='all'||cat===c) rows=[...rows,...DATA[c].map(r=>({...r,cat:c}))]; });
+  const clrMap = {E:'#27ae60',S:'#2980b9',G:'#8e44ad'};
+  tbody.innerHTML = rows.map((r,i)=>`<tr>
+    <td><span class="badge" style="background:${clrMap[r.cat]}">${r.cat}</span></td>
+    <td>${r.major}</td><td>${r.mid}</td>
+    <td>${r.minor||r.mid}</td><td>${r.unit||''}</td>
+    <td>${r.dept}</td>
+    <td>${r.cat==='E'?'<span class="badge bg-danger">필수</span>':'<span class="badge bg-secondary">선택</span>'}</td>
+    <td>${i+1}</td>
+    <td><span class="badge bg-success">사용</span></td>
+  </tr>`).join('');
+}
+function filterMasterCat(cat) { renderMasterTable(cat); }
+
+// ━━━━━━━━━━ 연도 변경 ━━━━━━━━━━
+function changeYear() {
+  const y = document.getElementById('yearSelect').value;
+  document.querySelector('#topbar .fw-bold')&&(document.querySelector('#topbar .year-chip label').textContent='기준연도');
+  showToast(`${y}년 기준으로 전환되었습니다.`);
+}
+
+// ━━━━━━━━━━ 엑셀 다운로드 ━━━━━━━━━━
+function downloadExcel() {
+  showToast('📊 Excel 파일 생성 중… (GET /esgindicator-api/values/export/factbook?year=2024)');
+  setTimeout(()=>showToast('✅ 다운로드 완료: ESG_FactBook_2024.xlsx'),1500);
+}
+
+// ━━━━━━━━━━ 토스트 ━━━━━━━━━━
+function showToast(msg) {
+  const c = document.getElementById('toast-container');
+  const el = document.createElement('div');
+  el.className='toast-msg'; el.textContent=msg;
+  c.appendChild(el);
+  setTimeout(()=>el.remove(),3000);
+}
+
+// ━━━━━━━━━━ 초기화 ━━━━━━━━━━
+window.onload = function() {
+  renderTable('E');
+  renderTable('S');
+  renderTable('G');
+};
+</script>
+</body>
+</html>
